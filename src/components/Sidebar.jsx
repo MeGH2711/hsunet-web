@@ -53,8 +53,11 @@ export default function Sidebar({
                 v1.0
               </span>
             </h1>
-            <p className="text-[11px] text-zinc-400 font-light tracking-wide">
-              Neurovascular ISLES-22
+            <p className="text-[11px] text-zinc-300 font-light tracking-wide">
+              ISLES 2026
+            </p>
+            <p className="text-[10px] text-zinc-400 font-medium tracking-wide mt-0.5">
+              Megh Patel
             </p>
           </div>
         </div>
