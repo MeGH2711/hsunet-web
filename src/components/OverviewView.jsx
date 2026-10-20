@@ -30,9 +30,9 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
   const bottomVisuals = [...visualCases].sort((a, b) => a.dice - b.dice).slice(0, 4);
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-black text-white p-6 space-y-6">
+    <div className="flex-1 h-full min-h-0 overflow-y-auto bg-black text-white p-6 space-y-6">
       {/* Top Banner */}
-      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-6 relative overflow-hidden">
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-6 relative shrink-0">
         <div className="relative z-10">
           <div className="flex items-center space-x-2 text-xs uppercase tracking-wider text-cyan-400 font-medium">
             <Zap className="w-3.5 h-3.5" />
@@ -101,7 +101,7 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
       </div>
 
       {/* Dataset Split Stratification Benchmark */}
-      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4">
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4 shrink-0">
         <h2 className="text-sm font-semibold text-white tracking-wide uppercase flex items-center gap-2">
           <GitFork className="w-4 h-4 text-cyan-400" />
           Dataset Split Distribution & Performance Benchmark
@@ -139,7 +139,7 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
       </div>
 
       {/* Lesion Scale Stratification */}
-      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4">
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4 shrink-0">
         <h2 className="text-sm font-semibold text-white tracking-wide uppercase flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-emerald-400" />
           Lesion Scale Stratification Benchmark
@@ -172,7 +172,7 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
       </div>
 
       {/* Featured Visual Samples */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 shrink-0">
         {/* Top Performing Visuals */}
         <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-zinc-800">

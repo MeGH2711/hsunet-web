@@ -180,9 +180,9 @@ export default function CaseTableView({ cases = [], onSelectSubject, onGoToInspe
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-black text-white p-6 space-y-4">
+    <div className="flex-1 h-full min-h-0 overflow-y-auto bg-black text-white p-6 space-y-4">
       {/* Table Header & Comprehensive Filter Controls */}
-      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4 shadow-lg">
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4 shadow-lg shrink-0">
         {/* Top Row: Title, Quick Count & Search / Export */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>

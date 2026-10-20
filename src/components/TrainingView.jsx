@@ -59,9 +59,9 @@ export default function TrainingView({ trainingData }) {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-black text-white p-6 space-y-6">
+    <div className="flex-1 h-full min-h-0 overflow-y-auto bg-black text-white p-6 space-y-6">
       {/* Header */}
-      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5">
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">

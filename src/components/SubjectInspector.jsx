@@ -163,9 +163,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
   const isFull3DScrub = slices.length >= 100;
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-black text-white p-6 space-y-5">
+    <div className="flex-1 h-full min-h-0 overflow-y-auto bg-black text-white p-6 space-y-5">
       {/* Top Header Card */}
-      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 backdrop-blur">
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 backdrop-blur shrink-0">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-3">

@@ -149,7 +149,7 @@ export default function App() {
       />
 
       {/* Main View Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-black">
+      <main className="flex-1 h-full min-h-0 overflow-hidden bg-black flex flex-col">
         {currentView === "inspector" && (
           <SubjectInspector
             subject={selectedSubject}
