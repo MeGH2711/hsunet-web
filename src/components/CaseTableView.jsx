@@ -1,40 +1,124 @@
-import React, { useState } from "react";
-import { Table as TableIcon, Search, Eye, Download, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import {
+  Table as TableIcon,
+  Search,
+  Eye,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  Filter,
+  RotateCcw,
+  CheckCircle2,
+  XCircle,
+  SlidersHorizontal,
+  Image as ImageIcon,
+  Layers,
+  Sparkles
+} from "lucide-react";
 import { cn, getDiceBg, formatNumber, getSplitBadge, getSplitDot } from "../lib/utils";
 
-export default function CaseTableView({ cases, onSelectSubject, onGoToInspector }) {
+export default function CaseTableView({ cases = [], onSelectSubject, onGoToInspector }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [tableSearch, setTableSearch] = useState("");
+  const [scanFilter, setScanFilter] = useState("all"); // "all", "available", "unavailable"
+  const [splitFilter, setSplitFilter] = useState("all"); // "all", "Training", "Validation", "Test"
+  const [siteFilter, setSiteFilter] = useState("all"); // "all", or site code
+  const [scaleFilter, setScaleFilter] = useState("all"); // "all", "Small", "Medium", "Large"
+  const [tierFilter, setTierFilter] = useState("all"); // "all", "excellent", "good", "moderate", "challenging"
+
   const [sortField, setSortField] = useState("dice");
   const [sortAsc, setSortAsc] = useState(false);
 
-  // Filter
-  const filtered = cases.filter((c) => {
-    if (!tableSearch) return true;
-    const q = tableSearch.toLowerCase();
-    return (
-      c.subject.toLowerCase().includes(q) ||
-      c.case_id.toLowerCase().includes(q) ||
-      c.site.toLowerCase().includes(q) ||
-      c.size_category.toLowerCase().includes(q) ||
-      (c.split && c.split.toLowerCase().includes(q))
-    );
-  });
+  // Compute stats for filter labels
+  const availableCount = useMemo(() => cases.filter((c) => c.has_visuals).length, [cases]);
+  const unavailableCount = cases.length - availableCount;
+  const sites = useMemo(() => Array.from(new Set(cases.map((c) => c.site).filter(Boolean))).sort(), [cases]);
+
+  // Check if any filters are active
+  const isFiltered =
+    tableSearch.trim() !== "" ||
+    scanFilter !== "all" ||
+    splitFilter !== "all" ||
+    siteFilter !== "all" ||
+    scaleFilter !== "all" ||
+    tierFilter !== "all";
+
+  const handleResetFilters = () => {
+    setTableSearch("");
+    setScanFilter("all");
+    setSplitFilter("all");
+    setSiteFilter("all");
+    setScaleFilter("all");
+    setTierFilter("all");
+    setPage(1);
+  };
+
+  // Filter cases
+  const filtered = useMemo(() => {
+    return cases.filter((c) => {
+      // 1. Text search
+      if (tableSearch.trim()) {
+        const q = tableSearch.toLowerCase().trim();
+        const matches =
+          c.subject.toLowerCase().includes(q) ||
+          c.case_id.toLowerCase().includes(q) ||
+          c.site.toLowerCase().includes(q) ||
+          c.size_category.toLowerCase().includes(q) ||
+          (c.split && c.split.toLowerCase().includes(q));
+        if (!matches) return false;
+      }
+
+      // 2. Scan availability filter
+      if (scanFilter === "available" && !c.has_visuals) return false;
+      if (scanFilter === "unavailable" && c.has_visuals) return false;
+
+      // 3. Subject split filter
+      if (splitFilter !== "all" && (c.split || "").toLowerCase() !== splitFilter.toLowerCase()) return false;
+
+      // 4. Site filter
+      if (siteFilter !== "all" && c.site !== siteFilter) return false;
+
+      // 5. Scale category filter
+      if (scaleFilter !== "all" && c.size_category !== scaleFilter) return false;
+
+      // 6. Performance dice tier filter
+      if (tierFilter !== "all") {
+        if (tierFilter === "excellent" && c.dice < 0.85) return false;
+        if (tierFilter === "good" && (c.dice < 0.70 || c.dice >= 0.85)) return false;
+        if (tierFilter === "moderate" && (c.dice < 0.50 || c.dice >= 0.70)) return false;
+        if (tierFilter === "challenging" && c.dice >= 0.50) return false;
+      }
+
+      return true;
+    });
+  }, [cases, tableSearch, scanFilter, splitFilter, siteFilter, scaleFilter, tierFilter]);
 
   // Sort
-  const sorted = [...filtered].sort((a, b) => {
-    let va = a[sortField];
-    let vb = b[sortField];
-    if (va === null || va === undefined) return 1;
-    if (vb === null || vb === undefined) return -1;
-    if (va < vb) return sortAsc ? -1 : 1;
-    if (va > vb) return sortAsc ? 1 : -1;
-    return 0;
-  });
+  const sorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      let va = a[sortField];
+      let vb = b[sortField];
+
+      // Handle boolean for has_visuals
+      if (sortField === "has_visuals") {
+        va = a.has_visuals ? 1 : 0;
+        vb = b.has_visuals ? 1 : 0;
+      }
+
+      if (va === null || va === undefined) return 1;
+      if (vb === null || vb === undefined) return -1;
+      if (va < vb) return sortAsc ? -1 : 1;
+      if (va > vb) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }, [filtered, sortField, sortAsc]);
 
   const totalPages = Math.ceil(sorted.length / pageSize) || 1;
-  const paginated = sorted.slice((page - 1) * pageSize, page * pageSize);
+  const paginated = useMemo(() => {
+    return sorted.slice((page - 1) * pageSize, page * pageSize);
+  }, [sorted, page, pageSize]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -50,6 +134,7 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
       "case_id",
       "subject",
       "split",
+      "scans_available",
       "site",
       "size_category",
       "dice",
@@ -67,6 +152,7 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
       c.case_id,
       c.subject,
       c.split || "Test",
+      c.has_visuals ? "Available" : "Unavailable",
       c.site,
       c.size_category,
       c.dice,
@@ -87,7 +173,7 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "hsunet_case_metrics.csv");
+    link.setAttribute("download", `hsunet_case_metrics_${scanFilter}_${splitFilter}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -95,20 +181,27 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
 
   return (
     <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-black text-white p-6 space-y-4">
-      {/* Table Header Controls */}
-      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Table Header & Comprehensive Filter Controls */}
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4 shadow-lg">
+        {/* Top Row: Title, Quick Count & Search / Export */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-              <TableIcon className="w-5 h-5 text-emerald-400" />
-              Complete Case Metrics Database ({cases.length} Total Subjects)
-            </h2>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              Individual subject segmentation metrics computed against neuroradiologist manual ground truths.
+            <div className="flex items-center space-x-2">
+              <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                <TableIcon className="w-5 h-5 text-emerald-400" />
+                Complete Case Metrics Database
+              </h2>
+              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-300">
+                {cases.length} Total Subjects
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400 mt-1">
+              Multi-center lesion segmentation evaluation metrics against neuroradiologist manual ground truths.
             </p>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center flex-wrap gap-2.5">
+            {/* Search Input */}
             <div className="relative">
               <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-zinc-500" />
               <input
@@ -118,18 +211,215 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
                   setTableSearch(e.target.value);
                   setPage(1);
                 }}
-                placeholder="Filter table cases..."
-                className="bg-zinc-900 border border-zinc-800 text-white text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-zinc-600 font-light"
+                placeholder="Search Subject ID, Case, Split..."
+                className="bg-zinc-900 border border-zinc-800 text-white text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-zinc-500 placeholder-zinc-500 font-light w-64"
               />
+              {tableSearch && (
+                <button
+                  onClick={() => {
+                    setTableSearch("");
+                    setPage(1);
+                  }}
+                  className="absolute right-2.5 top-2 text-zinc-500 hover:text-zinc-300 text-xs"
+                >
+                  ✕
+                </button>
+              )}
             </div>
 
+            {/* Export CSV Button */}
             <button
               onClick={exportCSV}
               className="flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs rounded-lg text-zinc-300 hover:text-white transition-colors"
+              title="Download currently filtered table data as CSV"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Export CSV</span>
+              <span>Export CSV ({sorted.length})</span>
             </button>
+          </div>
+        </div>
+
+        {/* Filter Toolbar Row: Scan Availability + Split + Site + Scale + Performance Tier */}
+        <div className="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center gap-3">
+          {/* 1. Scan Availability Filter */}
+          <div className="flex items-center space-x-1.5">
+            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium flex items-center gap-1">
+              <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+              Scans:
+            </span>
+            <div className="inline-flex rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-xs font-light">
+              <button
+                onClick={() => {
+                  setScanFilter("all");
+                  setPage(1);
+                }}
+                className={cn(
+                  "px-2.5 py-1 rounded-md transition-all text-xs",
+                  scanFilter === "all"
+                    ? "bg-zinc-800 text-white font-medium shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                )}
+              >
+                All ({cases.length})
+              </button>
+              <button
+                onClick={() => {
+                  setScanFilter("available");
+                  setPage(1);
+                }}
+                className={cn(
+                  "px-2.5 py-1 rounded-md transition-all text-xs flex items-center gap-1",
+                  scanFilter === "available"
+                    ? "bg-emerald-950/80 text-emerald-300 font-medium border border-emerald-800/60 shadow-sm"
+                    : "text-zinc-400 hover:text-emerald-400"
+                )}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                Available ({availableCount})
+              </button>
+              <button
+                onClick={() => {
+                  setScanFilter("unavailable");
+                  setPage(1);
+                }}
+                className={cn(
+                  "px-2.5 py-1 rounded-md transition-all text-xs flex items-center gap-1",
+                  scanFilter === "unavailable"
+                    ? "bg-zinc-800 text-zinc-200 font-medium border border-zinc-700 shadow-sm"
+                    : "text-zinc-400 hover:text-zinc-300"
+                )}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+                Unavailable ({unavailableCount})
+              </button>
+            </div>
+          </div>
+
+          {/* 2. Split Filter */}
+          <div className="flex items-center space-x-1.5">
+            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+              Split:
+            </span>
+            <select
+              value={splitFilter}
+              onChange={(e) => {
+                setSplitFilter(e.target.value);
+                setPage(1);
+              }}
+              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 font-light cursor-pointer hover:border-zinc-700"
+            >
+              <option value="all">All Splits</option>
+              <option value="Training">Training (929)</option>
+              <option value="Validation">Validation (233)</option>
+              <option value="Test">Test (291)</option>
+            </select>
+          </div>
+
+          {/* 3. Site Filter */}
+          <div className="flex items-center space-x-1.5">
+            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+              Site:
+            </span>
+            <select
+              value={siteFilter}
+              onChange={(e) => {
+                setSiteFilter(e.target.value);
+                setPage(1);
+              }}
+              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 font-light cursor-pointer hover:border-zinc-700"
+            >
+              <option value="all">All Sites ({sites.length})</option>
+              {sites.map((s) => (
+                <option key={s} value={s}>
+                  Site {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 4. Scale Filter */}
+          <div className="flex items-center space-x-1.5">
+            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+              Scale:
+            </span>
+            <select
+              value={scaleFilter}
+              onChange={(e) => {
+                setScaleFilter(e.target.value);
+                setPage(1);
+              }}
+              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 font-light cursor-pointer hover:border-zinc-700"
+            >
+              <option value="all">All Scales</option>
+              <option value="Small">Small (&lt; 1.5 mL)</option>
+              <option value="Medium">Medium (1.5 - 15 mL)</option>
+              <option value="Large">Large (&gt; 15 mL)</option>
+            </select>
+          </div>
+
+          {/* 5. Performance Tier Filter */}
+          <div className="flex items-center space-x-1.5">
+            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+              Performance:
+            </span>
+            <select
+              value={tierFilter}
+              onChange={(e) => {
+                setTierFilter(e.target.value);
+                setPage(1);
+              }}
+              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 font-light cursor-pointer hover:border-zinc-700"
+            >
+              <option value="all">All Performance</option>
+              <option value="excellent">Excellent (DSC ≥ 0.85)</option>
+              <option value="good">Good (0.70 ≤ DSC &lt; 0.85)</option>
+              <option value="moderate">Moderate (0.50 ≤ DSC &lt; 0.70)</option>
+              <option value="challenging">Challenging (DSC &lt; 0.50)</option>
+            </select>
+          </div>
+
+          {/* Reset Filters Button */}
+          {isFiltered && (
+            <button
+              onClick={handleResetFilters}
+              className="ml-auto flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs bg-rose-950/40 border border-rose-800/60 text-rose-300 hover:bg-rose-900/60 transition-colors"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Reset Filters</span>
+            </button>
+          )}
+        </div>
+
+        {/* Live Filter Indicator Bar */}
+        <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
+          <div className="flex items-center gap-2">
+            <span>
+              Showing <strong className="text-white font-mono">{sorted.length}</strong> of{" "}
+              <span className="font-mono">{cases.length}</span> subjects
+            </span>
+            {isFiltered && (
+              <span className="text-[11px] text-zinc-500">
+                ({cases.length - sorted.length} filtered out)
+              </span>
+            )}
+          </div>
+
+          {/* Quick Page Size Selector */}
+          <div className="flex items-center space-x-2">
+            <span className="text-[11px] text-zinc-400">Rows per page:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+              className="bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-0.5 focus:outline-none focus:border-zinc-600 font-mono"
+            >
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+            </select>
           </div>
         </div>
       </div>
@@ -155,6 +445,14 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
                   Case ID
                 </th>
                 <th
+                  onClick={() => handleSort("split")}
+                  className="py-3 px-2 cursor-pointer hover:text-white"
+                >
+                  <div className="flex items-center gap-1 font-mono">
+                    Split <ArrowUpDown className="w-3 h-3" />
+                  </div>
+                </th>
+                <th
                   onClick={() => handleSort("site")}
                   className="py-3 px-2 cursor-pointer hover:text-white"
                 >
@@ -167,11 +465,11 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
                   Scale
                 </th>
                 <th
-                  onClick={() => handleSort("split")}
-                  className="py-3 px-2 cursor-pointer hover:text-white"
+                  onClick={() => handleSort("has_visuals")}
+                  className="py-3 px-3 text-center cursor-pointer hover:text-white"
                 >
-                  <div className="flex items-center gap-1 font-mono">
-                    Split <ArrowUpDown className="w-3 h-3" />
+                  <div className="flex items-center justify-center gap-1 font-mono">
+                    Scans Available <ArrowUpDown className="w-3 h-3 text-cyan-400" />
                   </div>
                 </th>
                 <th
@@ -218,101 +516,153 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
                 >
                   Precision
                 </th>
-                <th className="py-3 px-3 text-center">Visuals</th>
+                <th className="py-3 px-3 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-900 font-light">
-              {paginated.map((c) => (
-                <tr
-                  key={c.case_id}
-                  className="hover:bg-zinc-900/50 transition-colors group"
-                >
-                  <td className="py-2.5 px-3 font-mono font-medium text-white">
-                    {c.subject}
-                  </td>
-                  <td className="py-2.5 px-3 font-mono text-zinc-400">
-                    {c.case_id}
-                  </td>
-                  <td className="py-2.5 px-2 text-zinc-300">
-                    {c.site}
-                  </td>
-                  <td className="py-2.5 px-2 text-zinc-400">
-                    {c.size_category}
-                  </td>
-                  <td className="py-2.5 px-2">
-                    <span
-                      className={cn(
-                        "px-2 py-0.5 rounded text-[10px] font-mono font-medium border inline-flex items-center gap-1",
-                        getSplitBadge(c.split)
-                      )}
-                    >
-                      <span className={cn("w-1.5 h-1.5 rounded-full", getSplitDot(c.split))} />
-                      {c.split || "Test"}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-3 font-mono">
-                    <span
-                      className={cn(
-                        "px-2 py-0.5 rounded text-[11px] font-medium border",
-                        getDiceBg(c.dice)
-                      )}
-                    >
-                      {c.dice.toFixed(4)}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-2 font-mono text-zinc-300">
-                    {c.iou.toFixed(4)}
-                  </td>
-                  <td className="py-2.5 px-2 font-mono text-zinc-300">
-                    {c.hd95 !== null ? c.hd95.toFixed(2) : "N/A"}
-                  </td>
-                  <td className="py-2.5 px-2 font-mono text-emerald-400">
-                    {c.ref_vol_ml.toFixed(2)}
-                  </td>
-                  <td className="py-2.5 px-2 font-mono text-cyan-400">
-                    {c.pred_vol_ml.toFixed(2)}
-                  </td>
-                  <td className="py-2.5 px-2 font-mono text-zinc-300">
-                    {(c.recall * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-2 font-mono text-zinc-300">
-                    {(c.precision * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-3 text-center">
-                    <button
-                      onClick={() => {
-                        onSelectSubject(c);
-                        onGoToInspector();
-                      }}
-                      className={cn(
-                        "px-2 py-1 rounded text-[11px] font-medium transition-all flex items-center justify-center gap-1 mx-auto",
-                        c.has_visuals
-                          ? "bg-zinc-800 hover:bg-white hover:text-black text-cyan-300 border border-zinc-700"
-                          : "text-zinc-600 hover:text-zinc-400"
-                      )}
-                    >
-                      <Eye className="w-3 h-3" />
-                      {c.has_visuals ? "View Slices" : "Details"}
-                    </button>
+              {paginated.length === 0 ? (
+                <tr>
+                  <td colSpan={14} className="py-12 text-center text-zinc-500">
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <Filter className="w-8 h-8 text-zinc-600 mb-1" />
+                      <p className="text-sm font-medium text-zinc-400">No subjects match the selected filters</p>
+                      <p className="text-xs text-zinc-600 max-w-sm">
+                        Try clearing or relaxing your filter conditions or search query.
+                      </p>
+                      <button
+                        onClick={handleResetFilters}
+                        className="mt-2 px-3 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-white rounded-lg transition-colors"
+                      >
+                        Reset All Filters
+                      </button>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                paginated.map((c) => (
+                  <tr
+                    key={c.case_id}
+                    className="hover:bg-zinc-900/50 transition-colors group"
+                  >
+                    <td className="py-2.5 px-3 font-mono font-medium text-white">
+                      {c.subject}
+                    </td>
+                    <td className="py-2.5 px-3 font-mono text-zinc-400">
+                      {c.case_id}
+                    </td>
+                    <td className="py-2.5 px-2">
+                      <span
+                        className={cn(
+                          "px-2 py-0.5 rounded text-[10px] font-mono font-medium border inline-flex items-center gap-1",
+                          getSplitBadge(c.split)
+                        )}
+                      >
+                        <span className={cn("w-1.5 h-1.5 rounded-full", getSplitDot(c.split))} />
+                        {c.split || "Test"}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-2 text-zinc-300">
+                      {c.site}
+                    </td>
+                    <td className="py-2.5 px-2 text-zinc-400">
+                      {c.size_category}
+                    </td>
+                    {/* Scans Availability Column */}
+                    <td className="py-2.5 px-3 text-center">
+                      <span
+                        className={cn(
+                          "px-2 py-0.5 rounded text-[10px] font-mono font-medium border inline-flex items-center gap-1",
+                          c.has_visuals
+                            ? "bg-emerald-950/40 border-emerald-800/60 text-emerald-300"
+                            : "bg-zinc-900 border-zinc-800 text-zinc-500"
+                        )}
+                        title={
+                          c.has_visuals
+                            ? "Pre-rendered 2D slice volumes and overlays available for instant interactive viewing"
+                            : "Evaluation metrics computed; slices dynamically served or metadata-only"
+                        }
+                      >
+                        <span className={cn("w-1.5 h-1.5 rounded-full", c.has_visuals ? "bg-emerald-400" : "bg-zinc-600")} />
+                        {c.has_visuals ? "Available" : "Unavailable"}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 font-mono">
+                      <span
+                        className={cn(
+                          "px-2 py-0.5 rounded text-[11px] font-medium border",
+                          getDiceBg(c.dice)
+                        )}
+                      >
+                        {c.dice.toFixed(4)}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-2 font-mono text-zinc-300">
+                      {c.iou.toFixed(4)}
+                    </td>
+                    <td className="py-2.5 px-2 font-mono text-zinc-300">
+                      {c.hd95 !== null ? c.hd95.toFixed(2) : "N/A"}
+                    </td>
+                    <td className="py-2.5 px-2 font-mono text-emerald-400">
+                      {c.ref_vol_ml.toFixed(2)}
+                    </td>
+                    <td className="py-2.5 px-2 font-mono text-cyan-400">
+                      {c.pred_vol_ml.toFixed(2)}
+                    </td>
+                    <td className="py-2.5 px-2 font-mono text-zinc-300">
+                      {(c.recall * 100).toFixed(1)}%
+                    </td>
+                    <td className="py-2.5 px-2 font-mono text-zinc-300">
+                      {(c.precision * 100).toFixed(1)}%
+                    </td>
+                    <td className="py-2.5 px-3 text-center">
+                      <button
+                        onClick={() => {
+                          onSelectSubject(c);
+                          onGoToInspector();
+                        }}
+                        className={cn(
+                          "px-2.5 py-1 rounded text-[11px] font-medium transition-all flex items-center justify-center gap-1 mx-auto",
+                          c.has_visuals
+                            ? "bg-zinc-800 hover:bg-white hover:text-black text-cyan-300 border border-zinc-700 shadow-sm"
+                            : "bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800"
+                        )}
+                        title={c.has_visuals ? "Inspect 2D/3D slice viewer" : "Inspect subject metrics"}
+                      >
+                        <Eye className="w-3 h-3" />
+                        {c.has_visuals ? "View Slices" : "Details"}
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Pagination Footer */}
-        <div className="p-3 border-t border-zinc-800 bg-zinc-950 flex items-center justify-between text-xs text-zinc-400">
+        <div className="p-3 border-t border-zinc-800 bg-zinc-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-zinc-400">
           <div>
-            Showing {(page - 1) * pageSize + 1} -{" "}
-            {Math.min(page * pageSize, sorted.length)} of {sorted.length} cases
+            Showing{" "}
+            <span className="font-mono text-white">
+              {sorted.length > 0 ? (page - 1) * pageSize + 1 : 0}
+            </span>{" "}
+            -{" "}
+            <span className="font-mono text-white">
+              {Math.min(page * pageSize, sorted.length)}
+            </span>{" "}
+            of <span className="font-mono text-white">{sorted.length}</span> cases
+            {isFiltered && (
+              <span className="text-zinc-500 ml-1">
+                (filtered from {cases.length} total)
+              </span>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
             <button
               disabled={page <= 1}
               onClick={() => setPage(page - 1)}
-              className="px-2.5 py-1 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-800"
+              className="px-2.5 py-1 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-800 transition-colors"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
@@ -322,7 +672,7 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
             <button
               disabled={page >= totalPages}
               onClick={() => setPage(page + 1)}
-              className="px-2.5 py-1 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-800"
+              className="px-2.5 py-1 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-800 transition-colors"
             >
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
