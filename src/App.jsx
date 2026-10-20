@@ -18,6 +18,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSite, setSelectedSite] = useState("all");
   const [selectedSize, setSelectedSize] = useState("all");
+  const [selectedSplit, setSelectedSplit] = useState("all");
   const [onlyWithVisuals, setOnlyWithVisuals] = useState(false); // Default to false so all 1,453 subjects can be browsed
   const [sortBy, setSortBy] = useState("dice-desc");
 
@@ -54,7 +55,8 @@ export default function App() {
       list = list.filter(
         (c) =>
           c.subject.toLowerCase().includes(q) ||
-          c.case_id.toLowerCase().includes(q)
+          c.case_id.toLowerCase().includes(q) ||
+          (c.split && c.split.toLowerCase().includes(q))
       );
     }
 
@@ -66,6 +68,11 @@ export default function App() {
     // Size filter
     if (selectedSize !== "all") {
       list = list.filter((c) => c.size_category === selectedSize);
+    }
+
+    // Split filter
+    if (selectedSplit !== "all") {
+      list = list.filter((c) => (c.split || "").toLowerCase() === selectedSplit.toLowerCase());
     }
 
     // Only with pre-rendered visuals toggle
@@ -132,6 +139,8 @@ export default function App() {
         setSelectedSite={setSelectedSite}
         selectedSize={selectedSize}
         setSelectedSize={setSelectedSize}
+        selectedSplit={selectedSplit}
+        setSelectedSplit={setSelectedSplit}
         onlyWithVisuals={onlyWithVisuals}
         setOnlyWithVisuals={setOnlyWithVisuals}
         sortBy={sortBy}

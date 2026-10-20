@@ -22,7 +22,7 @@ import {
   Flame,
   Loader2
 } from "lucide-react";
-import { cn, formatNumber, getDiceColor, getDiceBg } from "../lib/utils";
+import { cn, formatNumber, getDiceColor, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
 
 export default function SubjectInspector({ subject, onSelectSubject }) {
   const [metaLoading, setMetaLoading] = useState(false);
@@ -181,14 +181,22 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-400">
                 Scale: {subject.size_category}
               </span>
+              <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-medium border flex items-center gap-1.5 shadow-sm", getSplitBadge(subject.split))}>
+                <span className={cn("w-1.5 h-1.5 rounded-full", getSplitDot(subject.split))} />
+                Split: {subject.split || "Test"}
+              </span>
               {slices.length > 0 && (
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-cyan-950/40 border border-cyan-800/60 text-cyan-300">
                   {slices.length} Slices Available
                 </span>
               )}
             </div>
-            <p className="text-xs text-zinc-400 mt-1.5 font-light">
-              Dataset Split: <span className="text-zinc-300 font-mono">{subject.split_source}</span>
+            <p className="text-xs text-zinc-400 mt-1.5 font-light flex items-center gap-1.5">
+              <span>Dataset Split:</span>
+              <span className={cn("px-1.5 py-0.5 rounded text-[11px] font-mono font-medium border", getSplitBadge(subject.split))}>
+                {subject.split || "Test"}
+              </span>
+              <span className="text-zinc-500 font-mono text-[11px]">({subject.split_source})</span>
             </p>
           </div>
 

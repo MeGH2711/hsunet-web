@@ -15,7 +15,7 @@ import {
   BrainCircuit,
   Maximize2
 } from "lucide-react";
-import { cn, getDiceBg } from "../lib/utils";
+import { cn, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
 
 export default function Sidebar({
   data,
@@ -29,6 +29,8 @@ export default function Sidebar({
   setSelectedSite,
   selectedSize,
   setSelectedSize,
+  selectedSplit,
+  setSelectedSplit,
   onlyWithVisuals,
   setOnlyWithVisuals,
   sortBy,
@@ -131,7 +133,7 @@ export default function Sidebar({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search Subject ID or Case ID..."
+            placeholder="Search Subject ID, Case, or Split..."
             className="w-full bg-zinc-900/80 border border-zinc-800 text-white text-xs rounded-md pl-8 pr-3 py-1.5 focus:outline-none focus:border-zinc-500 placeholder-zinc-500 font-light"
           />
           {searchQuery && (
@@ -145,17 +147,33 @@ export default function Sidebar({
         </div>
 
         {/* Dropdowns row */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-1.5">
           <div>
-            <label className="text-[10px] text-zinc-400 block mb-0.5 uppercase tracking-wider font-medium">
+            <label className="text-[10px] text-zinc-400 block mb-0.5 uppercase tracking-wider font-medium truncate">
+              Split
+            </label>
+            <select
+              value={selectedSplit}
+              onChange={(e) => setSelectedSplit(e.target.value)}
+              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded px-1.5 py-1 focus:outline-none focus:border-zinc-600 font-light"
+            >
+              <option value="all">All ({data?.summary?.total_cases || 0})</option>
+              <option value="Training">Train ({data?.summary?.split_counts?.Training || 929})</option>
+              <option value="Validation">Val ({data?.summary?.split_counts?.Validation || 233})</option>
+              <option value="Test">Test ({data?.summary?.split_counts?.Test || 291})</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[10px] text-zinc-400 block mb-0.5 uppercase tracking-wider font-medium truncate">
               Site
             </label>
             <select
               value={selectedSite}
               onChange={(e) => setSelectedSite(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded px-2 py-1 focus:outline-none focus:border-zinc-600 font-light"
+              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded px-1.5 py-1 focus:outline-none focus:border-zinc-600 font-light"
             >
-              <option value="all">All Sites ({data?.summary?.total_cases || 0})</option>
+              <option value="all">All Sites</option>
               {sites.map((s) => (
                 <option key={s} value={s}>
                   Site {s}
@@ -165,13 +183,13 @@ export default function Sidebar({
           </div>
 
           <div>
-            <label className="text-[10px] text-zinc-400 block mb-0.5 uppercase tracking-wider font-medium">
-              Size
+            <label className="text-[10px] text-zinc-400 block mb-0.5 uppercase tracking-wider font-medium truncate">
+              Scale
             </label>
             <select
               value={selectedSize}
               onChange={(e) => setSelectedSize(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded px-2 py-1 focus:outline-none focus:border-zinc-600 font-light"
+              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded px-1.5 py-1 focus:outline-none focus:border-zinc-600 font-light"
             >
               <option value="all">All Sizes</option>
               {sizes.map((sz) => (
@@ -263,8 +281,16 @@ export default function Sidebar({
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" title="Visual Slices Ready" />
                     )}
                   </div>
-                  <div className="flex items-center space-x-2 text-[10px] text-zinc-400 mt-0.5">
-                    <span className="font-mono">{c.case_id}</span>
+                  <div className="flex items-center space-x-1.5 text-[10px] text-zinc-400 mt-1">
+                    <span
+                      className={cn(
+                        "px-1.5 py-0.2 rounded text-[9px] font-mono font-medium border uppercase tracking-wider",
+                        getSplitBadge(c.split)
+                      )}
+                    >
+                      {c.split === "Validation" ? "Val" : c.split === "Training" ? "Train" : (c.split || "Test")}
+                    </span>
+                    <span className="font-mono text-zinc-400">{c.case_id}</span>
                     <span>•</span>
                     <span>{c.site}</span>
                     <span>•</span>

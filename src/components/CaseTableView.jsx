@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Table as TableIcon, Search, Eye, Download, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
-import { cn, getDiceBg, formatNumber } from "../lib/utils";
+import { cn, getDiceBg, formatNumber, getSplitBadge, getSplitDot } from "../lib/utils";
 
 export default function CaseTableView({ cases, onSelectSubject, onGoToInspector }) {
   const [page, setPage] = useState(1);
@@ -17,7 +17,8 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
       c.subject.toLowerCase().includes(q) ||
       c.case_id.toLowerCase().includes(q) ||
       c.site.toLowerCase().includes(q) ||
-      c.size_category.toLowerCase().includes(q)
+      c.size_category.toLowerCase().includes(q) ||
+      (c.split && c.split.toLowerCase().includes(q))
     );
   });
 
@@ -48,6 +49,7 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
     const headers = [
       "case_id",
       "subject",
+      "split",
       "site",
       "size_category",
       "dice",
@@ -64,6 +66,7 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
     const rows = sorted.map((c) => [
       c.case_id,
       c.subject,
+      c.split || "Test",
       c.site,
       c.size_category,
       c.dice,
@@ -164,6 +167,14 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
                   Scale
                 </th>
                 <th
+                  onClick={() => handleSort("split")}
+                  className="py-3 px-2 cursor-pointer hover:text-white"
+                >
+                  <div className="flex items-center gap-1 font-mono">
+                    Split <ArrowUpDown className="w-3 h-3" />
+                  </div>
+                </th>
+                <th
                   onClick={() => handleSort("dice")}
                   className="py-3 px-3 cursor-pointer hover:text-white font-mono"
                 >
@@ -227,6 +238,17 @@ export default function CaseTableView({ cases, onSelectSubject, onGoToInspector 
                   </td>
                   <td className="py-2.5 px-2 text-zinc-400">
                     {c.size_category}
+                  </td>
+                  <td className="py-2.5 px-2">
+                    <span
+                      className={cn(
+                        "px-2 py-0.5 rounded text-[10px] font-mono font-medium border inline-flex items-center gap-1",
+                        getSplitBadge(c.split)
+                      )}
+                    >
+                      <span className={cn("w-1.5 h-1.5 rounded-full", getSplitDot(c.split))} />
+                      {c.split || "Test"}
+                    </span>
                   </td>
                   <td className="py-2.5 px-3 font-mono">
                     <span

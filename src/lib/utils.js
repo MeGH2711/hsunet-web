@@ -27,3 +27,34 @@ export function getDiceBg(dice) {
   if (dice >= 0.30) return "bg-amber-950/40 border-amber-800/60 text-amber-300";
   return "bg-rose-950/40 border-rose-800/60 text-rose-300";
 }
+
+export function getSplitBadge(split) {
+  const s = (split || "").toLowerCase();
+  if (s === "training" || s === "train") {
+    return "bg-blue-950/50 border-blue-800/60 text-blue-300";
+  }
+  if (s === "validation" || s === "val") {
+    return "bg-amber-950/50 border-amber-800/60 text-amber-300";
+  }
+  if (s === "test") {
+    return "bg-purple-950/50 border-purple-800/60 text-purple-300";
+  }
+  return "bg-zinc-900 border-zinc-800 text-zinc-400";
+}
+
+export function getSplitDot(split) {
+  const s = (split || "").toLowerCase();
+  if (s === "training" || s === "train") return "bg-blue-400";
+  if (s === "validation" || s === "val") return "bg-amber-400";
+  if (s === "test") return "bg-purple-400";
+  return "bg-zinc-400";
+}
+
+export function getSplitText(split) {
+  const s = (split || "").toLowerCase();
+  if (s === "training" || s === "train") return "text-blue-400";
+  if (s === "validation" || s === "val") return "text-amber-400";
+  if (s === "test") return "text-purple-400";
+  return "text-zinc-400";
+}
+

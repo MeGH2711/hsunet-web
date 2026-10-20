@@ -1,6 +1,6 @@
 import React from "react";
-import { Activity, ShieldCheck, Award, Zap, Brain, Layers, BarChart3, ArrowRight } from "lucide-react";
-import { cn, getDiceColor, getDiceBg } from "../lib/utils";
+import { Activity, ShieldCheck, Award, Zap, Brain, Layers, BarChart3, ArrowRight, GitFork } from "lucide-react";
+import { cn, getDiceColor, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
 
 export default function OverviewView({ data, onSelectSubject, onGoToInspector }) {
   const summary = data?.summary || {};
@@ -13,6 +13,15 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
     const meanDsc = subset.length > 0 ? subset.reduce((a, b) => a + b.dice, 0) / subset.length : 0;
     const meanHd95 = subset.length > 0 ? subset.reduce((a, b) => a + (b.hd95 || 0), 0) / subset.length : 0;
     return { size: sz, count: subset.length, meanDsc, meanHd95 };
+  });
+
+  // Stratify by split (Training / Validation / Test)
+  const splits = ["Training", "Validation", "Test"];
+  const splitStats = splits.map((sp) => {
+    const subset = cases.filter((c) => (c.split || "").toLowerCase() === sp.toLowerCase());
+    const meanDsc = subset.length > 0 ? subset.reduce((a, b) => a + b.dice, 0) / subset.length : 0;
+    const meanHd95 = subset.length > 0 ? subset.reduce((a, b) => a + (b.hd95 || 0), 0) / subset.length : 0;
+    return { split: sp, count: subset.length, meanDsc, meanHd95 };
   });
 
   // Top performing & most challenging cases with visuals
@@ -91,6 +100,44 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
         </div>
       </div>
 
+      {/* Dataset Split Stratification Benchmark */}
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-white tracking-wide uppercase flex items-center gap-2">
+          <GitFork className="w-4 h-4 text-cyan-400" />
+          Dataset Split Distribution & Performance Benchmark
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {splitStats.map((st) => (
+            <div key={st.split} className="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className={cn("px-2 py-0.5 rounded text-xs font-mono font-medium border flex items-center gap-1.5", getSplitBadge(st.split))}>
+                  <span className={cn("w-1.5 h-1.5 rounded-full", getSplitDot(st.split))} />
+                  {st.split} Set
+                </span>
+                <span className="text-xs font-mono text-zinc-400 font-medium">{st.count} Subjects</span>
+              </div>
+              <div className="flex items-baseline space-x-2 pt-1">
+                <span className="text-2xl font-bold font-mono text-white">{st.meanDsc.toFixed(4)}</span>
+                <span className="text-xs text-zinc-400">Mean DSC</span>
+              </div>
+              <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                <div
+                  className={cn("h-full rounded-full", getSplitDot(st.split))}
+                  style={{ width: `${Math.min(100, st.meanDsc * 100)}%` }}
+                />
+              </div>
+              <div className="text-[11px] text-zinc-500 flex justify-between pt-1">
+                <span>HD95: {st.meanHd95.toFixed(2)} mm</span>
+                <span>
+                  {st.split === "Training" ? "Fold 0 Train" : st.split === "Validation" ? "Fold 0 Val" : "Held-Out Test"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Lesion Scale Stratification */}
       <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4">
         <h2 className="text-sm font-semibold text-white tracking-wide uppercase flex items-center gap-2">
@@ -146,7 +193,12 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
                 className="p-3 bg-zinc-900/50 hover:bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-between cursor-pointer transition-colors group"
               >
                 <div>
-                  <div className="text-xs font-mono font-medium text-white">{c.subject}</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-mono font-medium text-white">{c.subject}</span>
+                    <span className={cn("px-1.5 py-0.2 rounded text-[9px] font-mono font-medium border uppercase tracking-wider", getSplitBadge(c.split))}>
+                      {c.split || "Test"}
+                    </span>
+                  </div>
                   <div className="text-[10px] text-zinc-500 mt-0.5">
                     {c.case_id} • Site {c.site} • {c.ref_vol_ml.toFixed(1)} mL
                   </div>
@@ -182,7 +234,12 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
                 className="p-3 bg-zinc-900/50 hover:bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-between cursor-pointer transition-colors group"
               >
                 <div>
-                  <div className="text-xs font-mono font-medium text-white">{c.subject}</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-mono font-medium text-white">{c.subject}</span>
+                    <span className={cn("px-1.5 py-0.2 rounded text-[9px] font-mono font-medium border uppercase tracking-wider", getSplitBadge(c.split))}>
+                      {c.split || "Test"}
+                    </span>
+                  </div>
                   <div className="text-[10px] text-zinc-500 mt-0.5">
                     {c.case_id} • Site {c.site} • {c.ref_vol_ml.toFixed(1)} mL
                   </div>
