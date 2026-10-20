@@ -31,26 +31,32 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
   // Determine slices and total count (either pre-rendered or dynamically loaded)
   const visuals = subject?.visuals || dynamicMeta;
   const slices = visuals?.slices || [];
-  const totalSlices = visuals?.total_slices || 0;
-  const defaultSlice = visuals?.default_slice || 0;
+  const totalSlices = visuals?.total_slices || slices.length || 0;
+  const defaultSlice = visuals?.default_slice ?? (slices[0]?.slice_index ?? 0);
 
   const [currentSliceIdx, setCurrentSliceIdx] = useState(defaultSlice);
   const [viewMode, setViewMode] = useState("grid"); // "grid", "error"
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playSpeed, setPlaySpeed] = useState(120); // ms per slice
+  const [playSpeed, setPlaySpeed] = useState(150); // ms per slice
   const [fullscreenImage, setFullscreenImage] = useState(null);
 
   const playIntervalRef = useRef(null);
 
-  // When subject changes, fetch metadata if not pre-rendered
+  // When subject changes, set initial slice
   useEffect(() => {
     if (!subject) return;
 
     setIsPlaying(false);
 
-    if (subject.visuals) {
+    if (subject.visuals?.slices?.length > 0) {
       setDynamicMeta(null);
-      setCurrentSliceIdx(subject.visuals.default_slice ?? 0);
+      const defZ = subject.visuals.default_slice;
+      const matched = subject.visuals.slices.find((s) => s.slice_index === defZ);
+      if (matched) {
+        setCurrentSliceIdx(defZ);
+      } else {
+        setCurrentSliceIdx(subject.visuals.slices[0].slice_index);
+      }
     } else {
       setMetaLoading(true);
       fetch(`/api/subject_meta?case_id=${subject.case_id}`)
@@ -64,19 +70,22 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
           setMetaLoading(false);
         })
         .catch((err) => {
-          console.warn("Could not load dynamic meta, fallback to default", err);
+          // If on static host like Vercel and API is not present, don't crash
           setMetaLoading(false);
         });
     }
   }, [subject?.case_id]);
 
-  // Cine loop playback
+  // Cine loop playback across available slices
   useEffect(() => {
-    if (isPlaying && totalSlices > 0) {
+    if (isPlaying && slices.length > 1) {
       playIntervalRef.current = setInterval(() => {
-        setCurrentSliceIdx((prev) => {
-          if (prev >= totalSlices - 1) return 0;
-          return prev + 1;
+        setCurrentSliceIdx((prevZ) => {
+          const currentIdxInSlices = slices.findIndex((s) => s.slice_index === prevZ);
+          if (currentIdxInSlices === -1 || currentIdxInSlices >= slices.length - 1) {
+            return slices[0].slice_index;
+          }
+          return slices[currentIdxInSlices + 1].slice_index;
         });
       }, playSpeed);
     } else {
@@ -85,28 +94,31 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     return () => {
       if (playIntervalRef.current) clearInterval(playIntervalRef.current);
     };
-  }, [isPlaying, totalSlices, playSpeed]);
+  }, [isPlaying, slices, playSpeed]);
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
 
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        setCurrentSliceIdx((prev) => Math.max(0, prev - 1));
-      } else if (e.key === "ArrowRight") {
-        e.preventDefault();
-        setCurrentSliceIdx((prev) => Math.min(totalSlices - 1, prev + 1));
-      } else if (e.key === " ") {
-        e.preventDefault();
-        setIsPlaying((prev) => !prev);
+      if (slices.length > 0) {
+        const curIdx = slices.findIndex((s) => s.slice_index === currentSliceIdx);
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          if (curIdx > 0) setCurrentSliceIdx(slices[curIdx - 1].slice_index);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          if (curIdx < slices.length - 1) setCurrentSliceIdx(slices[curIdx + 1].slice_index);
+        } else if (e.key === " ") {
+          e.preventDefault();
+          setIsPlaying((prev) => !prev);
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [totalSlices]);
+  }, [slices, currentSliceIdx]);
 
   if (!subject) {
     return (
@@ -120,25 +132,26 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     );
   }
 
+  // Find active slice by slice_index
+  const activeSlice =
+    slices.find((s) => s.slice_index === currentSliceIdx) ||
+    (slices.length > 0 ? slices[0] : null);
+
   const lesionProfile = visuals?.lesion_profile || [];
   const maxLesionVoxels = Math.max(...lesionProfile.map((p) => Math.max(p.gt, p.pred)), 1);
 
-  // Active slice data (construct URLs for dynamic or static)
-  const currentProfile = lesionProfile[currentSliceIdx] || { gt: 0, pred: 0 };
-  const isPeak = currentSliceIdx === defaultSlice && (currentProfile.gt > 0 || currentProfile.pred > 0);
-
   const getSliceUrl = (type) => {
-    if (subject.visuals && slices[currentSliceIdx]) {
-      return slices[currentSliceIdx][`${type}_url`];
+    if (activeSlice && activeSlice[`${type}_url`]) {
+      return activeSlice[`${type}_url`];
     }
     return `/api/slice?case_id=${subject.case_id}&z=${currentSliceIdx}&type=${type}`;
   };
 
   const currentSlice = {
-    slice_index: currentSliceIdx,
-    is_peak: isPeak,
-    gt_voxels: currentProfile.gt,
-    pred_voxels: currentProfile.pred,
+    slice_index: activeSlice ? activeSlice.slice_index : currentSliceIdx,
+    is_peak: activeSlice ? activeSlice.is_peak : false,
+    gt_voxels: activeSlice ? activeSlice.gt_voxels : 0,
+    pred_voxels: activeSlice ? activeSlice.pred_voxels : 0,
     raw_url: getSliceUrl("raw"),
     gt_url: getSliceUrl("gt"),
     gt_overlay_url: getSliceUrl("gt_overlay"),
@@ -147,9 +160,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     error_url: getSliceUrl("error"),
   };
 
-  const lesionSpan = lesionProfile.filter((p) => p.gt > 0 || p.pred > 0);
-  const firstLesionSlice = lesionSpan.length > 0 ? lesionSpan[0].slice : null;
-  const lastLesionSlice = lesionSpan.length > 0 ? lesionSpan[lesionSpan.length - 1].slice : null;
+  const isFull3DScrub = slices.length >= 100;
 
   return (
     <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-black text-white p-6 space-y-5">
@@ -170,9 +181,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-400">
                 Scale: {subject.size_category}
               </span>
-              {totalSlices > 0 && (
+              {slices.length > 0 && (
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-cyan-950/40 border border-cyan-800/60 text-cyan-300">
-                  {totalSlices} Slices (Full 3D)
+                  {slices.length} Slices Available
                 </span>
               )}
             </div>
@@ -205,7 +216,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
           <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-lg p-3">
             <div className="text-[10px] uppercase text-zinc-400 tracking-wider font-medium">HD95 Distance</div>
             <div className="text-lg font-bold font-mono text-white mt-0.5">
-              {subject.hd95 !== null ? `${subject.hd95.toFixed(2)}` : "N/A"}
+              {subject.hd95 !== null ? `${subject.hd95.toFixed(2)}` : "0.00"}
               <span className="text-xs font-normal text-zinc-500 ml-1">mm</span>
             </div>
             <div className="text-[10px] text-zinc-400 mt-0.5">95% Surface Error</div>
@@ -218,7 +229,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               <span className="text-xs font-normal text-zinc-500 ml-1">mL</span>
             </div>
             <div className="text-[10px] text-zinc-400 mt-0.5">
-              {subject.ref_vol_ml === 0 ? "True Negative" : "Reference Lesion"}
+              {subject.ref_vol_ml === 0 ? "Stroke Negative" : "Reference Lesion"}
             </div>
           </div>
 
@@ -255,26 +266,26 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         </div>
       </div>
 
-      {/* 3D Volume Slices Navigator & Controls */}
+      {/* Slices Navigator & Controls */}
       {metaLoading ? (
         <div className="border border-zinc-800 bg-zinc-950 rounded-xl p-8 flex items-center justify-center space-x-3 text-zinc-400 text-xs font-mono">
           <Loader2 className="w-5 h-5 animate-spin text-white" />
-          <span>Accessing 3D NIfTI Volume & Precomputing Slices...</span>
+          <span>Accessing visual scans...</span>
         </div>
-      ) : totalSlices > 0 ? (
+      ) : slices.length > 0 ? (
         <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             {/* Slice Position Status */}
             <div className="flex items-center space-x-3">
-              <span className="text-xs uppercase tracking-wider text-zinc-400 font-medium">Axial Depth:</span>
+              <span className="text-xs uppercase tracking-wider text-zinc-400 font-medium">Axial Slice:</span>
               <span className="text-sm font-bold font-mono text-white bg-zinc-900 border border-zinc-700 px-3 py-1 rounded-md shadow-inner">
-                Slice Z = {currentSliceIdx} <span className="text-zinc-500 font-normal">/ {totalSlices - 1}</span>
+                Z = {currentSlice.slice_index} <span className="text-zinc-500 font-normal">({slices.findIndex((s) => s.slice_index === currentSlice.slice_index) + 1} of {slices.length})</span>
               </span>
 
-              {isPeak && (
+              {currentSlice.is_peak && (
                 <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 flex items-center gap-1">
                   <Flame className="w-3 h-3 text-emerald-400" />
-                  Peak Lesion Slice
+                  {currentSlice.gt_voxels > 0 ? "Peak Lesion Slice" : "Brain Center Slice"}
                 </span>
               )}
 
@@ -286,37 +297,45 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             {/* Step & Playback Controls */}
             <div className="flex items-center space-x-1.5">
               <button
-                onClick={() => setCurrentSliceIdx(0)}
-                title="First Slice (Z=0)"
+                onClick={() => setCurrentSliceIdx(slices[0].slice_index)}
+                title="First Slice"
                 className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
               >
                 <ChevronsLeft className="w-4 h-4" />
               </button>
 
               <button
-                onClick={() => setCurrentSliceIdx((prev) => Math.max(0, prev - 1))}
+                onClick={() => {
+                  const cur = slices.findIndex((s) => s.slice_index === currentSlice.slice_index);
+                  if (cur > 0) setCurrentSliceIdx(slices[cur - 1].slice_index);
+                }}
                 title="Previous Slice (Left Arrow)"
                 className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
 
-              <button
-                onClick={() => setIsPlaying((prev) => !prev)}
-                title="Cine Loop Auto-Play (Spacebar)"
-                className={cn(
-                  "px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors border",
-                  isPlaying
-                    ? "bg-rose-950/40 border-rose-800 text-rose-300"
-                    : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-white"
-                )}
-              >
-                {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                <span>{isPlaying ? "Pause" : "Play Cine"}</span>
-              </button>
+              {slices.length > 1 && (
+                <button
+                  onClick={() => setIsPlaying((prev) => !prev)}
+                  title="Cine Loop Auto-Play (Spacebar)"
+                  className={cn(
+                    "px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors border",
+                    isPlaying
+                      ? "bg-rose-950/40 border-rose-800 text-rose-300"
+                      : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-white"
+                  )}
+                >
+                  {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                  <span>{isPlaying ? "Pause" : "Play Cine"}</span>
+                </button>
+              )}
 
               <button
-                onClick={() => setCurrentSliceIdx((prev) => Math.min(totalSlices - 1, prev + 1))}
+                onClick={() => {
+                  const cur = slices.findIndex((s) => s.slice_index === currentSlice.slice_index);
+                  if (cur < slices.length - 1) setCurrentSliceIdx(slices[cur + 1].slice_index);
+                }}
                 title="Next Slice (Right Arrow)"
                 className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
               >
@@ -324,7 +343,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               </button>
 
               <button
-                onClick={() => setCurrentSliceIdx(totalSlices - 1)}
+                onClick={() => setCurrentSliceIdx(slices[slices.length - 1].slice_index)}
                 title="Last Slice"
                 className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
               >
@@ -334,7 +353,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               {defaultSlice !== undefined && (
                 <button
                   onClick={() => setCurrentSliceIdx(defaultSlice)}
-                  title="Jump directly to Max Lesion Area or Center of Brain"
+                  title="Jump to Focus Slice"
                   className="ml-2 px-2.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-emerald-900/60 text-emerald-400 text-xs rounded font-medium flex items-center gap-1 transition-colors"
                 >
                   <Target className="w-3.5 h-3.5" />
@@ -344,61 +363,47 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             </div>
           </div>
 
-          {/* Continuous Interactive Slice Slider */}
-          <div className="space-y-1.5 pt-2">
-            <input
-              type="range"
-              min={0}
-              max={totalSlices - 1}
-              value={currentSliceIdx}
-              onChange={(e) => setCurrentSliceIdx(Number(e.target.value))}
-              className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
-            />
-
-            {/* Lesion Depth Profile Strip */}
-            {lesionProfile.length > 0 && (
-              <div className="relative pt-1">
-                <div className="h-6 w-full bg-zinc-900/80 rounded border border-zinc-800 flex items-end px-0.5 overflow-hidden">
-                  {lesionProfile.map((p) => {
-                    const heightPct = (Math.max(p.gt, p.pred) / maxLesionVoxels) * 100;
-                    const isSelected = p.slice === currentSliceIdx;
-                    return (
-                      <div
-                        key={p.slice}
-                        onClick={() => setCurrentSliceIdx(p.slice)}
-                        title={`Slice ${p.slice}: GT ${p.gt} voxels, Pred ${p.pred} voxels`}
-                        style={{ width: `${100 / totalSlices}%`, height: `${Math.max(10, heightPct)}%` }}
-                        className={cn(
-                          "transition-colors cursor-pointer",
-                          isSelected
-                            ? "bg-white"
-                            : p.gt > 0 && p.pred > 0
-                            ? "bg-emerald-500/80 hover:bg-emerald-400"
-                            : p.pred > 0
-                            ? "bg-cyan-500/80 hover:bg-cyan-400"
-                            : p.gt > 0
-                            ? "bg-blue-500/80 hover:bg-blue-400"
-                            : "bg-zinc-800/40 hover:bg-zinc-700/60"
-                        )}
-                      />
-                    );
-                  })}
-                </div>
-
-                <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono mt-1">
-                  <span>Slice 0 (Inferior Base)</span>
-                  {firstLesionSlice !== null ? (
-                    <span className="text-zinc-400">
-                      Lesion Extent: Z={firstLesionSlice} to Z={lastLesionSlice} ({lesionSpan.length} Slices)
-                    </span>
-                  ) : (
-                    <span className="text-zinc-500 italic">No focal lesion present (Stroke-negative control scan)</span>
-                  )}
-                  <span>Slice {totalSlices - 1} (Superior Vertex)</span>
-                </div>
+          {/* Quick Slice Selectors */}
+          {!isFull3DScrub ? (
+            <div className="pt-2">
+              <div className="flex items-center space-x-2 flex-wrap gap-y-2">
+                <span className="text-[11px] text-zinc-400 font-light mr-1">Select Axial Slice:</span>
+                {slices.map((sl) => (
+                  <button
+                    key={sl.slice_index}
+                    onClick={() => setCurrentSliceIdx(sl.slice_index)}
+                    className={cn(
+                      "px-3 py-1.5 text-xs rounded-lg font-mono transition-all border flex items-center gap-1.5",
+                      currentSlice.slice_index === sl.slice_index
+                        ? "bg-white text-black border-white font-semibold shadow-md"
+                        : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:text-white"
+                    )}
+                  >
+                    <span>Z = {sl.slice_index}</span>
+                    {sl.is_peak && (
+                      <span className="text-[9px] px-1.5 py-0.2 bg-emerald-500/20 text-emerald-400 rounded">
+                        Focus
+                      </span>
+                    )}
+                    {sl.gt_voxels > 0 && (
+                      <span className="text-[9px] text-zinc-400">({sl.gt_voxels} vox)</span>
+                    )}
+                  </button>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="space-y-1.5 pt-2">
+              <input
+                type="range"
+                min={0}
+                max={totalSlices - 1}
+                value={currentSlice.slice_index}
+                onChange={(e) => setCurrentSliceIdx(Number(e.target.value))}
+                className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
+              />
+            </div>
+          )}
         </div>
       ) : null}
 
@@ -454,11 +459,11 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         </div>
 
         {/* Visual Panels */}
-        {totalSlices === 0 && !metaLoading ? (
+        {!activeSlice && slices.length === 0 ? (
           <div className="p-12 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-950">
             <Info className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
             <p className="text-sm text-zinc-400 font-medium">
-              Loading slices for {subject.subject} ({subject.case_id})...
+              Scans not loaded for {subject.subject} ({subject.case_id}).
             </p>
           </div>
         ) : viewMode === "grid" ? (
@@ -466,7 +471,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* 1. Raw Scan */}
             <div
-              onClick={() => setFullscreenImage({ url: currentSlice.raw_url, title: `Raw Scan (Z=${currentSliceIdx})` })}
+              onClick={() => setFullscreenImage({ url: currentSlice.raw_url, title: `Raw Scan (Z=${currentSlice.slice_index})` })}
               className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
             >
               <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
@@ -482,14 +487,14 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                 />
               </div>
               <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
-                <span>Axial Slice {currentSliceIdx}</span>
+                <span>Axial Slice Z={currentSlice.slice_index}</span>
                 <span>Anatomy</span>
               </div>
             </div>
 
             {/* 2. Ground Truth Mask */}
             <div
-              onClick={() => setFullscreenImage({ url: currentSlice.gt_url, title: `Ground Truth Mask (Z=${currentSliceIdx})` })}
+              onClick={() => setFullscreenImage({ url: currentSlice.gt_url, title: `Ground Truth Mask (Z=${currentSlice.slice_index})` })}
               className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
             >
               <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
@@ -512,7 +517,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
 
             {/* 3. GT Overlay on Scan */}
             <div
-              onClick={() => setFullscreenImage({ url: currentSlice.gt_overlay_url, title: `GT Mask + Scan Overlay (Z=${currentSliceIdx})` })}
+              onClick={() => setFullscreenImage({ url: currentSlice.gt_overlay_url, title: `GT Mask + Scan Overlay (Z=${currentSlice.slice_index})` })}
               className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
             >
               <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
@@ -535,7 +540,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
 
             {/* 4. Predicted Mask Overlay */}
             <div
-              onClick={() => setFullscreenImage({ url: currentSlice.pred_overlay_url, title: `Predicted Mask Overlay (Z=${currentSliceIdx})` })}
+              onClick={() => setFullscreenImage({ url: currentSlice.pred_overlay_url, title: `Predicted Mask Overlay (Z=${currentSlice.slice_index})` })}
               className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
             >
               <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
@@ -560,7 +565,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
           /* Error Confusion Diagnostic Map View */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
-              onClick={() => setFullscreenImage({ url: currentSlice.error_url, title: `Diagnostic Error Map (Z=${currentSliceIdx})` })}
+              onClick={() => setFullscreenImage({ url: currentSlice.error_url, title: `Diagnostic Error Map (Z=${currentSlice.slice_index})` })}
               className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
             >
               <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
@@ -585,7 +590,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
 
             {/* Side-by-side comparison with GT */}
             <div
-              onClick={() => setFullscreenImage({ url: currentSlice.gt_overlay_url, title: `Ground Truth Overlay (Z=${currentSliceIdx})` })}
+              onClick={() => setFullscreenImage({ url: currentSlice.gt_overlay_url, title: `Ground Truth Overlay (Z=${currentSlice.slice_index})` })}
               className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
             >
               <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">

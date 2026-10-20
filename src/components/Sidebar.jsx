@@ -198,7 +198,7 @@ export default function Sidebar({
               className="text-[11px] text-zinc-300 font-light cursor-pointer flex items-center gap-1"
             >
               <Eye className="w-3 h-3 text-cyan-400" />
-              Pre-Cached Only ({data?.sampled_case_ids?.length || 0})
+              With Visual Scans ({data?.sampled_case_ids?.length || 0})
             </label>
           </div>
 
