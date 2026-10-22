@@ -10,11 +10,12 @@ Live deployment ready for **Vercel**.
 
 - **Pure Black Aesthetic**: Sleek minimal `#000000` design with crisp typography (Montserrat) and shadcn-inspired components.
 - **PACS-Grade 3D Volume Scrubber**: Smooth continuous axial depth slider (`Z = 0` to `Z = N - 1`), Cine-loop auto-play, keyboard controls (Left/Right arrows, Spacebar), and lesion depth profile timelines.
-- **4-Way Synchronized Visual Comparison**:
+- **5-Way Synchronized Visual Comparison**:
   1. Raw CT / MRI Scan (contrast-stretched normalized grayscale)
   2. Ground Truth Lesion Mask (manual annotation)
-  3. Ground Truth + Scan Overlay (semi-transparent emerald green overlay)
-  4. Predicted Mask Overlay (semi-transparent cyan prediction overlay)
+  3. Predicted Lesion Mask (cyan prediction mask)
+  4. Ground Truth + Scan Overlay (semi-transparent emerald green overlay)
+  5. Predicted Mask Overlay (semi-transparent cyan prediction overlay)
 - **Confusion Error Diagnostic Map**:
   - **Green**: True Positive (correctly segmented lesion)
   - **Coral Red**: False Positive (over-segmented healthy tissue)

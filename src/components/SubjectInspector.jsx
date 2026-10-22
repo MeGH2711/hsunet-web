@@ -37,7 +37,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
   const [currentSliceIdx, setCurrentSliceIdx] = useState(defaultSlice);
   const [viewMode, setViewMode] = useState("grid"); // "grid", "error"
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playSpeed, setPlaySpeed] = useState(150); // ms per slice
+  const [playSpeed, setPlaySpeed] = useState(1000); // 1000 ms = 1.0s per slice transition
   const [fullscreenImage, setFullscreenImage] = useState(null);
 
   const playIntervalRef = useRef(null);
@@ -324,19 +324,35 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               </button>
 
               {slices.length > 1 && (
-                <button
-                  onClick={() => setIsPlaying((prev) => !prev)}
-                  title="Cine Loop Auto-Play (Spacebar)"
-                  className={cn(
-                    "px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors border",
-                    isPlaying
-                      ? "bg-rose-950/40 border-rose-800 text-rose-300"
-                      : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-white"
-                  )}
-                >
-                  {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                  <span>{isPlaying ? "Pause" : "Play Cine"}</span>
-                </button>
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={() => setIsPlaying((prev) => !prev)}
+                    title="Cine Loop Auto-Play (Spacebar)"
+                    className={cn(
+                      "px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors border",
+                      isPlaying
+                        ? "bg-rose-950/40 border-rose-800 text-rose-300"
+                        : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-white"
+                    )}
+                  >
+                    {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                    <span>{isPlaying ? "Pause" : "Play Cine"}</span>
+                  </button>
+
+                  <select
+                    value={playSpeed}
+                    onChange={(e) => setPlaySpeed(Number(e.target.value))}
+                    title="Transition speed per slice"
+                    className="bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1.5 font-mono focus:outline-none focus:border-zinc-600 transition-colors cursor-pointer"
+                  >
+                    <option value={2000}>2.0s / slice</option>
+                    <option value={1500}>1.5s / slice</option>
+                    <option value={1000}>1.0s / slice (Default)</option>
+                    <option value={750}>0.75s / slice</option>
+                    <option value={500}>0.5s / slice</option>
+                    <option value={250}>0.25s / slice</option>
+                  </select>
+                </div>
               )}
 
               <button
@@ -428,7 +444,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               )}
             >
               <Layers className="w-3.5 h-3.5" />
-              4-Way Visual Grid
+              5-Way Visual Grid
             </button>
             <button
               onClick={() => setViewMode("error")}
@@ -475,8 +491,8 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             </p>
           </div>
         ) : viewMode === "grid" ? (
-          /* 4-Way Synchronized Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          /* 5-Way Synchronized Grid */
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
             {/* 1. Raw Scan */}
             <div
               onClick={() => setFullscreenImage({ url: currentSlice.raw_url, title: `Raw Scan (Z=${currentSlice.slice_index})` })}
@@ -523,13 +539,36 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               </div>
             </div>
 
-            {/* 3. GT Overlay on Scan */}
+            {/* 3. Predicted Lesion Mask */}
+            <div
+              onClick={() => setFullscreenImage({ url: currentSlice.pred_url, title: `Predicted Lesion Mask (Z=${currentSlice.slice_index})` })}
+              className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+            >
+              <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                <span className="text-xs font-medium text-cyan-400">3. Predicted Lesion Mask</span>
+                <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+              </div>
+              <div className="aspect-square bg-black flex items-center justify-center p-1">
+                <img
+                  src={currentSlice.pred_url}
+                  alt="Predicted Lesion Mask"
+                  className="w-full h-full object-contain"
+                  loading="lazy"
+                />
+              </div>
+              <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
+                <span>{currentSlice.pred_voxels} Voxel Area</span>
+                <span className="text-cyan-400">{currentSlice.pred_voxels > 0 ? "Lesion Predicted" : "Clear / 0 Vox"}</span>
+              </div>
+            </div>
+
+            {/* 4. GT Overlay on Scan */}
             <div
               onClick={() => setFullscreenImage({ url: currentSlice.gt_overlay_url, title: `GT Mask + Scan Overlay (Z=${currentSlice.slice_index})` })}
               className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
             >
               <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-emerald-400">3. GT + Scan Overlay</span>
+                <span className="text-xs font-medium text-emerald-400">4. GT + Scan Overlay</span>
                 <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
               </div>
               <div className="aspect-square bg-black flex items-center justify-center p-1">
@@ -546,13 +585,13 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               </div>
             </div>
 
-            {/* 4. Predicted Mask Overlay */}
+            {/* 5. Predicted Mask Overlay */}
             <div
               onClick={() => setFullscreenImage({ url: currentSlice.pred_overlay_url, title: `Predicted Mask Overlay (Z=${currentSlice.slice_index})` })}
               className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
             >
               <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-cyan-400">4. Predicted Mask Overlay</span>
+                <span className="text-xs font-medium text-cyan-400">5. Predicted Mask Overlay</span>
                 <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
               </div>
               <div className="aspect-square bg-black flex items-center justify-center p-1">
