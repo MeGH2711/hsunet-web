@@ -1,10 +1,190 @@
-import React from "react";
-import { Activity, ShieldCheck, Award, Zap, Brain, Layers, BarChart3, ArrowRight, GitFork } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Activity, ShieldCheck, Award, Zap, Brain, Layers, BarChart3, ArrowRight, GitFork, LineChart, Crosshair } from "lucide-react";
 import { cn, getDiceColor, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
 
-export default function OverviewView({ data, onSelectSubject, onGoToInspector }) {
+export default function OverviewView({ data, onSelectSubject, onGoToInspector, onGoToTraining }) {
   const summary = data?.summary || {};
   const cases = data?.cases || [];
+  const trainingEpochs = data?.training?.epochs || [];
+  const finalEpoch = data?.training?.final_epoch || trainingEpochs[trainingEpochs.length - 1];
+
+  // Interactive Hover State for Overview Sparklines
+  const [hoveredEpoch, setHoveredEpoch] = useState(null);
+
+  // Helper to render responsive interactive mini sparklines with X/Y scales
+  const renderMiniSparkline = (dataKey, strokeColor, label, yUnit = "") => {
+    if (trainingEpochs.length === 0) return null;
+    const values = trainingEpochs.map((e) => e[dataKey]).filter((v) => v !== null && !isNaN(v));
+    if (values.length === 0) return null;
+
+    const minVal = Math.min(...values);
+    const maxVal = Math.max(...values);
+    const range = maxVal - minVal || 1;
+    const width = 280;
+    const height = 90;
+    const paddingLeft = 46;
+    const paddingRight = 12;
+    const paddingTop = 12;
+    const paddingBottom = 22;
+
+    const plotWidth = width - paddingLeft - paddingRight;
+    const plotHeight = height - paddingTop - paddingBottom;
+
+    const minE = trainingEpochs[0].epoch;
+    const maxE = trainingEpochs[trainingEpochs.length - 1].epoch;
+    const epochSpan = maxE - minE || 1;
+
+    const getX = (ep) => paddingLeft + ((ep - minE) / epochSpan) * plotWidth;
+    const getY = (val) => paddingTop + (1 - (val - minVal) / range) * plotHeight;
+
+    const points = trainingEpochs
+      .filter((e) => e[dataKey] !== null && !isNaN(e[dataKey]))
+      .map((e) => `${getX(e.epoch).toFixed(1)},${getY(e[dataKey]).toFixed(1)}`)
+      .join(" ");
+
+    const formatVal = (v) => {
+      if (v === null || v === undefined) return "--";
+      if (dataKey === "lr") return v < 0.001 ? v.toExponential(1) : v.toFixed(4);
+      return v.toFixed(3);
+    };
+
+    const activeEpObj = hoveredEpoch !== null
+      ? trainingEpochs.find((e) => e.epoch === hoveredEpoch)
+      : null;
+    const activeX = activeEpObj ? getX(activeEpObj.epoch) : null;
+    const activeY = activeEpObj && activeEpObj[dataKey] !== null ? getY(activeEpObj[dataKey]) : null;
+
+    const handleMouseMove = (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const svgX = (e.clientX - rect.left) * (width / rect.width);
+      const boundedX = Math.max(paddingLeft, Math.min(width - paddingRight, svgX));
+      const ratio = (boundedX - paddingLeft) / plotWidth;
+      const targetEp = Math.round(minE + ratio * epochSpan);
+      setHoveredEpoch(targetEp);
+    };
+
+    return (
+      <div className="bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700/80 rounded-xl p-3.5 flex flex-col justify-between relative group transition-all">
+        <div className="flex items-center justify-between text-xs mb-1">
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: strokeColor }} />
+            <span className="font-medium text-zinc-300">{label}</span>
+          </div>
+          <span className="font-mono text-white text-xs font-semibold">
+            {activeEpObj
+              ? `Ep ${activeEpObj.epoch}: ${formatVal(activeEpObj[dataKey])}`
+              : `${formatVal(values[values.length - 1])}`}
+            {yUnit ? ` ${yUnit}` : ""}
+          </span>
+        </div>
+
+        {/* Interactive SVG Canvas */}
+        <div className="w-full relative cursor-crosshair select-none">
+          <svg
+            viewBox={`0 0 ${width} ${height}`}
+            className="w-full h-20"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setHoveredEpoch(null)}
+          >
+            {/* Horizontal Y Gridlines & Scale Ticks */}
+            {[minVal, minVal + range * 0.5, maxVal].map((val, idx) => {
+              const y = getY(val);
+              return (
+                <g key={`y-axis-${idx}`}>
+                  <line
+                    x1={paddingLeft}
+                    y1={y}
+                    x2={width - paddingRight}
+                    y2={y}
+                    stroke="#27272a"
+                    strokeDasharray="2 2"
+                    strokeWidth="1"
+                  />
+                  <text
+                    x={paddingLeft - 4}
+                    y={y + 3}
+                    textAnchor="end"
+                    className="text-[8px] font-mono fill-zinc-500"
+                  >
+                    {formatVal(val)}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Vertical X Gridlines & Scale Ticks */}
+            {[minE, Math.round(minE + epochSpan * 0.5), maxE].map((ep, idx) => {
+              const x = getX(ep);
+              return (
+                <g key={`x-axis-${idx}`}>
+                  <line
+                    x1={x}
+                    y1={paddingTop}
+                    x2={x}
+                    y2={height - paddingBottom}
+                    stroke="#27272a"
+                    strokeDasharray="2 2"
+                    strokeWidth="1"
+                  />
+                  <text
+                    x={x}
+                    y={height - paddingBottom + 12}
+                    textAnchor="middle"
+                    className="text-[8px] font-mono fill-zinc-500"
+                  >
+                    Ep {ep}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Solid Coordinate Axes */}
+            <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={height - paddingBottom} stroke="#3f3f46" strokeWidth="1" />
+            <line x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} stroke="#3f3f46" strokeWidth="1" />
+
+            {/* Main Polyline Curve */}
+            <polyline
+              fill="none"
+              stroke={strokeColor}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              points={points}
+            />
+
+            {/* Crosshair & Active Hover Dot */}
+            {activeEpObj && activeX !== null && (
+              <g>
+                <line
+                  x1={activeX}
+                  y1={paddingTop}
+                  x2={activeX}
+                  y2={height - paddingBottom}
+                  stroke="#06B6D4"
+                  strokeWidth="1.2"
+                  strokeDasharray="2 2"
+                />
+                {activeY !== null && (
+                  <>
+                    <circle cx={activeX} cy={activeY} r="5" fill={strokeColor} fillOpacity="0.3" />
+                    <circle cx={activeX} cy={activeY} r="2.5" fill="#000" stroke={strokeColor} strokeWidth="2" />
+                  </>
+                )}
+              </g>
+            )}
+          </svg>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between text-[9px] text-zinc-500 font-mono pt-1 border-t border-zinc-800/40">
+          <span>Scale: [{formatVal(minVal)} .. {formatVal(maxVal)}]</span>
+          <span className="text-zinc-400">
+            {activeEpObj ? `Epoch ${activeEpObj.epoch}` : `100 Epochs (0–99)`}
+          </span>
+        </div>
+      </div>
+    );
+  };
 
   // Stratify by size category
   const sizes = ["Small", "Medium", "Large"];
@@ -168,6 +348,37 @@ export default function OverviewView({ data, onSelectSubject, onGoToInspector })
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Training Dynamics & Model Convergence (Latest Occurred Epoch Details) */}
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-semibold text-white tracking-wide uppercase flex items-center gap-2">
+              <LineChart className="w-4 h-4 text-cyan-400" />
+              Training Dynamics & Model Convergence (Fold 0)
+            </h2>
+            <p className="text-xs text-zinc-400 mt-0.5 font-light">
+              Continuous 100 epochs (0–99) parsed with latest occurred epoch details from official training log.
+            </p>
+          </div>
+          {onGoToTraining && (
+            <button
+              onClick={onGoToTraining}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs rounded-lg text-zinc-300 hover:text-white transition-colors self-start sm:self-auto font-medium"
+            >
+              <span>View Full Curves & Logs</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {renderMiniSparkline("train_loss", "#06B6D4", "Train Loss (Latest)")}
+          {renderMiniSparkline("val_loss", "#10B981", "Val Loss (Latest)")}
+          {renderMiniSparkline("val_dice", "#3B82F6", "Val Pseudo Dice (Latest)")}
+          {renderMiniSparkline("lr", "#F59E0B", "Learning Rate (Latest)")}
         </div>
       </div>
 

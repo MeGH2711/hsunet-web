@@ -162,6 +162,7 @@ export default function App() {
             data={data}
             onSelectSubject={setSelectedSubject}
             onGoToInspector={() => setCurrentView("inspector")}
+            onGoToTraining={() => setCurrentView("training")}
           />
         )}
 
