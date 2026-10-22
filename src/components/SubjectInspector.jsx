@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   Layers,
   ZoomIn,
@@ -30,7 +30,33 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
 
   // Determine slices and total count (either pre-rendered or dynamically loaded)
   const visuals = subject?.visuals || dynamicMeta;
-  const slices = visuals?.slices || [];
+  
+  // Compute slices: from pre-rendered visuals, dynamicMeta slices, or synthesized from total_slices
+  const slices = useMemo(() => {
+    if (visuals?.slices && visuals.slices.length > 0) return visuals.slices;
+    if (visuals?.total_slices > 0) {
+      const arr = [];
+      const n = visuals.total_slices;
+      for (let z = 0; z < n; z++) {
+        const lp = visuals.lesion_profile?.[z];
+        arr.push({
+          slice_index: z,
+          is_peak: z === (visuals.default_slice ?? 0),
+          gt_voxels: lp?.gt ?? 0,
+          pred_voxels: lp?.pred ?? 0,
+          raw_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=raw`,
+          gt_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=gt`,
+          gt_overlay_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=gt_overlay`,
+          pred_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=pred`,
+          pred_overlay_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=pred_overlay`,
+          error_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=error`,
+        });
+      }
+      return arr;
+    }
+    return [];
+  }, [visuals, subject?.case_id]);
+
   const totalSlices = visuals?.total_slices || slices.length || 0;
   const defaultSlice = visuals?.default_slice ?? (slices[0]?.slice_index ?? 0);
 
@@ -47,9 +73,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     if (!subject) return;
 
     setIsPlaying(false);
+    setDynamicMeta(null);
 
     if (subject.visuals?.slices?.length > 0) {
-      setDynamicMeta(null);
       const defZ = subject.visuals.default_slice;
       const matched = subject.visuals.slices.find((s) => s.slice_index === defZ);
       if (matched) {
@@ -71,6 +97,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         })
         .catch((err) => {
           // If on static host like Vercel and API is not present, don't crash
+          console.warn("Dynamic slice server request failed:", err);
           setMetaLoading(false);
         });
     }
@@ -150,8 +177,8 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
   const currentSlice = {
     slice_index: activeSlice ? activeSlice.slice_index : currentSliceIdx,
     is_peak: activeSlice ? activeSlice.is_peak : false,
-    gt_voxels: activeSlice ? activeSlice.gt_voxels : 0,
-    pred_voxels: activeSlice ? activeSlice.pred_voxels : 0,
+    gt_voxels: activeSlice?.gt_voxels ?? (lesionProfile[currentSliceIdx]?.gt ?? 0),
+    pred_voxels: activeSlice?.pred_voxels ?? (lesionProfile[currentSliceIdx]?.pred ?? 0),
     raw_url: getSliceUrl("raw"),
     gt_url: getSliceUrl("gt"),
     gt_overlay_url: getSliceUrl("gt_overlay"),
@@ -160,7 +187,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     error_url: getSliceUrl("error"),
   };
 
-  const isFull3DScrub = slices.length >= 100;
+  const isFull3DScrub = slices.length > 10;
 
   return (
     <div className="flex-1 h-full min-h-0 overflow-y-auto bg-black text-white p-6 space-y-5">
@@ -483,11 +510,24 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         </div>
 
         {/* Visual Panels */}
-        {!activeSlice && slices.length === 0 ? (
+        {metaLoading ? (
+          <div className="p-16 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-950/70">
+            <Loader2 className="w-8 h-8 mx-auto text-cyan-400 animate-spin mb-3" />
+            <p className="text-sm text-zinc-300 font-medium">
+              Generating dynamic 3D visual slices for {subject.subject} ({subject.case_id})...
+            </p>
+            <p className="text-xs text-zinc-500 mt-1">
+              Extracting NIfTI raw scan, ground truth annotations, and HS-UNet predictions in real-time.
+            </p>
+          </div>
+        ) : !activeSlice && slices.length === 0 ? (
           <div className="p-12 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-950">
             <Info className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
             <p className="text-sm text-zinc-400 font-medium">
               Scans not loaded for {subject.subject} ({subject.case_id}).
+            </p>
+            <p className="text-xs text-zinc-600 mt-1">
+              Ensure the local medical slice server is running (run_dashboard.bat).
             </p>
           </div>
         ) : viewMode === "grid" ? (
