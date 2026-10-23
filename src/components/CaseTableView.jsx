@@ -14,7 +14,8 @@ import {
   SlidersHorizontal,
   Image as ImageIcon,
   Layers,
-  Sparkles
+  Sparkles,
+  Building2
 } from "lucide-react";
 import { cn, getDiceBg, formatNumber, getSplitBadge, getSplitDot } from "../lib/utils";
 
@@ -44,6 +45,17 @@ export default function CaseTableView({ cases = [], onSelectSubject, onGoToInspe
     siteFilter !== "all" ||
     scaleFilter !== "all" ||
     tierFilter !== "all";
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (tableSearch.trim()) count++;
+    if (scanFilter !== "all") count++;
+    if (splitFilter !== "all") count++;
+    if (siteFilter !== "all") count++;
+    if (scaleFilter !== "all") count++;
+    if (tierFilter !== "all") count++;
+    return count;
+  }, [tableSearch, scanFilter, splitFilter, siteFilter, scaleFilter, tierFilter]);
 
   const handleResetFilters = () => {
     setTableSearch("");
@@ -239,187 +251,235 @@ export default function CaseTableView({ cases = [], onSelectSubject, onGoToInspe
           </div>
         </div>
 
-        {/* Filter Toolbar Row: Scan Availability + Split + Site + Scale + Performance Tier */}
-        <div className="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center gap-3">
-          {/* 1. Scan Availability Filter */}
-          <div className="flex items-center space-x-1.5">
-            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium flex items-center gap-1">
-              <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
-              Scans:
-            </span>
-            <div className="inline-flex rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-xs font-light">
-              <button
-                onClick={() => {
-                  setScanFilter("all");
-                  setPage(1);
-                }}
-                className={cn(
-                  "px-2.5 py-1 rounded-md transition-all text-xs",
-                  scanFilter === "all"
-                    ? "bg-zinc-800 text-white font-medium shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                )}
-              >
-                All ({cases.length})
-              </button>
-              <button
-                onClick={() => {
-                  setScanFilter("available");
-                  setPage(1);
-                }}
-                className={cn(
-                  "px-2.5 py-1 rounded-md transition-all text-xs flex items-center gap-1",
-                  scanFilter === "available"
-                    ? "bg-emerald-950/80 text-emerald-300 font-medium border border-emerald-800/60 shadow-sm"
-                    : "text-zinc-400 hover:text-emerald-400"
-                )}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                Available ({availableCount})
-              </button>
-              <button
-                onClick={() => {
-                  setScanFilter("unavailable");
-                  setPage(1);
-                }}
-                className={cn(
-                  "px-2.5 py-1 rounded-md transition-all text-xs flex items-center gap-1",
-                  scanFilter === "unavailable"
-                    ? "bg-zinc-800 text-zinc-200 font-medium border border-zinc-700 shadow-sm"
-                    : "text-zinc-400 hover:text-zinc-300"
-                )}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
-                Unavailable ({unavailableCount})
-              </button>
-            </div>
-          </div>
-
-          {/* 2. Split Filter */}
-          <div className="flex items-center space-x-1.5">
-            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-              Split:
-            </span>
-            <select
-              value={splitFilter}
-              onChange={(e) => {
-                setSplitFilter(e.target.value);
-                setPage(1);
-              }}
-              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 font-light cursor-pointer hover:border-zinc-700"
-            >
-              <option value="all">All Splits</option>
-              <option value="Training">Training (929)</option>
-              <option value="Validation">Validation (233)</option>
-              <option value="Test">Test (291)</option>
-            </select>
-          </div>
-
-          {/* 3. Site Filter */}
-          <div className="flex items-center space-x-1.5">
-            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-              Site:
-            </span>
-            <select
-              value={siteFilter}
-              onChange={(e) => {
-                setSiteFilter(e.target.value);
-                setPage(1);
-              }}
-              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 font-light cursor-pointer hover:border-zinc-700"
-            >
-              <option value="all">All Sites ({sites.length})</option>
-              {sites.map((s) => (
-                <option key={s} value={s}>
-                  Site {s}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* 4. Scale Filter */}
-          <div className="flex items-center space-x-1.5">
-            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-              Scale:
-            </span>
-            <select
-              value={scaleFilter}
-              onChange={(e) => {
-                setScaleFilter(e.target.value);
-                setPage(1);
-              }}
-              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 font-light cursor-pointer hover:border-zinc-700"
-            >
-              <option value="all">All Scales</option>
-              <option value="Small">Small (&lt; 1.5 mL)</option>
-              <option value="Medium">Medium (1.5 - 15 mL)</option>
-              <option value="Large">Large (&gt; 15 mL)</option>
-            </select>
-          </div>
-
-          {/* 5. Performance Tier Filter */}
-          <div className="flex items-center space-x-1.5">
-            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-              Performance:
-            </span>
-            <select
-              value={tierFilter}
-              onChange={(e) => {
-                setTierFilter(e.target.value);
-                setPage(1);
-              }}
-              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 font-light cursor-pointer hover:border-zinc-700"
-            >
-              <option value="all">All Performance</option>
-              <option value="excellent">Excellent (DSC ≥ 0.85)</option>
-              <option value="good">Good (0.70 ≤ DSC &lt; 0.85)</option>
-              <option value="moderate">Moderate (0.50 ≤ DSC &lt; 0.70)</option>
-              <option value="challenging">Challenging (DSC &lt; 0.50)</option>
-            </select>
-          </div>
-
-          {/* Reset Filters Button */}
-          {isFiltered && (
-            <button
-              onClick={handleResetFilters}
-              className="ml-auto flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs bg-rose-950/40 border border-rose-800/60 text-rose-300 hover:bg-rose-900/60 transition-colors"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Reset Filters</span>
-            </button>
-          )}
-        </div>
-
-        {/* Live Filter Indicator Bar */}
-        <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
-          <div className="flex items-center gap-2">
-            <span>
-              Showing <strong className="text-white font-mono">{sorted.length}</strong> of{" "}
-              <span className="font-mono">{cases.length}</span> subjects
-            </span>
-            {isFiltered && (
-              <span className="text-[11px] text-zinc-500">
-                ({cases.length - sorted.length} filtered out)
+        {/* Structured Filter Card Container */}
+        <div className="pt-3.5 border-t border-zinc-800/80 space-y-3">
+          {/* Filters Header Bar with Active Filter Counter and Reset Button */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="p-1 rounded-md bg-zinc-900 border border-zinc-800 text-cyan-400">
+                <Filter className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-xs font-semibold text-zinc-200 tracking-wider font-mono">
+                DATASET FILTERS
               </span>
+              {activeFiltersCount > 0 ? (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-cyan-950/60 border border-cyan-800/60 text-cyan-300">
+                  {activeFiltersCount} Active {activeFiltersCount === 1 ? "Filter" : "Filters"}
+                </span>
+              ) : (
+                <span className="text-[11px] text-zinc-500 font-mono hidden sm:inline">
+                  (Showing all records)
+                </span>
+              )}
+            </div>
+
+            {isFiltered && (
+              <button
+                onClick={handleResetFilters}
+                className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-rose-950/40 border border-rose-800/60 text-rose-300 hover:bg-rose-900/60 transition-colors shadow-sm"
+                title="Reset all search queries and active filter dropdowns"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Reset Filters</span>
+              </button>
             )}
           </div>
 
-          {/* Quick Page Size Selector */}
-          <div className="flex items-center space-x-2">
-            <span className="text-[11px] text-zinc-400">Rows per page:</span>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPage(1);
-              }}
-              className="bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-0.5 focus:outline-none focus:border-zinc-600 font-mono"
-            >
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-            </select>
+          {/* Structured Filter Controls Grid (5 Distinct Cards) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+            {/* 1. 3D Scan Availability Pill Switcher */}
+            <div className="bg-zinc-900/50 border border-zinc-800/90 rounded-lg p-2.5 space-y-2 flex flex-col justify-between shadow-sm">
+              <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-medium flex items-center gap-1.5">
+                <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+                <span>3D Scan Visuals</span>
+              </label>
+              <div className="grid grid-cols-3 gap-1 bg-zinc-950 p-1 rounded-md border border-zinc-800/90 text-xs">
+                <button
+                  onClick={() => { setScanFilter("all"); setPage(1); }}
+                  className={cn(
+                    "py-1 px-1 rounded text-[11px] font-mono transition-all text-center truncate",
+                    scanFilter === "all" ? "bg-white text-black font-bold shadow-sm" : "text-zinc-400 hover:text-white"
+                  )}
+                  title={`All cases (${cases.length})`}
+                >
+                  All ({cases.length})
+                </button>
+                <button
+                  onClick={() => { setScanFilter("available"); setPage(1); }}
+                  className={cn(
+                    "py-1 px-1 rounded text-[11px] font-mono transition-all text-center flex items-center justify-center gap-1 truncate",
+                    scanFilter === "available"
+                      ? "bg-emerald-500 text-black font-bold shadow-sm"
+                      : "text-zinc-400 hover:text-emerald-400"
+                  )}
+                  title={`Available 3D scans (${availableCount})`}
+                >
+                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", scanFilter === "available" ? "bg-black" : "bg-emerald-400")} />
+                  <span className="truncate">Avail ({availableCount})</span>
+                </button>
+                <button
+                  onClick={() => { setScanFilter("unavailable"); setPage(1); }}
+                  className={cn(
+                    "py-1 px-1 rounded text-[11px] font-mono transition-all text-center truncate",
+                    scanFilter === "unavailable" ? "bg-zinc-800 text-white font-medium border border-zinc-700 shadow-sm" : "text-zinc-400 hover:text-zinc-300"
+                  )}
+                  title={`Unavailable (${unavailableCount})`}
+                >
+                  None ({unavailableCount})
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Dataset Split Dropdown */}
+            <div className="bg-zinc-900/50 border border-zinc-800/90 rounded-lg p-2.5 space-y-2 flex flex-col justify-between shadow-sm">
+              <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-medium flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-violet-400" />
+                <span>Dataset Split</span>
+              </label>
+              <select
+                value={splitFilter}
+                onChange={(e) => { setSplitFilter(e.target.value); setPage(1); }}
+                className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs rounded-md px-2.5 py-1.5 focus:outline-none focus:border-violet-500 font-mono cursor-pointer hover:border-zinc-700 transition-colors"
+              >
+                <option value="all">All Splits</option>
+                <option value="Training">Training (929)</option>
+                <option value="Validation">Validation (233)</option>
+                <option value="Test">Test (291)</option>
+              </select>
+            </div>
+
+            {/* 3. Acquisition Site Dropdown */}
+            <div className="bg-zinc-900/50 border border-zinc-800/90 rounded-lg p-2.5 space-y-2 flex flex-col justify-between shadow-sm">
+              <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-medium flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5 text-amber-400" />
+                <span>Clinical Site</span>
+              </label>
+              <select
+                value={siteFilter}
+                onChange={(e) => { setSiteFilter(e.target.value); setPage(1); }}
+                className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs rounded-md px-2.5 py-1.5 focus:outline-none focus:border-amber-500 font-mono cursor-pointer hover:border-zinc-700 transition-colors"
+              >
+                <option value="all">All Sites ({sites.length})</option>
+                {sites.map((s) => (
+                  <option key={s} value={s}>
+                    Site {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* 4. Lesion Scale Dropdown */}
+            <div className="bg-zinc-900/50 border border-zinc-800/90 rounded-lg p-2.5 space-y-2 flex flex-col justify-between shadow-sm">
+              <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-medium flex items-center gap-1.5">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-rose-400" />
+                <span>Lesion Scale</span>
+              </label>
+              <select
+                value={scaleFilter}
+                onChange={(e) => { setScaleFilter(e.target.value); setPage(1); }}
+                className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs rounded-md px-2.5 py-1.5 focus:outline-none focus:border-rose-500 font-mono cursor-pointer hover:border-zinc-700 transition-colors"
+              >
+                <option value="all">All Scales</option>
+                <option value="Small">Small (&lt; 1.5 mL)</option>
+                <option value="Medium">Medium (1.5 - 15 mL)</option>
+                <option value="Large">Large (&gt; 15 mL)</option>
+              </select>
+            </div>
+
+            {/* 5. Performance Tier Dropdown */}
+            <div className="bg-zinc-900/50 border border-zinc-800/90 rounded-lg p-2.5 space-y-2 flex flex-col justify-between shadow-sm">
+              <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-medium flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Model Performance</span>
+              </label>
+              <select
+                value={tierFilter}
+                onChange={(e) => { setTierFilter(e.target.value); setPage(1); }}
+                className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs rounded-md px-2.5 py-1.5 focus:outline-none focus:border-emerald-500 font-mono cursor-pointer hover:border-zinc-700 transition-colors"
+              >
+                <option value="all">All Performance Tiers</option>
+                <option value="excellent">Excellent (DSC ≥ 0.85)</option>
+                <option value="good">Good (0.70 ≤ DSC &lt; 0.85)</option>
+                <option value="moderate">Moderate (0.50 ≤ DSC &lt; 0.70)</option>
+                <option value="challenging">Challenging (DSC &lt; 0.50)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Active Filter Tags & Bottom Status Strip */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t border-zinc-800/60 text-xs">
+            {/* Left: Summary Count & Removable Active Filter Badges */}
+            <div className="flex items-center flex-wrap gap-2">
+              <span className="text-zinc-400 font-mono">
+                Showing <strong className="text-white font-semibold">{sorted.length}</strong> of{" "}
+                <span className="text-zinc-400">{cases.length}</span> subjects
+              </span>
+              {isFiltered && (
+                <span className="text-[11px] font-mono text-zinc-500">
+                  ({cases.length - sorted.length} filtered out)
+                </span>
+              )}
+
+              {/* Removable Active Filter Pills */}
+              {isFiltered && (
+                <div className="flex items-center flex-wrap gap-1.5 ml-1">
+                  {tableSearch.trim() && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-zinc-900 border border-zinc-700 text-zinc-200">
+                      Query: "{tableSearch}"
+                      <button onClick={() => { setTableSearch(""); setPage(1); }} className="hover:text-rose-400 ml-0.5 font-bold">✕</button>
+                    </span>
+                  )}
+                  {scanFilter !== "all" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-cyan-950/40 border border-cyan-800/60 text-cyan-300">
+                      Visuals: {scanFilter}
+                      <button onClick={() => { setScanFilter("all"); setPage(1); }} className="hover:text-rose-400 ml-0.5 font-bold">✕</button>
+                    </span>
+                  )}
+                  {splitFilter !== "all" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-violet-950/40 border border-violet-800/60 text-violet-300">
+                      Split: {splitFilter}
+                      <button onClick={() => { setSplitFilter("all"); setPage(1); }} className="hover:text-rose-400 ml-0.5 font-bold">✕</button>
+                    </span>
+                  )}
+                  {siteFilter !== "all" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-amber-950/40 border border-amber-800/60 text-amber-300">
+                      Site: {siteFilter}
+                      <button onClick={() => { setSiteFilter("all"); setPage(1); }} className="hover:text-rose-400 ml-0.5 font-bold">✕</button>
+                    </span>
+                  )}
+                  {scaleFilter !== "all" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-rose-950/40 border border-rose-800/60 text-rose-300">
+                      Scale: {scaleFilter}
+                      <button onClick={() => { setScaleFilter("all"); setPage(1); }} className="hover:text-rose-400 ml-0.5 font-bold">✕</button>
+                    </span>
+                  )}
+                  {tierFilter !== "all" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-emerald-950/40 border border-emerald-800/60 text-emerald-300">
+                      Tier: {tierFilter}
+                      <button onClick={() => { setTierFilter("all"); setPage(1); }} className="hover:text-rose-400 ml-0.5 font-bold">✕</button>
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Right: Quick Page Size Selector */}
+            <div className="flex items-center space-x-2 font-mono text-xs">
+              <span className="text-[11px] text-zinc-400">Rows per page:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs rounded-md px-2.5 py-1 focus:outline-none focus:border-zinc-600 font-mono cursor-pointer hover:border-zinc-700 transition-colors"
+              >
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={250}>250</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
