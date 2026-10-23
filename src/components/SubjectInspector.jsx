@@ -20,7 +20,9 @@ import {
   ShieldAlert,
   ArrowUpRight,
   Flame,
-  Loader2
+  Loader2,
+  Eye,
+  Compass
 } from "lucide-react";
 import { cn, formatNumber, getDiceColor, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
 
@@ -28,62 +30,107 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
   const [metaLoading, setMetaLoading] = useState(false);
   const [dynamicMeta, setDynamicMeta] = useState(null);
 
-  // Determine slices and total count (either pre-rendered or dynamically loaded)
+  // Active visuals payload: static or dynamically fetched
   const visuals = subject?.visuals || dynamicMeta;
-  
-  // Compute slices: from pre-rendered visuals, dynamicMeta slices, or synthesized from total_slices
-  const slices = useMemo(() => {
-    if (visuals?.slices && visuals.slices.length > 0) return visuals.slices;
-    if (visuals?.total_slices > 0) {
-      const arr = [];
-      const n = visuals.total_slices;
-      for (let z = 0; z < n; z++) {
-        const lp = visuals.lesion_profile?.[z];
-        arr.push({
-          slice_index: z,
-          is_peak: z === (visuals.default_slice ?? 0),
-          gt_voxels: lp?.gt ?? 0,
-          pred_voxels: lp?.pred ?? 0,
-          raw_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=raw`,
-          gt_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=gt`,
-          gt_overlay_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=gt_overlay`,
-          pred_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=pred`,
-          pred_overlay_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=pred_overlay`,
-          error_url: `/api/slice?case_id=${subject?.case_id}&z=${z}&type=error`,
-        });
-      }
-      return arr;
-    }
-    return [];
-  }, [visuals, subject?.case_id]);
 
-  const totalSlices = visuals?.total_slices || slices.length || 0;
-  const defaultSlice = visuals?.default_slice ?? (slices[0]?.slice_index ?? 0);
+  // Compute multi-planar configuration
+  const planesConfig = useMemo(() => {
+    const p = visuals?.planes || dynamicMeta?.planes;
 
-  const [currentSliceIdx, setCurrentSliceIdx] = useState(defaultSlice);
+    // 1. Axial Plane (Z)
+    const axialDef = p?.axial?.default_slice ?? visuals?.default_slice ?? 0;
+    const axialTotal = p?.axial?.total_slices ?? visuals?.total_slices ?? (visuals?.slices?.length || 179);
+    const axialSlices = p?.axial?.slices && p.axial.slices.length > 0 ? p.axial.slices : (visuals?.slices || []);
+    const axialLesionProfile = p?.axial?.lesion_profile || visuals?.lesion_profile || [];
+
+    // 2. Sagittal Plane (X)
+    const sagDef = p?.sagittal?.default_slice ?? Math.floor((dynamicMeta?.shape?.[0] || 158) / 2);
+    const sagTotal = p?.sagittal?.total_slices ?? (dynamicMeta?.shape?.[0] || 158);
+    const sagSlices = p?.sagittal?.slices || [];
+    const sagLesionProfile = p?.sagittal?.lesion_profile || [];
+
+    // 3. Coronal Plane (Y)
+    const corDef = p?.coronal?.default_slice ?? Math.floor((dynamicMeta?.shape?.[1] || 206) / 2);
+    const corTotal = p?.coronal?.total_slices ?? (dynamicMeta?.shape?.[1] || 206);
+    const corSlices = p?.coronal?.slices || [];
+    const corLesionProfile = p?.coronal?.lesion_profile || [];
+
+    return {
+      axial: {
+        key: "axial",
+        title: "Row 1: Axial Views",
+        shortName: "Axial",
+        planeLabel: "Transverse Plane",
+        axis: "Z",
+        axisDesc: "Superior — Inferior",
+        defaultSlice: axialDef,
+        totalSlices: axialTotal,
+        slices: axialSlices,
+        lesionProfile: axialLesionProfile,
+        color: "text-amber-400",
+        badgeBg: "bg-amber-950/40 border-amber-800/60 text-amber-300",
+      },
+      sagittal: {
+        key: "sagittal",
+        title: "Row 2: Sagittal Views",
+        shortName: "Sagittal",
+        planeLabel: "Sagittal Plane",
+        axis: "X",
+        axisDesc: "Left — Right Lateral",
+        defaultSlice: sagDef,
+        totalSlices: sagTotal,
+        slices: sagSlices,
+        lesionProfile: sagLesionProfile,
+        color: "text-violet-400",
+        badgeBg: "bg-violet-950/40 border-violet-800/60 text-violet-300",
+      },
+      coronal: {
+        key: "coronal",
+        title: "Row 3: Coronal Views",
+        shortName: "Coronal",
+        planeLabel: "Coronal Plane",
+        axis: "Y",
+        axisDesc: "Anterior — Posterior Frontal",
+        defaultSlice: corDef,
+        totalSlices: corTotal,
+        slices: corSlices,
+        lesionProfile: corLesionProfile,
+        color: "text-sky-400",
+        badgeBg: "bg-sky-950/40 border-sky-800/60 text-sky-300",
+      },
+    };
+  }, [visuals, dynamicMeta]);
+
+  // Per-plane active slice state
+  const [axialSliceIdx, setAxialSliceIdx] = useState(0);
+  const [sagittalSliceIdx, setSagittalSliceIdx] = useState(0);
+  const [coronalSliceIdx, setCoronalSliceIdx] = useState(0);
+
   const [viewMode, setViewMode] = useState("grid"); // "grid", "error"
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playSpeed, setPlaySpeed] = useState(1000); // 1000 ms = 1.0s per slice transition
+  const [playSpeed, setPlaySpeed] = useState(1000);
   const [fullscreenImage, setFullscreenImage] = useState(null);
 
   const playIntervalRef = useRef(null);
 
-  // When subject changes, set initial slice
+  // When subject changes, reset slice indices to their default focus slices
   useEffect(() => {
     if (!subject) return;
 
     setIsPlaying(false);
     setDynamicMeta(null);
 
-    if (subject.visuals?.slices?.length > 0) {
-      const defZ = subject.visuals.default_slice;
-      const matched = subject.visuals.slices.find((s) => s.slice_index === defZ);
-      if (matched) {
-        setCurrentSliceIdx(defZ);
-      } else {
-        setCurrentSliceIdx(subject.visuals.slices[0].slice_index);
-      }
-    } else {
+    const p = subject.visuals?.planes;
+    const axDef = p?.axial?.default_slice ?? subject.visuals?.default_slice ?? 0;
+    const sagDef = p?.sagittal?.default_slice ?? 0;
+    const corDef = p?.coronal?.default_slice ?? 0;
+
+    setAxialSliceIdx(axDef);
+    setSagittalSliceIdx(sagDef);
+    setCoronalSliceIdx(corDef);
+
+    // If case has no pre-rendered static planes, fetch dynamic metadata from Python backend
+    if (!p) {
       setMetaLoading(true);
       fetch(`/api/subject_meta?case_id=${subject.case_id}`)
         .then((res) => {
@@ -92,27 +139,37 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         })
         .then((data) => {
           setDynamicMeta(data);
-          setCurrentSliceIdx(data.default_slice ?? 0);
+          if (data.planes) {
+            setAxialSliceIdx(data.planes.axial?.default_slice ?? data.default_slice ?? 0);
+            setSagittalSliceIdx(data.planes.sagittal?.default_slice ?? 0);
+            setCoronalSliceIdx(data.planes.coronal?.default_slice ?? 0);
+          } else {
+            setAxialSliceIdx(data.default_slice ?? 0);
+          }
           setMetaLoading(false);
         })
         .catch((err) => {
-          // If on static host like Vercel and API is not present, don't crash
-          console.warn("Dynamic slice server request failed:", err);
+          console.warn("Dynamic slice server request:", err);
           setMetaLoading(false);
         });
     }
   }, [subject?.case_id]);
 
-  // Cine loop playback across available slices
+  // Jump all 3 views to the lesion focus coordinate
+  const handleJumpAllToFocus = () => {
+    setAxialSliceIdx(planesConfig.axial.defaultSlice);
+    setSagittalSliceIdx(planesConfig.sagittal.defaultSlice);
+    setCoronalSliceIdx(planesConfig.coronal.defaultSlice);
+  };
+
+  // Cine loop playback across axial slices
   useEffect(() => {
-    if (isPlaying && slices.length > 1) {
+    if (isPlaying) {
       playIntervalRef.current = setInterval(() => {
-        setCurrentSliceIdx((prevZ) => {
-          const currentIdxInSlices = slices.findIndex((s) => s.slice_index === prevZ);
-          if (currentIdxInSlices === -1 || currentIdxInSlices >= slices.length - 1) {
-            return slices[0].slice_index;
-          }
-          return slices[currentIdxInSlices + 1].slice_index;
+        setAxialSliceIdx((prevZ) => {
+          const total = planesConfig.axial.totalSlices;
+          if (total <= 1) return prevZ;
+          return prevZ >= total - 1 ? 0 : prevZ + 1;
         });
       }, playSpeed);
     } else {
@@ -121,31 +178,28 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     return () => {
       if (playIntervalRef.current) clearInterval(playIntervalRef.current);
     };
-  }, [isPlaying, slices, playSpeed]);
+  }, [isPlaying, planesConfig.axial.totalSlices, playSpeed]);
 
-  // Keyboard navigation
+  // Keyboard navigation for active axial plane
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
 
-      if (slices.length > 0) {
-        const curIdx = slices.findIndex((s) => s.slice_index === currentSliceIdx);
-        if (e.key === "ArrowLeft") {
-          e.preventDefault();
-          if (curIdx > 0) setCurrentSliceIdx(slices[curIdx - 1].slice_index);
-        } else if (e.key === "ArrowRight") {
-          e.preventDefault();
-          if (curIdx < slices.length - 1) setCurrentSliceIdx(slices[curIdx + 1].slice_index);
-        } else if (e.key === " ") {
-          e.preventDefault();
-          setIsPlaying((prev) => !prev);
-        }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setAxialSliceIdx((prev) => Math.max(0, prev - 1));
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        setAxialSliceIdx((prev) => Math.min(planesConfig.axial.totalSlices - 1, prev + 1));
+      } else if (e.key === " ") {
+        e.preventDefault();
+        setIsPlaying((prev) => !prev);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [slices, currentSliceIdx]);
+  }, [planesConfig.axial.totalSlices]);
 
   if (!subject) {
     return (
@@ -159,38 +213,69 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     );
   }
 
-  // Find active slice by slice_index
-  const activeSlice =
-    slices.find((s) => s.slice_index === currentSliceIdx) ||
-    (slices.length > 0 ? slices[0] : null);
-
-  const lesionProfile = visuals?.lesion_profile || [];
-  const maxLesionVoxels = Math.max(...lesionProfile.map((p) => Math.max(p.gt, p.pred)), 1);
-
-  const getSliceUrl = (type) => {
-    if (activeSlice && activeSlice[`${type}_url`]) {
-      return activeSlice[`${type}_url`];
+  // Helper to resolve slice URLs for any anatomical plane
+  const getSliceUrl = (planeKey, sliceIdx, type) => {
+    const conf = planesConfig[planeKey];
+    // Check pre-rendered static slices
+    const matched = conf?.slices?.find((s) => s.slice_index === sliceIdx);
+    if (matched && matched[`${type}_url`]) {
+      return matched[`${type}_url`];
     }
-    return `/api/slice?case_id=${subject.case_id}&z=${currentSliceIdx}&type=${type}`;
+    // Dynamic slice server endpoint
+    return `/api/slice?case_id=${subject.case_id}&plane=${planeKey}&slice_idx=${sliceIdx}&type=${type}`;
   };
 
-  const currentSlice = {
-    slice_index: activeSlice ? activeSlice.slice_index : currentSliceIdx,
-    is_peak: activeSlice ? activeSlice.is_peak : false,
-    gt_voxels: activeSlice?.gt_voxels ?? (lesionProfile[currentSliceIdx]?.gt ?? 0),
-    pred_voxels: activeSlice?.pred_voxels ?? (lesionProfile[currentSliceIdx]?.pred ?? 0),
-    raw_url: getSliceUrl("raw"),
-    gt_url: getSliceUrl("gt"),
-    gt_overlay_url: getSliceUrl("gt_overlay"),
-    pred_url: getSliceUrl("pred"),
-    pred_overlay_url: getSliceUrl("pred_overlay"),
-    error_url: getSliceUrl("error"),
+  // Compute slice info helper for any given plane
+  const getPlaneSliceInfo = (planeKey, sliceIdx) => {
+    const conf = planesConfig[planeKey];
+    const matched = conf?.slices?.find((s) => s.slice_index === sliceIdx);
+    const gt = matched?.gt_voxels ?? (conf?.lesionProfile?.[sliceIdx]?.gt ?? 0);
+    const pred = matched?.pred_voxels ?? (conf?.lesionProfile?.[sliceIdx]?.pred ?? 0);
+    const isPeak = sliceIdx === conf.defaultSlice || (matched ? matched.is_peak : false);
+
+    return {
+      planeKey,
+      sliceIndex: sliceIdx,
+      isPeak,
+      gtVoxels: gt,
+      predVoxels: pred,
+      rawUrl: getSliceUrl(planeKey, sliceIdx, "raw"),
+      gtUrl: getSliceUrl(planeKey, sliceIdx, "gt"),
+      predUrl: getSliceUrl(planeKey, sliceIdx, "pred"),
+      gtOverlayUrl: getSliceUrl(planeKey, sliceIdx, "gt_overlay"),
+      predOverlayUrl: getSliceUrl(planeKey, sliceIdx, "pred_overlay"),
+      errorUrl: getSliceUrl(planeKey, sliceIdx, "error"),
+    };
   };
 
-  const isFull3DScrub = slices.length > 10;
+  const axialInfo = getPlaneSliceInfo("axial", axialSliceIdx);
+  const sagittalInfo = getPlaneSliceInfo("sagittal", sagittalSliceIdx);
+  const coronalInfo = getPlaneSliceInfo("coronal", coronalSliceIdx);
+
+  // Orthogonal planes list for rendering rows
+  const orthogonalRows = [
+    {
+      config: planesConfig.axial,
+      currentSliceIdx: axialSliceIdx,
+      setSliceIdx: setAxialSliceIdx,
+      info: axialInfo,
+    },
+    {
+      config: planesConfig.sagittal,
+      currentSliceIdx: sagittalSliceIdx,
+      setSliceIdx: setSagittalSliceIdx,
+      info: sagittalInfo,
+    },
+    {
+      config: planesConfig.coronal,
+      currentSliceIdx: coronalSliceIdx,
+      setSliceIdx: setCoronalSliceIdx,
+      info: coronalInfo,
+    },
+  ];
 
   return (
-    <div className="flex-1 h-full min-h-0 overflow-y-auto bg-black text-white p-6 space-y-5">
+    <div className="flex-1 h-full min-h-0 overflow-y-auto bg-black text-white p-6 space-y-6">
       {/* Top Header Card */}
       <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 backdrop-blur shrink-0">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -212,18 +297,20 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                 <span className={cn("w-1.5 h-1.5 rounded-full", getSplitDot(subject.split))} />
                 Split: {subject.split || "Test"}
               </span>
-              {slices.length > 0 && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-cyan-950/40 border border-cyan-800/60 text-cyan-300">
-                  {slices.length} Slices Available
-                </span>
-              )}
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-cyan-950/40 border border-cyan-800/60 text-cyan-300">
+                Multi-Planar 3D Ready
+              </span>
             </div>
-            <p className="text-xs text-zinc-400 mt-1.5 font-light flex items-center gap-1.5">
+            <p className="text-xs text-zinc-400 mt-1.5 font-light flex items-center gap-2">
               <span>Dataset Split:</span>
               <span className={cn("px-1.5 py-0.5 rounded text-[11px] font-mono font-medium border", getSplitBadge(subject.split))}>
                 {subject.split || "Test"}
               </span>
               <span className="text-zinc-500 font-mono text-[11px]">({subject.split_source})</span>
+              <span className="text-zinc-600">·</span>
+              <span className="text-zinc-400 font-mono text-[11px]">
+                Volume Shape: [{planesConfig.sagittal.totalSlices} × {planesConfig.coronal.totalSlices} × {planesConfig.axial.totalSlices}]
+              </span>
             </p>
           </div>
 
@@ -301,167 +388,38 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         </div>
       </div>
 
-      {/* Slices Navigator & Controls */}
-      {metaLoading ? (
-        <div className="border border-zinc-800 bg-zinc-950 rounded-xl p-8 flex items-center justify-center space-x-3 text-zinc-400 text-xs font-mono">
-          <Loader2 className="w-5 h-5 animate-spin text-white" />
-          <span>Accessing visual scans...</span>
-        </div>
-      ) : slices.length > 0 ? (
-        <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-            {/* Slice Position Status */}
-            <div className="flex items-center space-x-3">
-              <span className="text-xs uppercase tracking-wider text-zinc-400 font-medium">Axial Slice:</span>
-              <span className="text-sm font-bold font-mono text-white bg-zinc-900 border border-zinc-700 px-3 py-1 rounded-md shadow-inner">
-                Z = {currentSlice.slice_index} <span className="text-zinc-500 font-normal">({slices.findIndex((s) => s.slice_index === currentSlice.slice_index) + 1} of {slices.length})</span>
-              </span>
-
-              {currentSlice.is_peak && (
-                <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 flex items-center gap-1">
-                  <Flame className="w-3 h-3 text-emerald-400" />
-                  {currentSlice.gt_voxels > 0 ? "Peak Lesion Slice" : "Brain Center Slice"}
-                </span>
-              )}
-
-              <span className="text-xs text-zinc-400 font-mono hidden sm:inline">
-                (GT: <span className="text-emerald-400 font-medium">{currentSlice.gt_voxels}</span> voxels | Pred: <span className="text-cyan-400 font-medium">{currentSlice.pred_voxels}</span> voxels)
-              </span>
-            </div>
-
-            {/* Step & Playback Controls */}
-            <div className="flex items-center space-x-1.5">
-              <button
-                onClick={() => setCurrentSliceIdx(slices[0].slice_index)}
-                title="First Slice"
-                className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
-              >
-                <ChevronsLeft className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => {
-                  const cur = slices.findIndex((s) => s.slice_index === currentSlice.slice_index);
-                  if (cur > 0) setCurrentSliceIdx(slices[cur - 1].slice_index);
-                }}
-                title="Previous Slice (Left Arrow)"
-                className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              {slices.length > 1 && (
-                <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => setIsPlaying((prev) => !prev)}
-                    title="Cine Loop Auto-Play (Spacebar)"
-                    className={cn(
-                      "px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors border",
-                      isPlaying
-                        ? "bg-rose-950/40 border-rose-800 text-rose-300"
-                        : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-white"
-                    )}
-                  >
-                    {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                    <span>{isPlaying ? "Pause" : "Play Cine"}</span>
-                  </button>
-
-                  <select
-                    value={playSpeed}
-                    onChange={(e) => setPlaySpeed(Number(e.target.value))}
-                    title="Transition speed per slice"
-                    className="bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1.5 font-mono focus:outline-none focus:border-zinc-600 transition-colors cursor-pointer"
-                  >
-                    <option value={2000}>2.0s / slice</option>
-                    <option value={1500}>1.5s / slice</option>
-                    <option value={1000}>1.0s / slice (Default)</option>
-                    <option value={750}>0.75s / slice</option>
-                    <option value={500}>0.5s / slice</option>
-                    <option value={250}>0.25s / slice</option>
-                  </select>
-                </div>
-              )}
-
-              <button
-                onClick={() => {
-                  const cur = slices.findIndex((s) => s.slice_index === currentSlice.slice_index);
-                  if (cur < slices.length - 1) setCurrentSliceIdx(slices[cur + 1].slice_index);
-                }}
-                title="Next Slice (Right Arrow)"
-                className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => setCurrentSliceIdx(slices[slices.length - 1].slice_index)}
-                title="Last Slice"
-                className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
-              >
-                <ChevronsRight className="w-4 h-4" />
-              </button>
-
-              {defaultSlice !== undefined && (
-                <button
-                  onClick={() => setCurrentSliceIdx(defaultSlice)}
-                  title="Jump to Focus Slice"
-                  className="ml-2 px-2.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-emerald-900/60 text-emerald-400 text-xs rounded font-medium flex items-center gap-1 transition-colors"
-                >
-                  <Target className="w-3.5 h-3.5" />
-                  Jump to Focus (Z={defaultSlice})
-                </button>
-              )}
-            </div>
+      {/* Global Multi-Planar Controls & 3D Focus Bar */}
+      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center space-x-3 flex-wrap gap-y-2">
+          <div className="flex items-center space-x-2">
+            <Compass className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs uppercase tracking-wider text-zinc-400 font-medium">3D Lesion Center:</span>
           </div>
 
-          {/* Quick Slice Selectors */}
-          {!isFull3DScrub ? (
-            <div className="pt-2">
-              <div className="flex items-center space-x-2 flex-wrap gap-y-2">
-                <span className="text-[11px] text-zinc-400 font-light mr-1">Select Axial Slice:</span>
-                {slices.map((sl) => (
-                  <button
-                    key={sl.slice_index}
-                    onClick={() => setCurrentSliceIdx(sl.slice_index)}
-                    className={cn(
-                      "px-3 py-1.5 text-xs rounded-lg font-mono transition-all border flex items-center gap-1.5",
-                      currentSlice.slice_index === sl.slice_index
-                        ? "bg-white text-black border-white font-semibold shadow-md"
-                        : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:text-white"
-                    )}
-                  >
-                    <span>Z = {sl.slice_index}</span>
-                    {sl.is_peak && (
-                      <span className="text-[9px] px-1.5 py-0.2 bg-emerald-500/20 text-emerald-400 rounded">
-                        Focus
-                      </span>
-                    )}
-                    {sl.gt_voxels > 0 && (
-                      <span className="text-[9px] text-zinc-400">({sl.gt_voxels} vox)</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-1.5 pt-2">
-              <input
-                type="range"
-                min={0}
-                max={totalSlices - 1}
-                value={currentSlice.slice_index}
-                onChange={(e) => setCurrentSliceIdx(Number(e.target.value))}
-                className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
-              />
-            </div>
-          )}
-        </div>
-      ) : null}
+          <div className="flex items-center space-x-2 font-mono text-xs">
+            <span className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-amber-300">
+              Axial Z = {axialSliceIdx}
+            </span>
+            <span className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-violet-300">
+              Sagittal X = {sagittalSliceIdx}
+            </span>
+            <span className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-sky-300">
+              Coronal Y = {coronalSliceIdx}
+            </span>
+          </div>
 
-      {/* Visual Displays Grid */}
-      <div className="border border-zinc-800 bg-zinc-950/70 rounded-xl p-5 space-y-4">
-        {/* View Mode & Legend */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-zinc-800/80 gap-3">
+          <button
+            onClick={handleJumpAllToFocus}
+            title="Snap all orthogonal views to lesion peak coordinates"
+            className="px-3 py-1 bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/70 text-emerald-300 text-xs rounded-md font-medium flex items-center gap-1.5 transition-colors"
+          >
+            <Target className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Jump All to 3D Focus</span>
+          </button>
+        </div>
+
+        {/* View Mode & Cine Control */}
+        <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-lg border border-zinc-800">
             <button
               onClick={() => setViewMode("grid")}
@@ -471,7 +429,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               )}
             >
               <Layers className="w-3.5 h-3.5" />
-              5-Way Visual Grid
+              5-Way Multi-Planar Grid
             </button>
             <button
               onClick={() => setViewMode("error")}
@@ -481,242 +439,387 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               )}
             >
               <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-              Confusion Error Diagnostic Map
+              Confusion Error Diagnostic Maps
             </button>
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-zinc-400 font-light">
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />
-              <span className="text-zinc-300">Ground Truth</span>
-            </div>
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-cyan-400 inline-block" />
-              <span className="text-zinc-300">Predicted Mask</span>
-            </div>
-            {viewMode === "error" && (
-              <>
-                <div className="flex items-center space-x-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block" />
-                  <span className="text-zinc-300">FP (Over-seg)</span>
-                </div>
-                <div className="flex items-center space-x-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block" />
-                  <span className="text-zinc-300">FN (Missed)</span>
-                </div>
-              </>
+          {/* Axial Cine Loop Control */}
+          <button
+            onClick={() => setIsPlaying((prev) => !prev)}
+            title="Axial Cine Loop Auto-Play (Spacebar)"
+            className={cn(
+              "px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-colors border",
+              isPlaying
+                ? "bg-rose-950/40 border-rose-800 text-rose-300"
+                : "bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-zinc-300 hover:text-white"
             )}
-          </div>
+          >
+            {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">{isPlaying ? "Pause Cine" : "Play Cine"}</span>
+          </button>
         </div>
-
-        {/* Visual Panels */}
-        {metaLoading ? (
-          <div className="p-16 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-950/70">
-            <Loader2 className="w-8 h-8 mx-auto text-cyan-400 animate-spin mb-3" />
-            <p className="text-sm text-zinc-300 font-medium">
-              Generating dynamic 3D visual slices for {subject.subject} ({subject.case_id})...
-            </p>
-            <p className="text-xs text-zinc-500 mt-1">
-              Extracting NIfTI raw scan, ground truth annotations, and HS-UNet predictions in real-time.
-            </p>
-          </div>
-        ) : !activeSlice && slices.length === 0 ? (
-          <div className="p-12 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-950">
-            <Info className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
-            <p className="text-sm text-zinc-400 font-medium">
-              Scans not loaded for {subject.subject} ({subject.case_id}).
-            </p>
-            <p className="text-xs text-zinc-600 mt-1">
-              Ensure the local medical slice server is running (run_dashboard.bat).
-            </p>
-          </div>
-        ) : viewMode === "grid" ? (
-          /* 5-Way Synchronized Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-            {/* 1. Raw Scan */}
-            <div
-              onClick={() => setFullscreenImage({ url: currentSlice.raw_url, title: `Raw Scan (Z=${currentSlice.slice_index})` })}
-              className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-            >
-              <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-zinc-300">1. Raw MRI / CT Scan</span>
-                <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </div>
-              <div className="aspect-square bg-black flex items-center justify-center p-1">
-                <img
-                  src={currentSlice.raw_url}
-                  alt="Raw Scan"
-                  className="w-full h-full object-contain filter contrast-125"
-                  loading="lazy"
-                />
-              </div>
-              <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
-                <span>Axial Slice Z={currentSlice.slice_index}</span>
-                <span>Anatomy</span>
-              </div>
-            </div>
-
-            {/* 2. Ground Truth Mask */}
-            <div
-              onClick={() => setFullscreenImage({ url: currentSlice.gt_url, title: `Ground Truth Mask (Z=${currentSlice.slice_index})` })}
-              className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-            >
-              <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-emerald-400">2. GT Lesion Mask</span>
-                <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </div>
-              <div className="aspect-square bg-black flex items-center justify-center p-1">
-                <img
-                  src={currentSlice.gt_url}
-                  alt="GT Lesion Mask"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
-              <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
-                <span>{currentSlice.gt_voxels} Voxel Area</span>
-                <span className="text-emerald-400">{currentSlice.gt_voxels > 0 ? "Lesion Present" : "Clear / 0 Vox"}</span>
-              </div>
-            </div>
-
-            {/* 3. Predicted Lesion Mask */}
-            <div
-              onClick={() => setFullscreenImage({ url: currentSlice.pred_url, title: `Predicted Lesion Mask (Z=${currentSlice.slice_index})` })}
-              className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-            >
-              <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-cyan-400">3. Predicted Lesion Mask</span>
-                <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </div>
-              <div className="aspect-square bg-black flex items-center justify-center p-1">
-                <img
-                  src={currentSlice.pred_url}
-                  alt="Predicted Lesion Mask"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
-              <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
-                <span>{currentSlice.pred_voxels} Voxel Area</span>
-                <span className="text-cyan-400">{currentSlice.pred_voxels > 0 ? "Lesion Predicted" : "Clear / 0 Vox"}</span>
-              </div>
-            </div>
-
-            {/* 4. GT Overlay on Scan */}
-            <div
-              onClick={() => setFullscreenImage({ url: currentSlice.gt_overlay_url, title: `GT Mask + Scan Overlay (Z=${currentSlice.slice_index})` })}
-              className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-            >
-              <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-emerald-400">4. GT + Scan Overlay</span>
-                <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </div>
-              <div className="aspect-square bg-black flex items-center justify-center p-1">
-                <img
-                  src={currentSlice.gt_overlay_url}
-                  alt="GT Overlay"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
-              <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-emerald-400/80 border-t border-zinc-900 flex justify-between">
-                <span>Reference Mask Overlay</span>
-                <span>Manual Annotation</span>
-              </div>
-            </div>
-
-            {/* 5. Predicted Mask Overlay */}
-            <div
-              onClick={() => setFullscreenImage({ url: currentSlice.pred_overlay_url, title: `Predicted Mask Overlay (Z=${currentSlice.slice_index})` })}
-              className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-            >
-              <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-cyan-400">5. Predicted Mask Overlay</span>
-                <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </div>
-              <div className="aspect-square bg-black flex items-center justify-center p-1">
-                <img
-                  src={currentSlice.pred_overlay_url}
-                  alt="Predicted Overlay"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
-              <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-cyan-400/80 border-t border-zinc-900 flex justify-between">
-                <span>HS-UNet Prediction</span>
-                <span>{currentSlice.pred_voxels} Voxels</span>
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* Error Confusion Diagnostic Map View */
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
-              onClick={() => setFullscreenImage({ url: currentSlice.error_url, title: `Diagnostic Error Map (Z=${currentSlice.slice_index})` })}
-              className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-            >
-              <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-white flex items-center gap-1.5">
-                  <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-                  Confusion Error Map (TP: Green, FP: Red, FN: Blue)
-                </span>
-                <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </div>
-              <div className="aspect-square bg-black flex items-center justify-center p-2">
-                <img
-                  src={currentSlice.error_url}
-                  alt="Error Map"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
-              <div className="px-3 py-2 bg-zinc-950 text-xs text-zinc-400 border-t border-zinc-900">
-                Green = Correct Hit (TP) | Red = Over-segmented False Positive (FP) | Blue = Missed Lesion (FN)
-              </div>
-            </div>
-
-            {/* Side-by-side comparison with GT */}
-            <div
-              onClick={() => setFullscreenImage({ url: currentSlice.gt_overlay_url, title: `Ground Truth Overlay (Z=${currentSlice.slice_index})` })}
-              className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-            >
-              <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                <span className="text-xs font-medium text-emerald-400">
-                  Ground Truth Reference (for direct comparison)
-                </span>
-                <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </div>
-              <div className="aspect-square bg-black flex items-center justify-center p-2">
-                <img
-                  src={currentSlice.gt_overlay_url}
-                  alt="GT Overlay Reference"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
-              <div className="px-3 py-2 bg-zinc-950 text-xs text-zinc-400 border-t border-zinc-900">
-                Target reference mask annotated by clinical neuroradiologists
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Loading state indicator */}
+      {metaLoading && (
+        <div className="border border-zinc-800 bg-zinc-950 rounded-xl p-8 flex items-center justify-center space-x-3 text-zinc-400 text-xs font-mono">
+          <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
+          <span>Extracting multi-planar 3D volumetric slices from NIfTI scanner...</span>
+        </div>
+      )}
+
+      {/* 3 Orthogonal Plane Rows */}
+      {viewMode === "grid" ? (
+        <div className="space-y-6">
+          {orthogonalRows.map(({ config, currentSliceIdx, setSliceIdx, info }) => {
+            const isFullScrub = config.slices.length === 0 || config.slices.length > 8;
+
+            return (
+              <div
+                key={config.key}
+                className="border border-zinc-800/90 bg-zinc-950/80 rounded-xl p-5 space-y-4 shadow-xl"
+              >
+                {/* Row Header & Interactive Navigation Controls */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-zinc-800/80 gap-3">
+                  <div className="flex items-center space-x-3 flex-wrap gap-y-2">
+                    <span className={cn("px-2.5 py-1 rounded-md text-xs font-mono font-semibold border flex items-center gap-1.5 shadow-sm", config.badgeBg)}>
+                      <Compass className="w-3.5 h-3.5" />
+                      {config.title}
+                    </span>
+
+                    <span className="text-xs text-zinc-400 font-light hidden sm:inline">
+                      ({config.planeLabel} · {config.axisDesc})
+                    </span>
+
+                    <span className="text-xs font-bold font-mono text-white bg-zinc-900 border border-zinc-700 px-2.5 py-1 rounded-md shadow-inner">
+                      {config.axis} = {info.sliceIndex} <span className="text-zinc-500 font-normal">({info.sliceIndex + 1} / {config.totalSlices})</span>
+                    </span>
+
+                    {info.isPeak && (
+                      <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 flex items-center gap-1">
+                        <Flame className="w-3 h-3 text-emerald-400" />
+                        Peak Slice
+                      </span>
+                    )}
+
+                    <span className="text-xs text-zinc-400 font-mono hidden md:inline">
+                      (GT: <span className="text-emerald-400 font-medium">{info.gtVoxels}</span> vox | Pred: <span className="text-cyan-400 font-medium">{info.predVoxels}</span> vox)
+                    </span>
+                  </div>
+
+                  {/* Slice Step Controls & Buttons */}
+                  <div className="flex items-center space-x-1.5">
+                    <button
+                      onClick={() => setSliceIdx(0)}
+                      title={`First ${config.shortName} Slice`}
+                      className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
+                    >
+                      <ChevronsLeft className="w-3.5 h-3.5" />
+                    </button>
+
+                    <button
+                      onClick={() => setSliceIdx((prev) => Math.max(0, prev - 1))}
+                      title={`Previous ${config.shortName} Slice`}
+                      className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                    </button>
+
+                    {/* Pre-rendered slice buttons if available */}
+                    {config.slices.length > 0 && config.slices.length <= 8 && (
+                      <div className="flex items-center space-x-1">
+                        {config.slices.map((sl) => (
+                          <button
+                            key={sl.slice_index}
+                            onClick={() => setSliceIdx(sl.slice_index)}
+                            className={cn(
+                              "px-2 py-1 text-xs rounded font-mono transition-all border",
+                              currentSliceIdx === sl.slice_index
+                                ? "bg-white text-black border-white font-semibold shadow-md"
+                                : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white"
+                            )}
+                          >
+                            {config.axis}={sl.slice_index}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Slider for smooth scrubbing */}
+                    {isFullScrub && config.totalSlices > 1 && (
+                      <div className="w-28 sm:w-36 flex items-center px-1">
+                        <input
+                          type="range"
+                          min={0}
+                          max={config.totalSlices - 1}
+                          value={currentSliceIdx}
+                          onChange={(e) => setSliceIdx(Number(e.target.value))}
+                          className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
+                        />
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => setSliceIdx((prev) => Math.min(config.totalSlices - 1, prev + 1))}
+                      title={`Next ${config.shortName} Slice`}
+                      className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
+                    >
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+
+                    <button
+                      onClick={() => setSliceIdx(config.totalSlices - 1)}
+                      title={`Last ${config.shortName} Slice`}
+                      className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
+                    >
+                      <ChevronsRight className="w-3.5 h-3.5" />
+                    </button>
+
+                    <button
+                      onClick={() => setSliceIdx(config.defaultSlice)}
+                      title={`Reset to Peak Focus (${config.axis}=${config.defaultSlice})`}
+                      className="ml-1.5 px-2 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white text-xs rounded font-mono flex items-center gap-1 transition-colors"
+                    >
+                      <Target className="w-3 h-3 text-emerald-400" />
+                      <span>Focus</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 5-Way Slices Row: Raw, GT Mask, Pred Mask, GT+Scan Overlay, Pred Mask Overlay */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
+                  {/* 1. Raw Scan */}
+                  <div
+                    onClick={() => setFullscreenImage({ url: info.rawUrl, title: `${config.shortName} Raw MRI / CT Scan (${config.axis}=${info.sliceIndex})` })}
+                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                  >
+                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                      <span className="text-xs font-medium text-zinc-300">1. Raw MRI / CT Scan</span>
+                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                    </div>
+                    <div className="aspect-square bg-black flex items-center justify-center p-1">
+                      <img
+                        src={info.rawUrl}
+                        alt="Raw Scan"
+                        className="w-full h-full object-contain filter contrast-125"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
+                      <span>{config.shortName} {config.axis}={info.sliceIndex}</span>
+                      <span>Anatomy</span>
+                    </div>
+                  </div>
+
+                  {/* 2. Ground Truth Mask */}
+                  <div
+                    onClick={() => setFullscreenImage({ url: info.gtUrl, title: `${config.shortName} GT Lesion Mask (${config.axis}=${info.sliceIndex})` })}
+                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                  >
+                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                      <span className="text-xs font-medium text-emerald-400">2. GT Lesion Mask</span>
+                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                    </div>
+                    <div className="aspect-square bg-black flex items-center justify-center p-1">
+                      <img
+                        src={info.gtUrl}
+                        alt="GT Mask"
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
+                      <span>{info.gtVoxels} Voxel Area</span>
+                      <span className="text-emerald-400">{info.gtVoxels > 0 ? "Lesion Present" : "Clear / 0 Vox"}</span>
+                    </div>
+                  </div>
+
+                  {/* 3. Predicted Lesion Mask */}
+                  <div
+                    onClick={() => setFullscreenImage({ url: info.predUrl, title: `${config.shortName} Predicted Lesion Mask (${config.axis}=${info.sliceIndex})` })}
+                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                  >
+                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                      <span className="text-xs font-medium text-cyan-400">3. Predicted Lesion Mask</span>
+                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                    </div>
+                    <div className="aspect-square bg-black flex items-center justify-center p-1">
+                      <img
+                        src={info.predUrl}
+                        alt="Predicted Mask"
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
+                      <span>{info.predVoxels} Voxel Area</span>
+                      <span className="text-cyan-400">{info.predVoxels > 0 ? "Lesion Predicted" : "Clear / 0 Vox"}</span>
+                    </div>
+                  </div>
+
+                  {/* 4. GT + Scan Overlay */}
+                  <div
+                    onClick={() => setFullscreenImage({ url: info.gtOverlayUrl, title: `${config.shortName} GT Mask + Scan Overlay (${config.axis}=${info.sliceIndex})` })}
+                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                  >
+                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                      <span className="text-xs font-medium text-emerald-400">4. GT + Scan Overlay</span>
+                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                    </div>
+                    <div className="aspect-square bg-black flex items-center justify-center p-1">
+                      <img
+                        src={info.gtOverlayUrl}
+                        alt="GT Overlay"
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-emerald-400/80 border-t border-zinc-900 flex justify-between">
+                      <span>Reference Annotation</span>
+                      <span>Ground Truth</span>
+                    </div>
+                  </div>
+
+                  {/* 5. Predicted Mask Overlay */}
+                  <div
+                    onClick={() => setFullscreenImage({ url: info.predOverlayUrl, title: `${config.shortName} Predicted Mask Overlay (${config.axis}=${info.sliceIndex})` })}
+                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                  >
+                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                      <span className="text-xs font-medium text-cyan-400">5. Predicted Mask Overlay</span>
+                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                    </div>
+                    <div className="aspect-square bg-black flex items-center justify-center p-1">
+                      <img
+                        src={info.predOverlayUrl}
+                        alt="Pred Overlay"
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-cyan-400/80 border-t border-zinc-900 flex justify-between">
+                      <span>HS-UNet Output</span>
+                      <span>{info.predVoxels} Voxels</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* Confusion Error Diagnostic Map View Mode across all 3 planes */
+        <div className="space-y-6">
+          <div className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl text-xs text-zinc-400 flex items-center justify-between flex-wrap gap-2">
+            <span className="font-medium text-white flex items-center gap-1.5">
+              <ShieldAlert className="w-4 h-4 text-rose-400" />
+              Multi-Planar Confusion Diagnostic Error Legend:
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />
+                <span className="text-zinc-300">True Positive (Hit)</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block" />
+                <span className="text-zinc-300">False Positive (Over-seg)</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block" />
+                <span className="text-zinc-300">False Negative (Missed)</span>
+              </span>
+            </div>
+          </div>
+
+          {orthogonalRows.map(({ config, info }) => (
+            <div
+              key={config.key}
+              className="border border-zinc-800/90 bg-zinc-950/80 rounded-xl p-5 space-y-4 shadow-xl"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+                <div className="flex items-center space-x-2">
+                  <span className={cn("px-2.5 py-1 rounded-md text-xs font-mono font-semibold border flex items-center gap-1.5", config.badgeBg)}>
+                    {config.title}
+                  </span>
+                  <span className="text-xs font-mono text-zinc-300">
+                    {config.axis} = {info.sliceIndex}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Confusion Error Map */}
+                <div
+                  onClick={() => setFullscreenImage({ url: info.errorUrl, title: `${config.shortName} Error Diagnostic Map (${config.axis}=${info.sliceIndex})` })}
+                  className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                >
+                  <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                    <span className="text-xs font-medium text-rose-400 flex items-center gap-1.5">
+                      <ShieldAlert className="w-3.5 h-3.5" />
+                      {config.shortName} Confusion Error Map
+                    </span>
+                    <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                  </div>
+                  <div className="aspect-square bg-black flex items-center justify-center p-2">
+                    <img
+                      src={info.errorUrl}
+                      alt="Error Map"
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="px-3 py-2 bg-zinc-950 text-[11px] text-zinc-400 border-t border-zinc-900">
+                    TP (Green) · FP Over-seg (Red) · FN Missed (Blue)
+                  </div>
+                </div>
+
+                {/* Ground Truth Reference */}
+                <div
+                  onClick={() => setFullscreenImage({ url: info.gtOverlayUrl, title: `${config.shortName} GT Reference Overlay (${config.axis}=${info.sliceIndex})` })}
+                  className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                >
+                  <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                    <span className="text-xs font-medium text-emerald-400">
+                      {config.shortName} Ground Truth Reference Overlay
+                    </span>
+                    <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                  </div>
+                  <div className="aspect-square bg-black flex items-center justify-center p-2">
+                    <img
+                      src={info.gtOverlayUrl}
+                      alt="GT Overlay"
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="px-3 py-2 bg-zinc-950 text-[11px] text-zinc-400 border-t border-zinc-900">
+                    Neuroradiologist Target Annotation
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Fullscreen Modal Dialog */}
       {fullscreenImage && (
         <div
           onClick={() => setFullscreenImage(null)}
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in"
         >
           <div
             onClick={(e) => e.stopPropagation()}
             className="max-w-4xl w-full bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
           >
             <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-white font-mono">{fullscreenImage.title}</h3>
+              <h3 className="text-sm font-semibold text-white font-mono flex items-center gap-2">
+                <Compass className="w-4 h-4 text-cyan-400" />
+                {fullscreenImage.title}
+              </h3>
               <button
                 onClick={() => setFullscreenImage(null)}
-                className="text-zinc-400 hover:text-white text-xs px-2 py-1 bg-zinc-900 rounded border border-zinc-800"
+                className="text-zinc-400 hover:text-white text-xs px-2.5 py-1 bg-zinc-900 rounded border border-zinc-800 transition-colors"
               >
                 Close (ESC)
               </button>
