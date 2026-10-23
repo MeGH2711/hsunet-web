@@ -184,6 +184,233 @@ function CroppedSliceImage({
   );
 }
 
+/**
+ * PlaneCardHeader: Well-structured, two-tier clinical header for Axial, Sagittal, and Coronal views.
+ * - Tier 1 (Anatomical Context & Quantitative Diagnostics):
+ *     Plane Badge with color theme, Anatomical Orientation (e.g. Transverse · Superior ↔ Inferior),
+ *     Active Coordinate Chip (e.g. Z = 119), Dominant Index (3 / 5), Peak Lesion Status pill, and GT vs Pred voxel counts.
+ * - Tier 2 (Dedicated Navigation Toolbar):
+ *     Dominant slice mode indicator, Step controls (First, Prev, Next, Last), segmented slice pills,
+ *     and a Peak Focus target button.
+ */
+function PlaneCardHeader({
+  config,
+  currentSliceIdx,
+  setSliceIdx,
+  info,
+  availableSlices = [],
+  hasDominantSlices = false,
+  safePos = 0,
+  isFirst = false,
+  isLast = false,
+  handleFirst,
+  handlePrev,
+  handleNext,
+  handleLast
+}) {
+  return (
+    <div className="space-y-3 pb-3 border-b border-zinc-800/80">
+      {/* Tier 1: Anatomical Identity & Quantitative Diagnostics */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        {/* Left: Plane Identity, Orientation & Coordinates */}
+        <div className="flex items-center flex-wrap gap-2.5">
+          {/* Plane Badge */}
+          <span className={cn("px-3 py-1 rounded-lg text-xs font-mono font-bold border flex items-center gap-1.5 shadow-sm", config.badgeBg)}>
+            <Compass className="w-3.5 h-3.5" />
+            {config.title}
+          </span>
+
+          {/* Anatomical Orientation Tag */}
+          <span className="text-[11px] font-mono text-zinc-400 bg-zinc-900/80 px-2.5 py-1 rounded-lg border border-zinc-800 hidden sm:inline-flex items-center gap-1.5">
+            <span className="text-zinc-300 font-medium">{config.planeLabel}</span>
+            <span className="text-zinc-600">·</span>
+            <span className="text-zinc-400">{config.axisDesc}</span>
+          </span>
+
+          {/* Active Coordinate Chip */}
+          <div className="flex items-center space-x-1.5 bg-zinc-900 border border-zinc-700/80 px-3 py-1 rounded-lg shadow-inner">
+            <span className="text-xs font-bold font-mono text-white tracking-wide">
+              {config.axis} = {info.sliceIndex}
+            </span>
+            <span className="text-[10px] text-zinc-400 font-mono">
+              ({hasDominantSlices ? `Dominant ${safePos + 1}/${availableSlices.length}` : `${info.sliceIndex + 1}/${config.totalSlices}`})
+            </span>
+          </div>
+
+          {/* Peak Lesion Status Badge */}
+          {info.isPeak ? (
+            <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 flex items-center gap-1.5 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+              <Flame className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              Peak Lesion Slice
+            </span>
+          ) : info.gtVoxels > 0 ? (
+            <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-cyan-950/40 border border-cyan-800/60 text-cyan-300 flex items-center gap-1.5">
+              <Target className="w-3 h-3 text-cyan-400" />
+              Active Lesion ({info.gtVoxels}v)
+            </span>
+          ) : (
+            <span className="px-2.5 py-1 rounded-lg text-xs font-mono text-zinc-400 bg-zinc-900/40 border border-zinc-800/80">
+              Lesion Free
+            </span>
+          )}
+        </div>
+
+        {/* Right: Quantitative Area Metrics */}
+        <div className="flex items-center space-x-2.5 text-xs font-mono self-start lg:self-auto">
+          <div className="flex items-center space-x-2.5 bg-zinc-900/90 border border-zinc-800 px-3 py-1 rounded-lg shadow-sm">
+            <span className="flex items-center gap-1.5 text-zinc-400 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+              GT: <span className="text-emerald-400 font-semibold">{info.gtVoxels}</span> vox
+            </span>
+            <span className="text-zinc-600 font-light">|</span>
+            <span className="flex items-center gap-1.5 text-zinc-400 text-xs">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee]" />
+              Pred: <span className="text-cyan-400 font-semibold">{info.predVoxels}</span> vox
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Tier 2: Dedicated Navigation & Dominant Slice Scrubbing Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-zinc-900/50 border border-zinc-800/80 rounded-lg p-2">
+        {/* Left: Slice Position & Mode Label */}
+        <div className="flex items-center space-x-2 px-1">
+          <Layers className="w-3.5 h-3.5 text-zinc-500" />
+          <span className="text-xs font-mono text-zinc-400">
+            {hasDominantSlices ? (
+              <span>Dominant Slices <span className="text-zinc-600">({availableSlices.length} key cross-sections)</span></span>
+            ) : (
+              <span>Scrub All Slices <span className="text-zinc-600">(Volume Axis {config.axis})</span></span>
+            )}
+          </span>
+        </div>
+
+        {/* Right: Step buttons + Segmented Slice Pills + Focus */}
+        <div className="flex items-center space-x-1.5 flex-wrap gap-y-1.5">
+          {/* Step Navigation Controls */}
+          <div className="flex items-center bg-zinc-950 border border-zinc-800 rounded-md p-0.5">
+            <button
+              onClick={handleFirst}
+              disabled={isFirst}
+              title={`First Dominant ${config.shortName} Slice`}
+              className={cn(
+                "p-1.5 rounded text-zinc-400 transition-colors",
+                isFirst ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
+              )}
+            >
+              <ChevronsLeft className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              onClick={handlePrev}
+              disabled={isFirst}
+              title={`Previous Dominant ${config.shortName} Slice`}
+              className={cn(
+                "p-1.5 rounded text-zinc-400 transition-colors",
+                isFirst ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
+              )}
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Dominant Slices Segmented Pills */}
+          {hasDominantSlices ? (
+            <div className="flex items-center bg-zinc-950 p-0.5 rounded-md border border-zinc-800 space-x-1">
+              {availableSlices.map((sl, idx) => {
+                const isSelected = currentSliceIdx === sl.slice_index;
+                return (
+                  <button
+                    key={sl.slice_index}
+                    onClick={() => setSliceIdx(sl.slice_index)}
+                    title={`Dominant Slice ${idx + 1} of ${availableSlices.length} (${config.axis}=${sl.slice_index})`}
+                    className={cn(
+                      "px-2.5 py-1 text-xs rounded font-mono transition-all flex items-center gap-1.5",
+                      isSelected
+                        ? "bg-white text-black font-bold shadow-md ring-1 ring-white/50"
+                        : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+                    )}
+                  >
+                    <span>{config.axis}={sl.slice_index}</span>
+                    {sl.is_peak && (
+                      <span className={cn(
+                        "text-[9px] px-1 rounded uppercase font-bold",
+                        isSelected ? "bg-black/15 text-black" : "bg-emerald-500/20 text-emerald-400"
+                      )}>
+                        Peak
+                      </span>
+                    )}
+                    {sl.gt_voxels > 0 && (
+                      <span className={cn("text-[9px]", isSelected ? "text-zinc-700 font-semibold" : "text-zinc-500")}>
+                        ({sl.gt_voxels}v)
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            config.totalSlices > 1 && (
+              <div className="w-28 sm:w-36 flex items-center px-1">
+                <input
+                  type="range"
+                  min={0}
+                  max={config.totalSlices - 1}
+                  value={currentSliceIdx}
+                  onChange={(e) => setSliceIdx(Number(e.target.value))}
+                  className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
+                />
+              </div>
+            )
+          )}
+
+          {/* Step Forward Navigation */}
+          <div className="flex items-center bg-zinc-950 border border-zinc-800 rounded-md p-0.5">
+            <button
+              onClick={handleNext}
+              disabled={isLast}
+              title={`Next Dominant ${config.shortName} Slice`}
+              className={cn(
+                "p-1.5 rounded text-zinc-400 transition-colors",
+                isLast ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
+              )}
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              onClick={handleLast}
+              disabled={isLast}
+              title={`Last Dominant ${config.shortName} Slice`}
+              className={cn(
+                "p-1.5 rounded text-zinc-400 transition-colors",
+                isLast ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
+              )}
+            >
+              <ChevronsRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Reset to Peak Lesion Focus */}
+          <button
+            onClick={() => setSliceIdx(config.defaultSlice)}
+            title={`Reset to Peak Focus (${config.axis}=${config.defaultSlice})`}
+            className={cn(
+              "px-2.5 py-1 text-xs rounded-md font-mono flex items-center gap-1.5 transition-all border shadow-sm",
+              currentSliceIdx === config.defaultSlice
+                ? "bg-emerald-950/50 border-emerald-700/60 text-emerald-300 font-semibold ring-1 ring-emerald-500/20"
+                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800"
+            )}
+          >
+            <Target className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Focus</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SubjectInspector({ subject, onSelectSubject }) {
   const [metaLoading, setMetaLoading] = useState(false);
   const [dynamicMeta, setDynamicMeta] = useState(null);
@@ -191,7 +418,6 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
   // Active visuals payload: static or dynamically fetched
   const visuals = subject?.visuals || dynamicMeta;
 
-  // Compute multi-planar configuration
   // Compute multi-planar configuration
   const planesConfig = useMemo(() => {
     const p = visuals?.planes || dynamicMeta?.planes;
@@ -722,154 +948,22 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                 key={config.key}
                 className="border border-zinc-800/90 bg-zinc-950/80 rounded-xl p-5 space-y-4 shadow-xl"
               >
-                {/* Row Header & Interactive Navigation Controls */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-zinc-800/80 gap-3">
-                  <div className="flex items-center space-x-3 flex-wrap gap-y-2">
-                    <span className={cn("px-2.5 py-1 rounded-md text-xs font-mono font-semibold border flex items-center gap-1.5 shadow-sm", config.badgeBg)}>
-                      <Compass className="w-3.5 h-3.5" />
-                      {config.title}
-                    </span>
-
-                    <span className="text-xs text-zinc-400 font-light hidden sm:inline">
-                      ({config.planeLabel} · {config.axisDesc})
-                    </span>
-
-                    <span className="text-xs font-bold font-mono text-white bg-zinc-900 border border-zinc-700 px-2.5 py-1 rounded-md shadow-inner flex items-center gap-1.5">
-                      <span>{config.axis} = {info.sliceIndex}</span>
-                      {hasDominantSlices ? (
-                        <span className="text-cyan-400 font-medium text-[11px]">
-                          (Dominant Slice {safePos + 1} of {availableSlices.length})
-                        </span>
-                      ) : (
-                        <span className="text-zinc-500 font-normal">
-                          ({info.sliceIndex + 1} / {config.totalSlices})
-                        </span>
-                      )}
-                    </span>
-
-                    {info.isPeak && (
-                      <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 flex items-center gap-1">
-                        <Flame className="w-3 h-3 text-emerald-400" />
-                        Peak Slice
-                      </span>
-                    )}
-
-                    <span className="text-xs text-zinc-400 font-mono hidden md:inline">
-                      (GT: <span className="text-emerald-400 font-medium">{info.gtVoxels}</span> vox | Pred: <span className="text-cyan-400 font-medium">{info.predVoxels}</span> vox)
-                    </span>
-                  </div>
-
-                  {/* Slice Step Controls & Buttons */}
-                  <div className="flex items-center space-x-1.5">
-                    <button
-                      onClick={handleFirst}
-                      disabled={isFirst}
-                      title={`First Dominant ${config.shortName} Slice`}
-                      className={cn(
-                        "p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 transition-colors",
-                        isFirst ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
-                      )}
-                    >
-                      <ChevronsLeft className="w-3.5 h-3.5" />
-                    </button>
-
-                    <button
-                      onClick={handlePrev}
-                      disabled={isFirst}
-                      title={`Previous Dominant ${config.shortName} Slice`}
-                      className={cn(
-                        "p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 transition-colors",
-                        isFirst ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
-                      )}
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                    </button>
-
-                    {/* Dominant Slices Selector Pills */}
-                    {hasDominantSlices ? (
-                      <div className="flex items-center space-x-1 sm:space-x-1.5 flex-wrap">
-                        {availableSlices.map((sl, idx) => {
-                          const isSelected = currentSliceIdx === sl.slice_index;
-                          return (
-                            <button
-                              key={sl.slice_index}
-                              onClick={() => setSliceIdx(sl.slice_index)}
-                              title={`Dominant Slice ${idx + 1} of ${availableSlices.length} (${config.axis}=${sl.slice_index})`}
-                              className={cn(
-                                "px-2.5 py-1 text-xs rounded-md font-mono transition-all border flex items-center gap-1.5",
-                                isSelected
-                                  ? "bg-white text-black border-white font-semibold shadow-md ring-1 ring-white/50"
-                                  : "bg-zinc-900/90 text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:text-white"
-                              )}
-                            >
-                              <span>{config.axis} = {sl.slice_index}</span>
-                              {sl.is_peak && (
-                                <span className={cn(
-                                  "text-[9px] px-1 rounded uppercase font-bold",
-                                  isSelected ? "bg-black/15 text-black" : "bg-emerald-500/20 text-emerald-400"
-                                )}>
-                                  Peak
-                                </span>
-                              )}
-                              {sl.gt_voxels > 0 && (
-                                <span className={cn("text-[9px]", isSelected ? "text-zinc-700 font-semibold" : "text-zinc-500")}>
-                                  ({sl.gt_voxels}v)
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      /* Slider fallback for full 3D dynamic volume mode */
-                      config.totalSlices > 1 && (
-                        <div className="w-28 sm:w-36 flex items-center px-1">
-                          <input
-                            type="range"
-                            min={0}
-                            max={config.totalSlices - 1}
-                            value={currentSliceIdx}
-                            onChange={(e) => setSliceIdx(Number(e.target.value))}
-                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
-                          />
-                        </div>
-                      )
-                    )}
-
-                    <button
-                      onClick={handleNext}
-                      disabled={isLast}
-                      title={`Next Dominant ${config.shortName} Slice`}
-                      className={cn(
-                        "p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 transition-colors",
-                        isLast ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
-                      )}
-                    >
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-
-                    <button
-                      onClick={handleLast}
-                      disabled={isLast}
-                      title={`Last Dominant ${config.shortName} Slice`}
-                      className={cn(
-                        "p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 transition-colors",
-                        isLast ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
-                      )}
-                    >
-                      <ChevronsRight className="w-3.5 h-3.5" />
-                    </button>
-
-                    <button
-                      onClick={() => setSliceIdx(config.defaultSlice)}
-                      title={`Reset to Peak Focus (${config.axis}=${config.defaultSlice})`}
-                      className="ml-1.5 px-2 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white text-xs rounded font-mono flex items-center gap-1 transition-colors"
-                    >
-                      <Target className="w-3 h-3 text-emerald-400" />
-                      <span>Focus</span>
-                    </button>
-                  </div>
-                </div>
+                {/* Redesigned Structured Plane Card Header */}
+                <PlaneCardHeader
+                  config={config}
+                  currentSliceIdx={currentSliceIdx}
+                  setSliceIdx={setSliceIdx}
+                  info={info}
+                  availableSlices={availableSlices}
+                  hasDominantSlices={hasDominantSlices}
+                  safePos={safePos}
+                  isFirst={isFirst}
+                  isLast={isLast}
+                  handleFirst={handleFirst}
+                  handlePrev={handlePrev}
+                  handleNext={handleNext}
+                  handleLast={handleLast}
+                />
 
                 {/* 5-Way Slices Row: Raw, GT Mask, Pred Mask, GT+Scan Overlay, Pred Mask Overlay */}
                 {(() => {
@@ -1059,10 +1153,40 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             </div>
           </div>
 
-          {orthogonalRows.map(({ config, currentSliceIdx, info }) => {
+          {orthogonalRows.map(({ config, currentSliceIdx, setSliceIdx, info }) => {
             const availableSlices = config.slices || [];
+            const hasDominantSlices = availableSlices.length > 0;
             const currentPos = availableSlices.findIndex((s) => s.slice_index === currentSliceIdx);
             const safePos = currentPos >= 0 ? currentPos : 0;
+            const isFirst = hasDominantSlices ? safePos <= 0 : currentSliceIdx <= 0;
+            const isLast = hasDominantSlices ? safePos >= availableSlices.length - 1 : currentSliceIdx >= config.totalSlices - 1;
+
+            const handleFirst = () => {
+              if (hasDominantSlices) setSliceIdx(availableSlices[0].slice_index);
+              else setSliceIdx(0);
+            };
+
+            const handlePrev = () => {
+              if (hasDominantSlices) {
+                if (safePos > 0) setSliceIdx(availableSlices[safePos - 1].slice_index);
+              } else {
+                setSliceIdx((prev) => Math.max(0, prev - 1));
+              }
+            };
+
+            const handleNext = () => {
+              if (hasDominantSlices) {
+                if (safePos < availableSlices.length - 1) setSliceIdx(availableSlices[safePos + 1].slice_index);
+              } else {
+                setSliceIdx((prev) => Math.min(config.totalSlices - 1, prev + 1));
+              }
+            };
+
+            const handleLast = () => {
+              if (hasDominantSlices) setSliceIdx(availableSlices[availableSlices.length - 1].slice_index);
+              else setSliceIdx(config.totalSlices - 1);
+            };
+
             const stripRow = (config.rowOffset ?? 0) + safePos;
             const stripUrl = visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null);
 
@@ -1071,16 +1195,22 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                 key={config.key}
                 className="border border-zinc-800/90 bg-zinc-950/80 rounded-xl p-5 space-y-4 shadow-xl"
               >
-                <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                  <div className="flex items-center space-x-2">
-                    <span className={cn("px-2.5 py-1 rounded-md text-xs font-mono font-semibold border flex items-center gap-1.5", config.badgeBg)}>
-                      {config.title}
-                    </span>
-                    <span className="text-xs font-mono text-zinc-300">
-                      {config.axis} = {info.sliceIndex}
-                    </span>
-                  </div>
-                </div>
+                {/* Redesigned Structured Plane Card Header */}
+                <PlaneCardHeader
+                  config={config}
+                  currentSliceIdx={currentSliceIdx}
+                  setSliceIdx={setSliceIdx}
+                  info={info}
+                  availableSlices={availableSlices}
+                  hasDominantSlices={hasDominantSlices}
+                  safePos={safePos}
+                  isFirst={isFirst}
+                  isLast={isLast}
+                  handleFirst={handleFirst}
+                  handlePrev={handlePrev}
+                  handleNext={handleNext}
+                  handleLast={handleLast}
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Confusion Error Map */}
