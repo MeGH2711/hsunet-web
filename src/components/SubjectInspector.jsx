@@ -208,6 +208,10 @@ function PlaneCardHeader({
   handleNext,
   handleLast
 }) {
+  // Only use button groups if there are 5 or fewer dominant slices (e.g. Vercel static version)
+  // For local system (or full volumes with > 5 slices), use the high-precision medical slider
+  const isDominantMode = hasDominantSlices && availableSlices.length > 0 && availableSlices.length <= 5;
+
   return (
     <div className="space-y-3 pb-3 border-b border-zinc-800/80">
       {/* Tier 1: Anatomical Identity & Quantitative Diagnostics */}
@@ -233,7 +237,7 @@ function PlaneCardHeader({
               {config.axis} = {info.sliceIndex}
             </span>
             <span className="text-[10px] text-zinc-400 font-mono">
-              ({hasDominantSlices ? `Dominant ${safePos + 1}/${availableSlices.length}` : `${info.sliceIndex + 1}/${config.totalSlices}`})
+              ({isDominantMode ? `Dominant ${safePos + 1}/${availableSlices.length}` : `Slice ${info.sliceIndex + 1} of ${config.totalSlices}`})
             </span>
           </div>
 
@@ -271,28 +275,28 @@ function PlaneCardHeader({
         </div>
       </div>
 
-      {/* Tier 2: Dedicated Navigation & Dominant Slice Scrubbing Toolbar */}
+      {/* Tier 2: Dedicated Navigation & Slice Scrubbing Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-zinc-900/50 border border-zinc-800/80 rounded-lg p-2">
         {/* Left: Slice Position & Mode Label */}
         <div className="flex items-center space-x-2 px-1">
-          <Layers className="w-3.5 h-3.5 text-zinc-500" />
-          <span className="text-xs font-mono text-zinc-400">
-            {hasDominantSlices ? (
-              <span>Dominant Slices <span className="text-zinc-600">({availableSlices.length} key cross-sections)</span></span>
+          <Layers className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="text-xs font-mono text-zinc-300">
+            {isDominantMode ? (
+              <span>Dominant Slices <span className="text-zinc-500">({availableSlices.length} key cross-sections)</span></span>
             ) : (
-              <span>Scrub All Slices <span className="text-zinc-600">(Volume Axis {config.axis})</span></span>
+              <span>Volume Slice Scrubbing <span className="text-cyan-400 font-semibold">({config.totalSlices} slices)</span></span>
             )}
           </span>
         </div>
 
-        {/* Right: Step buttons + Segmented Slice Pills + Focus */}
+        {/* Right: Step buttons + Segmented Slice Pills OR Medical Slider + Focus */}
         <div className="flex items-center space-x-1.5 flex-wrap gap-y-1.5">
           {/* Step Navigation Controls */}
           <div className="flex items-center bg-zinc-950 border border-zinc-800 rounded-md p-0.5">
             <button
               onClick={handleFirst}
               disabled={isFirst}
-              title={`First Dominant ${config.shortName} Slice`}
+              title={`First ${config.shortName} Slice (${config.axis}=0)`}
               className={cn(
                 "p-1.5 rounded text-zinc-400 transition-colors",
                 isFirst ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
@@ -304,7 +308,7 @@ function PlaneCardHeader({
             <button
               onClick={handlePrev}
               disabled={isFirst}
-              title={`Previous Dominant ${config.shortName} Slice`}
+              title={`Previous ${config.shortName} Slice`}
               className={cn(
                 "p-1.5 rounded text-zinc-400 transition-colors",
                 isFirst ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
@@ -314,8 +318,8 @@ function PlaneCardHeader({
             </button>
           </div>
 
-          {/* Dominant Slices Segmented Pills */}
-          {hasDominantSlices ? (
+          {/* Conditional Navigation: 5-Slice Button Group for Vercel vs Smooth Medical Slider for Local */}
+          {isDominantMode ? (
             <div className="flex items-center bg-zinc-950 p-0.5 rounded-md border border-zinc-800 space-x-1">
               {availableSlices.map((sl, idx) => {
                 const isSelected = currentSliceIdx === sl.slice_index;
@@ -350,18 +354,21 @@ function PlaneCardHeader({
               })}
             </div>
           ) : (
-            config.totalSlices > 1 && (
-              <div className="w-28 sm:w-36 flex items-center px-1">
-                <input
-                  type="range"
-                  min={0}
-                  max={config.totalSlices - 1}
-                  value={currentSliceIdx}
-                  onChange={(e) => setSliceIdx(Number(e.target.value))}
-                  className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
-                />
+            <div className="flex items-center space-x-2.5 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800">
+              <input
+                type="range"
+                min={0}
+                max={Math.max(1, config.totalSlices - 1)}
+                value={currentSliceIdx}
+                onChange={(e) => setSliceIdx(Number(e.target.value))}
+                className="w-36 sm:w-56 md:w-72 lg:w-96 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 focus:outline-none"
+              />
+              <div className="flex items-center space-x-1.5 text-xs font-mono bg-zinc-900 px-2 py-0.5 rounded border border-zinc-700 shadow-inner">
+                <span className="font-bold text-cyan-300">{config.axis}={currentSliceIdx}</span>
+                <span className="text-zinc-600">/</span>
+                <span className="text-zinc-400">{config.totalSlices - 1}</span>
               </div>
-            )
+            </div>
           )}
 
           {/* Step Forward Navigation */}
@@ -369,7 +376,7 @@ function PlaneCardHeader({
             <button
               onClick={handleNext}
               disabled={isLast}
-              title={`Next Dominant ${config.shortName} Slice`}
+              title={`Next ${config.shortName} Slice`}
               className={cn(
                 "p-1.5 rounded text-zinc-400 transition-colors",
                 isLast ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
@@ -381,7 +388,7 @@ function PlaneCardHeader({
             <button
               onClick={handleLast}
               disabled={isLast}
-              title={`Last Dominant ${config.shortName} Slice`}
+              title={`Last ${config.shortName} Slice (${config.axis}=${config.totalSlices - 1})`}
               className={cn(
                 "p-1.5 rounded text-zinc-400 transition-colors",
                 isLast ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
@@ -904,26 +911,26 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
       {viewMode === "grid" ? (
         <div className="space-y-6">
           {orthogonalRows.map(({ config, currentSliceIdx, setSliceIdx, info }) => {
-            const hasDominantSlices = config.slices && config.slices.length > 0;
-            const availableSlices = hasDominantSlices ? config.slices : [];
+            const isDominantMode = config.slices && config.slices.length > 0 && config.slices.length <= 5;
+            const availableSlices = isDominantMode ? config.slices : [];
 
-            // Find active index in dominant slices list
-            const activePos = hasDominantSlices
+            // Find active index in dominant slices list if applicable
+            const activePos = isDominantMode
               ? availableSlices.findIndex((s) => s.slice_index === currentSliceIdx)
               : -1;
             const safePos = activePos >= 0 ? activePos : 0;
-            const isFirst = hasDominantSlices ? safePos === 0 : currentSliceIdx === 0;
-            const isLast = hasDominantSlices
+            const isFirst = isDominantMode ? safePos === 0 : currentSliceIdx <= 0;
+            const isLast = isDominantMode
               ? safePos === availableSlices.length - 1
-              : currentSliceIdx === config.totalSlices - 1;
+              : currentSliceIdx >= config.totalSlices - 1;
 
             const handleFirst = () => {
-              if (hasDominantSlices) setSliceIdx(availableSlices[0].slice_index);
+              if (isDominantMode) setSliceIdx(availableSlices[0].slice_index);
               else setSliceIdx(0);
             };
 
             const handlePrev = () => {
-              if (hasDominantSlices) {
+              if (isDominantMode) {
                 if (safePos > 0) setSliceIdx(availableSlices[safePos - 1].slice_index);
               } else {
                 setSliceIdx((prev) => Math.max(0, prev - 1));
@@ -931,7 +938,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             };
 
             const handleNext = () => {
-              if (hasDominantSlices) {
+              if (isDominantMode) {
                 if (safePos < availableSlices.length - 1) setSliceIdx(availableSlices[safePos + 1].slice_index);
               } else {
                 setSliceIdx((prev) => Math.min(config.totalSlices - 1, prev + 1));
@@ -939,7 +946,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             };
 
             const handleLast = () => {
-              if (hasDominantSlices) setSliceIdx(availableSlices[availableSlices.length - 1].slice_index);
+              if (isDominantMode) setSliceIdx(availableSlices[availableSlices.length - 1].slice_index);
               else setSliceIdx(config.totalSlices - 1);
             };
 
@@ -955,7 +962,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                   setSliceIdx={setSliceIdx}
                   info={info}
                   availableSlices={availableSlices}
-                  hasDominantSlices={hasDominantSlices}
+                  hasDominantSlices={isDominantMode}
                   safePos={safePos}
                   isFirst={isFirst}
                   isLast={isLast}
@@ -967,8 +974,10 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
 
                 {/* 5-Way Slices Row: Raw, GT Mask, Pred Mask, GT+Scan Overlay, Pred Mask Overlay */}
                 {(() => {
-                  const stripRow = (config.rowOffset ?? 0) + safePos;
-                  const stripUrl = visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null);
+                  const stripRow = isDominantMode ? (config.rowOffset ?? 0) + safePos : 0;
+                  const stripUrl = isDominantMode
+                    ? (visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null))
+                    : null;
 
                   return (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
@@ -1154,20 +1163,20 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
           </div>
 
           {orthogonalRows.map(({ config, currentSliceIdx, setSliceIdx, info }) => {
-            const availableSlices = config.slices || [];
-            const hasDominantSlices = availableSlices.length > 0;
-            const currentPos = availableSlices.findIndex((s) => s.slice_index === currentSliceIdx);
+            const isDominantMode = config.slices && config.slices.length > 0 && config.slices.length <= 5;
+            const availableSlices = isDominantMode ? config.slices : [];
+            const currentPos = isDominantMode ? availableSlices.findIndex((s) => s.slice_index === currentSliceIdx) : -1;
             const safePos = currentPos >= 0 ? currentPos : 0;
-            const isFirst = hasDominantSlices ? safePos <= 0 : currentSliceIdx <= 0;
-            const isLast = hasDominantSlices ? safePos >= availableSlices.length - 1 : currentSliceIdx >= config.totalSlices - 1;
+            const isFirst = isDominantMode ? safePos <= 0 : currentSliceIdx <= 0;
+            const isLast = isDominantMode ? safePos >= availableSlices.length - 1 : currentSliceIdx >= config.totalSlices - 1;
 
             const handleFirst = () => {
-              if (hasDominantSlices) setSliceIdx(availableSlices[0].slice_index);
+              if (isDominantMode) setSliceIdx(availableSlices[0].slice_index);
               else setSliceIdx(0);
             };
 
             const handlePrev = () => {
-              if (hasDominantSlices) {
+              if (isDominantMode) {
                 if (safePos > 0) setSliceIdx(availableSlices[safePos - 1].slice_index);
               } else {
                 setSliceIdx((prev) => Math.max(0, prev - 1));
@@ -1175,7 +1184,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             };
 
             const handleNext = () => {
-              if (hasDominantSlices) {
+              if (isDominantMode) {
                 if (safePos < availableSlices.length - 1) setSliceIdx(availableSlices[safePos + 1].slice_index);
               } else {
                 setSliceIdx((prev) => Math.min(config.totalSlices - 1, prev + 1));
@@ -1183,12 +1192,14 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             };
 
             const handleLast = () => {
-              if (hasDominantSlices) setSliceIdx(availableSlices[availableSlices.length - 1].slice_index);
+              if (isDominantMode) setSliceIdx(availableSlices[availableSlices.length - 1].slice_index);
               else setSliceIdx(config.totalSlices - 1);
             };
 
-            const stripRow = (config.rowOffset ?? 0) + safePos;
-            const stripUrl = visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null);
+            const stripRow = isDominantMode ? (config.rowOffset ?? 0) + safePos : 0;
+            const stripUrl = isDominantMode
+              ? (visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null))
+              : null;
 
             return (
               <div
@@ -1202,7 +1213,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                   setSliceIdx={setSliceIdx}
                   info={info}
                   availableSlices={availableSlices}
-                  hasDominantSlices={hasDominantSlices}
+                  hasDominantSlices={isDominantMode}
                   safePos={safePos}
                   isFirst={isFirst}
                   isLast={isLast}
