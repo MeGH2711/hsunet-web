@@ -48,7 +48,6 @@ function SliceImage({ src, alt, className = "w-full h-full object-contain", cont
       {/* Sleek Medical Scanner Loading Animation Overlay */}
       {!loaded && !hasError && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-zinc-950/85 backdrop-blur-[2px] transition-opacity duration-300 pointer-events-none">
-          {/* Circular Sonar / Radar Pulse */}
           <div className="relative w-11 h-11 flex items-center justify-center">
             <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-ping opacity-60" />
             <div className="absolute inset-1.5 rounded-full border border-dashed border-cyan-500/40 animate-[spin_4s_linear_infinite]" />
@@ -65,7 +64,6 @@ function SliceImage({ src, alt, className = "w-full h-full object-contain", cont
             </span>
           </div>
 
-          {/* Shimmering scanning line across center */}
           <div className="absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-pulse top-1/2 -translate-y-1/2" />
         </div>
       )}
@@ -96,6 +94,96 @@ function SliceImage({ src, alt, className = "w-full h-full object-contain", cont
   );
 }
 
+/**
+ * CroppedSliceImage: Efficiently crops a single slide cell from a consolidated multi-planar image strip.
+ * Features 0-latency client-side switching, shared browser cache across all views, and medical scanner animation.
+ */
+function CroppedSliceImage({
+  stripUrl,
+  col = 0,
+  row = 0,
+  totalCols = 6,
+  totalRows = 15,
+  alt = "Medical Slice",
+  contrast = false,
+  className = "",
+  fallbackSrc = null
+}) {
+  const [loaded, setLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const prevSrcRef = useRef(stripUrl || fallbackSrc);
+
+  if (prevSrcRef.current !== (stripUrl || fallbackSrc)) {
+    prevSrcRef.current = stripUrl || fallbackSrc;
+    setLoaded(false);
+    setHasError(false);
+  }
+
+  // Fallback to single slice if no stripUrl is available
+  if (!stripUrl && fallbackSrc) {
+    return <SliceImage src={fallbackSrc} alt={alt} contrast={contrast} className={className} />;
+  }
+
+  return (
+    <div className={cn("relative w-full h-full flex items-center justify-center bg-black overflow-hidden select-none", className)}>
+      {/* Sleek Medical Scanner Loading Animation Overlay */}
+      {!loaded && !hasError && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-zinc-950/85 backdrop-blur-[2px] transition-opacity duration-300 pointer-events-none">
+          <div className="relative w-11 h-11 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-ping opacity-60" />
+            <div className="absolute inset-1.5 rounded-full border border-dashed border-cyan-500/40 animate-[spin_4s_linear_infinite]" />
+            <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
+            <div className="absolute w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]" />
+          </div>
+
+          <div className="mt-2 flex items-center space-x-1.5">
+            <span className="w-1 h-1 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.3s]" />
+            <span className="w-1 h-1 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.15s]" />
+            <span className="w-1 h-1 rounded-full bg-cyan-400 animate-bounce" />
+            <span className="text-[10px] font-mono tracking-wider text-cyan-300/80 uppercase ml-0.5">
+              Loading Visuals...
+            </span>
+          </div>
+
+          <div className="absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-pulse top-1/2 -translate-y-1/2" />
+        </div>
+      )}
+
+      {/* Error / Processing Fallback */}
+      {hasError && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-3 text-center bg-zinc-950 text-zinc-500">
+          <AlertCircle className="w-5 h-5 text-zinc-600 mb-1" />
+          <span className="text-[10px] font-mono text-zinc-400">Slice Unavailable</span>
+        </div>
+      )}
+
+      {/* Consolidated Strip: Cropped in real-time via CSS percentage coordinates */}
+      <img
+        src={stripUrl}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        onError={() => setHasError(true)}
+        style={{
+          position: "absolute",
+          width: `${totalCols * 100}%`,
+          height: `${totalRows * 100}%`,
+          left: `-${col * 100}%`,
+          top: `-${row * 100}%`,
+          maxWidth: "none",
+          maxHeight: "none",
+          objectFit: "fill",
+        }}
+        className={cn(
+          contrast && "filter contrast-125",
+          "transition-opacity duration-300 ease-in-out pointer-events-none",
+          loaded ? "opacity-100" : "opacity-0"
+        )}
+        loading="eager"
+      />
+    </div>
+  );
+}
+
 export default function SubjectInspector({ subject, onSelectSubject }) {
   const [metaLoading, setMetaLoading] = useState(false);
   const [dynamicMeta, setDynamicMeta] = useState(null);
@@ -103,6 +191,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
   // Active visuals payload: static or dynamically fetched
   const visuals = subject?.visuals || dynamicMeta;
 
+  // Compute multi-planar configuration
   // Compute multi-planar configuration
   const planesConfig = useMemo(() => {
     const p = visuals?.planes || dynamicMeta?.planes;
@@ -112,18 +201,21 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     const axialTotal = p?.axial?.total_slices ?? visuals?.total_slices ?? (visuals?.slices?.length || 179);
     const axialSlices = p?.axial?.slices && p.axial.slices.length > 0 ? p.axial.slices : (visuals?.slices || []);
     const axialLesionProfile = p?.axial?.lesion_profile || visuals?.lesion_profile || [];
+    const axialRowOffset = p?.axial?.row_offset ?? 0;
 
     // 2. Sagittal Plane (X)
     const sagDef = p?.sagittal?.default_slice ?? Math.floor((dynamicMeta?.shape?.[0] || 158) / 2);
     const sagTotal = p?.sagittal?.total_slices ?? (dynamicMeta?.shape?.[0] || 158);
     const sagSlices = p?.sagittal?.slices || [];
     const sagLesionProfile = p?.sagittal?.lesion_profile || [];
+    const sagRowOffset = p?.sagittal?.row_offset ?? 5;
 
     // 3. Coronal Plane (Y)
     const corDef = p?.coronal?.default_slice ?? Math.floor((dynamicMeta?.shape?.[1] || 206) / 2);
     const corTotal = p?.coronal?.total_slices ?? (dynamicMeta?.shape?.[1] || 206);
     const corSlices = p?.coronal?.slices || [];
     const corLesionProfile = p?.coronal?.lesion_profile || [];
+    const corRowOffset = p?.coronal?.row_offset ?? 10;
 
     return {
       axial: {
@@ -133,6 +225,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         planeLabel: "Transverse Plane",
         axis: "Z",
         axisDesc: "Superior — Inferior",
+        rowOffset: axialRowOffset,
         defaultSlice: axialDef,
         totalSlices: axialTotal,
         slices: axialSlices,
@@ -147,6 +240,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         planeLabel: "Sagittal Plane",
         axis: "X",
         axisDesc: "Left — Right Lateral",
+        rowOffset: sagRowOffset,
         defaultSlice: sagDef,
         totalSlices: sagTotal,
         slices: sagSlices,
@@ -161,6 +255,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
         planeLabel: "Coronal Plane",
         axis: "Y",
         axisDesc: "Anterior — Posterior Frontal",
+        rowOffset: corRowOffset,
         defaultSlice: corDef,
         totalSlices: corTotal,
         slices: corSlices,
@@ -777,113 +872,165 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                 </div>
 
                 {/* 5-Way Slices Row: Raw, GT Mask, Pred Mask, GT+Scan Overlay, Pred Mask Overlay */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
-                  {/* 1. Raw Scan */}
-                  <div
-                    onClick={() => setFullscreenImage({ url: info.rawUrl, title: `${config.shortName} Raw MRI / CT Scan (${config.axis}=${info.sliceIndex})` })}
-                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-                  >
-                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                      <span className="text-xs font-medium text-zinc-300">1. Raw MRI / CT Scan</span>
-                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-                    </div>
-                    <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <SliceImage
-                        src={info.rawUrl}
-                        alt="Raw Scan"
-                        contrast={true}
-                      />
-                    </div>
-                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
-                      <span>{config.shortName} {config.axis}={info.sliceIndex}</span>
-                      <span>Anatomy</span>
-                    </div>
-                  </div>
+                {(() => {
+                  const stripRow = (config.rowOffset ?? 0) + safePos;
+                  const stripUrl = visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null);
 
-                  {/* 2. Ground Truth Mask */}
-                  <div
-                    onClick={() => setFullscreenImage({ url: info.gtUrl, title: `${config.shortName} GT Lesion Mask (${config.axis}=${info.sliceIndex})` })}
-                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-                  >
-                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                      <span className="text-xs font-medium text-emerald-400">2. GT Lesion Mask</span>
-                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-                    </div>
-                    <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <SliceImage
-                        src={info.gtUrl}
-                        alt="GT Mask"
-                      />
-                    </div>
-                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
-                      <span>{info.gtVoxels} Voxel Area</span>
-                      <span className="text-emerald-400">{info.gtVoxels > 0 ? "Lesion Present" : "Clear / 0 Vox"}</span>
-                    </div>
-                  </div>
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
+                      {/* 1. Raw Scan */}
+                      <div
+                        onClick={() => setFullscreenImage({
+                          stripUrl,
+                          row: stripRow,
+                          col: 0,
+                          url: info.rawUrl,
+                          title: `${config.shortName} Raw MRI / CT Scan (${config.axis}=${info.sliceIndex})`
+                        })}
+                        className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                      >
+                        <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                          <span className="text-xs font-medium text-zinc-300">1. Raw MRI / CT Scan</span>
+                          <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                        </div>
+                        <div className="aspect-square bg-black flex items-center justify-center p-1 relative overflow-hidden">
+                          <CroppedSliceImage
+                            stripUrl={stripUrl}
+                            row={stripRow}
+                            col={0}
+                            fallbackSrc={info.rawUrl}
+                            alt="Raw Scan"
+                            contrast={true}
+                          />
+                        </div>
+                        <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
+                          <span>{config.shortName} {config.axis}={info.sliceIndex}</span>
+                          <span>Anatomy</span>
+                        </div>
+                      </div>
 
-                  {/* 3. Predicted Lesion Mask */}
-                  <div
-                    onClick={() => setFullscreenImage({ url: info.predUrl, title: `${config.shortName} Predicted Lesion Mask (${config.axis}=${info.sliceIndex})` })}
-                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-                  >
-                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                      <span className="text-xs font-medium text-cyan-400">3. Predicted Lesion Mask</span>
-                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-                    </div>
-                    <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <SliceImage
-                        src={info.predUrl}
-                        alt="Predicted Mask"
-                      />
-                    </div>
-                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
-                      <span>{info.predVoxels} Voxel Area</span>
-                      <span className="text-cyan-400">{info.predVoxels > 0 ? "Lesion Predicted" : "Clear / 0 Vox"}</span>
-                    </div>
-                  </div>
+                      {/* 2. Ground Truth Mask */}
+                      <div
+                        onClick={() => setFullscreenImage({
+                          stripUrl,
+                          row: stripRow,
+                          col: 1,
+                          url: info.gtUrl,
+                          title: `${config.shortName} GT Lesion Mask (${config.axis}=${info.sliceIndex})`
+                        })}
+                        className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                      >
+                        <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                          <span className="text-xs font-medium text-emerald-400">2. GT Lesion Mask</span>
+                          <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                        </div>
+                        <div className="aspect-square bg-black flex items-center justify-center p-1 relative overflow-hidden">
+                          <CroppedSliceImage
+                            stripUrl={stripUrl}
+                            row={stripRow}
+                            col={1}
+                            fallbackSrc={info.gtUrl}
+                            alt="GT Mask"
+                          />
+                        </div>
+                        <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
+                          <span>{info.gtVoxels} Voxel Area</span>
+                          <span className="text-emerald-400">{info.gtVoxels > 0 ? "Lesion Present" : "Clear / 0 Vox"}</span>
+                        </div>
+                      </div>
 
-                  {/* 4. GT + Scan Overlay */}
-                  <div
-                    onClick={() => setFullscreenImage({ url: info.gtOverlayUrl, title: `${config.shortName} GT Mask + Scan Overlay (${config.axis}=${info.sliceIndex})` })}
-                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-                  >
-                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                      <span className="text-xs font-medium text-emerald-400">4. GT + Scan Overlay</span>
-                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-                    </div>
-                    <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <SliceImage
-                        src={info.gtOverlayUrl}
-                        alt="GT Overlay"
-                      />
-                    </div>
-                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-emerald-400/80 border-t border-zinc-900 flex justify-between">
-                      <span>Reference Annotation</span>
-                      <span>Ground Truth</span>
-                    </div>
-                  </div>
+                      {/* 3. Predicted Lesion Mask */}
+                      <div
+                        onClick={() => setFullscreenImage({
+                          stripUrl,
+                          row: stripRow,
+                          col: 2,
+                          url: info.predUrl,
+                          title: `${config.shortName} Predicted Lesion Mask (${config.axis}=${info.sliceIndex})`
+                        })}
+                        className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                      >
+                        <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                          <span className="text-xs font-medium text-cyan-400">3. Predicted Lesion Mask</span>
+                          <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                        </div>
+                        <div className="aspect-square bg-black flex items-center justify-center p-1 relative overflow-hidden">
+                          <CroppedSliceImage
+                            stripUrl={stripUrl}
+                            row={stripRow}
+                            col={2}
+                            fallbackSrc={info.predUrl}
+                            alt="Predicted Mask"
+                          />
+                        </div>
+                        <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
+                          <span>{info.predVoxels} Voxel Area</span>
+                          <span className="text-cyan-400">{info.predVoxels > 0 ? "Lesion Predicted" : "Clear / 0 Vox"}</span>
+                        </div>
+                      </div>
 
-                  {/* 5. Predicted Mask Overlay */}
-                  <div
-                    onClick={() => setFullscreenImage({ url: info.predOverlayUrl, title: `${config.shortName} Predicted Mask Overlay (${config.axis}=${info.sliceIndex})` })}
-                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-                  >
-                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                      <span className="text-xs font-medium text-cyan-400">5. Predicted Mask Overlay</span>
-                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                      {/* 4. GT + Scan Overlay */}
+                      <div
+                        onClick={() => setFullscreenImage({
+                          stripUrl,
+                          row: stripRow,
+                          col: 3,
+                          url: info.gtOverlayUrl,
+                          title: `${config.shortName} GT Mask + Scan Overlay (${config.axis}=${info.sliceIndex})`
+                        })}
+                        className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                      >
+                        <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                          <span className="text-xs font-medium text-emerald-400">4. GT + Scan Overlay</span>
+                          <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                        </div>
+                        <div className="aspect-square bg-black flex items-center justify-center p-1 relative overflow-hidden">
+                          <CroppedSliceImage
+                            stripUrl={stripUrl}
+                            row={stripRow}
+                            col={3}
+                            fallbackSrc={info.gtOverlayUrl}
+                            alt="GT Overlay"
+                          />
+                        </div>
+                        <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-emerald-400/80 border-t border-zinc-900 flex justify-between">
+                          <span>Reference Annotation</span>
+                          <span>Ground Truth</span>
+                        </div>
+                      </div>
+
+                      {/* 5. Predicted Mask Overlay */}
+                      <div
+                        onClick={() => setFullscreenImage({
+                          stripUrl,
+                          row: stripRow,
+                          col: 4,
+                          url: info.predOverlayUrl,
+                          title: `${config.shortName} Predicted Mask Overlay (${config.axis}=${info.sliceIndex})`
+                        })}
+                        className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                      >
+                        <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                          <span className="text-xs font-medium text-cyan-400">5. Predicted Mask Overlay</span>
+                          <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                        </div>
+                        <div className="aspect-square bg-black flex items-center justify-center p-1 relative overflow-hidden">
+                          <CroppedSliceImage
+                            stripUrl={stripUrl}
+                            row={stripRow}
+                            col={4}
+                            fallbackSrc={info.predOverlayUrl}
+                            alt="Pred Overlay"
+                          />
+                        </div>
+                        <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-cyan-400/80 border-t border-zinc-900 flex justify-between">
+                          <span>HS-UNet Output</span>
+                          <span>{info.predVoxels} Voxels</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <SliceImage
-                        src={info.predOverlayUrl}
-                        alt="Pred Overlay"
-                      />
-                    </div>
-                    <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-cyan-400/80 border-t border-zinc-900 flex justify-between">
-                      <span>HS-UNet Output</span>
-                      <span>{info.predVoxels} Voxels</span>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
               </div>
             );
           })}
@@ -912,70 +1059,96 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             </div>
           </div>
 
-          {orthogonalRows.map(({ config, info }) => (
-            <div
-              key={config.key}
-              className="border border-zinc-800/90 bg-zinc-950/80 rounded-xl p-5 space-y-4 shadow-xl"
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                <div className="flex items-center space-x-2">
-                  <span className={cn("px-2.5 py-1 rounded-md text-xs font-mono font-semibold border flex items-center gap-1.5", config.badgeBg)}>
-                    {config.title}
-                  </span>
-                  <span className="text-xs font-mono text-zinc-300">
-                    {config.axis} = {info.sliceIndex}
-                  </span>
-                </div>
-              </div>
+          {orthogonalRows.map(({ config, currentSliceIdx, info }) => {
+            const availableSlices = config.slices || [];
+            const currentPos = availableSlices.findIndex((s) => s.slice_index === currentSliceIdx);
+            const safePos = currentPos >= 0 ? currentPos : 0;
+            const stripRow = (config.rowOffset ?? 0) + safePos;
+            const stripUrl = visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null);
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Confusion Error Map */}
-                <div
-                  onClick={() => setFullscreenImage({ url: info.errorUrl, title: `${config.shortName} Error Diagnostic Map (${config.axis}=${info.sliceIndex})` })}
-                  className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-                >
-                  <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                    <span className="text-xs font-medium text-rose-400 flex items-center gap-1.5">
-                      <ShieldAlert className="w-3.5 h-3.5" />
-                      {config.shortName} Confusion Error Map
+            return (
+              <div
+                key={config.key}
+                className="border border-zinc-800/90 bg-zinc-950/80 rounded-xl p-5 space-y-4 shadow-xl"
+              >
+                <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+                  <div className="flex items-center space-x-2">
+                    <span className={cn("px-2.5 py-1 rounded-md text-xs font-mono font-semibold border flex items-center gap-1.5", config.badgeBg)}>
+                      {config.title}
                     </span>
-                    <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-                  </div>
-                  <div className="aspect-square bg-black flex items-center justify-center p-2">
-                    <SliceImage
-                      src={info.errorUrl}
-                      alt="Error Map"
-                    />
-                  </div>
-                  <div className="px-3 py-2 bg-zinc-950 text-[11px] text-zinc-400 border-t border-zinc-900">
-                    TP (Green) · FP Over-seg (Red) · FN Missed (Blue)
+                    <span className="text-xs font-mono text-zinc-300">
+                      {config.axis} = {info.sliceIndex}
+                    </span>
                   </div>
                 </div>
 
-                {/* Ground Truth Reference */}
-                <div
-                  onClick={() => setFullscreenImage({ url: info.gtOverlayUrl, title: `${config.shortName} GT Reference Overlay (${config.axis}=${info.sliceIndex})` })}
-                  className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
-                >
-                  <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
-                    <span className="text-xs font-medium text-emerald-400">
-                      {config.shortName} Ground Truth Reference Overlay
-                    </span>
-                    <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Confusion Error Map */}
+                  <div
+                    onClick={() => setFullscreenImage({
+                      stripUrl,
+                      row: stripRow,
+                      col: 5,
+                      url: info.errorUrl,
+                      title: `${config.shortName} Error Diagnostic Map (${config.axis}=${info.sliceIndex})`
+                    })}
+                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                  >
+                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                      <span className="text-xs font-medium text-rose-400 flex items-center gap-1.5">
+                        <ShieldAlert className="w-3.5 h-3.5" />
+                        {config.shortName} Confusion Error Map
+                      </span>
+                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                    </div>
+                    <div className="aspect-square bg-black flex items-center justify-center p-2 relative overflow-hidden">
+                      <CroppedSliceImage
+                        stripUrl={stripUrl}
+                        row={stripRow}
+                        col={5}
+                        fallbackSrc={info.errorUrl}
+                        alt="Error Map"
+                      />
+                    </div>
+                    <div className="px-3 py-2 bg-zinc-950 text-[11px] text-zinc-400 border-t border-zinc-900">
+                      TP (Green) · FP Over-seg (Red) · FN Missed (Blue)
+                    </div>
                   </div>
-                  <div className="aspect-square bg-black flex items-center justify-center p-2">
-                    <SliceImage
-                      src={info.gtOverlayUrl}
-                      alt="GT Overlay"
-                    />
-                  </div>
-                  <div className="px-3 py-2 bg-zinc-950 text-[11px] text-zinc-400 border-t border-zinc-900">
-                    Neuroradiologist Target Annotation
+
+                  {/* Ground Truth Reference */}
+                  <div
+                    onClick={() => setFullscreenImage({
+                      stripUrl,
+                      row: stripRow,
+                      col: 3,
+                      url: info.gtOverlayUrl,
+                      title: `${config.shortName} GT Reference Overlay (${config.axis}=${info.sliceIndex})`
+                    })}
+                    className="group relative bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden cursor-pointer hover:border-zinc-600 transition-all shadow-md"
+                  >
+                    <div className="px-3 py-2 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between">
+                      <span className="text-xs font-medium text-emerald-400">
+                        {config.shortName} Ground Truth Reference Overlay
+                      </span>
+                      <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
+                    </div>
+                    <div className="aspect-square bg-black flex items-center justify-center p-2 relative overflow-hidden">
+                      <CroppedSliceImage
+                        stripUrl={stripUrl}
+                        row={stripRow}
+                        col={3}
+                        fallbackSrc={info.gtOverlayUrl}
+                        alt="GT Overlay"
+                      />
+                    </div>
+                    <div className="px-3 py-2 bg-zinc-950 text-[11px] text-zinc-400 border-t border-zinc-900">
+                      Neuroradiologist Target Annotation
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -1002,11 +1175,16 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               </button>
             </div>
             <div className="p-6 bg-black flex items-center justify-center max-h-[75vh]">
-              <SliceImage
-                src={fullscreenImage.url}
-                alt={fullscreenImage.title}
-                className="max-h-[70vh] object-contain rounded shadow-lg"
-              />
+              <div className="w-[65vh] h-[65vh] max-w-full aspect-square relative overflow-hidden rounded shadow-lg bg-zinc-950 flex items-center justify-center">
+                <CroppedSliceImage
+                  stripUrl={fullscreenImage.stripUrl}
+                  row={fullscreenImage.row}
+                  col={fullscreenImage.col}
+                  fallbackSrc={fullscreenImage.url}
+                  alt={fullscreenImage.title}
+                  className="w-full h-full"
+                />
+              </div>
             </div>
           </div>
         </div>
