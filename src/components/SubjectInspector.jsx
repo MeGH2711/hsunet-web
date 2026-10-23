@@ -22,9 +22,79 @@ import {
   Flame,
   Loader2,
   Eye,
-  Compass
+  Compass,
+  AlertCircle
 } from "lucide-react";
 import { cn, formatNumber, getDiceColor, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
+
+/**
+ * High-performance slice image viewer with radar/scanner loading animation overlay
+ * Displays an interactive medical scan loader until the full slice image is downloaded & decoded.
+ */
+function SliceImage({ src, alt, className = "w-full h-full object-contain", contrast = false }) {
+  const [loaded, setLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const prevSrcRef = useRef(src);
+
+  // Reset loading state synchronously whenever slice URL changes
+  if (prevSrcRef.current !== src) {
+    prevSrcRef.current = src;
+    setLoaded(false);
+    setHasError(false);
+  }
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden select-none">
+      {/* Sleek Medical Scanner Loading Animation Overlay */}
+      {!loaded && !hasError && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-zinc-950/85 backdrop-blur-[2px] transition-opacity duration-300 pointer-events-none">
+          {/* Circular Sonar / Radar Pulse */}
+          <div className="relative w-11 h-11 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-ping opacity-60" />
+            <div className="absolute inset-1.5 rounded-full border border-dashed border-cyan-500/40 animate-[spin_4s_linear_infinite]" />
+            <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
+            <div className="absolute w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]" />
+          </div>
+
+          <div className="mt-2 flex items-center space-x-1.5">
+            <span className="w-1 h-1 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.3s]" />
+            <span className="w-1 h-1 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.15s]" />
+            <span className="w-1 h-1 rounded-full bg-cyan-400 animate-bounce" />
+            <span className="text-[10px] font-mono tracking-wider text-cyan-300/80 uppercase ml-0.5">
+              Loading Slice...
+            </span>
+          </div>
+
+          {/* Shimmering scanning line across center */}
+          <div className="absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-pulse top-1/2 -translate-y-1/2" />
+        </div>
+      )}
+
+      {/* Error / Processing Fallback State */}
+      {hasError && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-3 text-center bg-zinc-950 text-zinc-500">
+          <AlertCircle className="w-5 h-5 text-zinc-600 mb-1" />
+          <span className="text-[10px] font-mono text-zinc-400">Slice Processing</span>
+        </div>
+      )}
+
+      {/* Rendered Medical Slice Image */}
+      <img
+        src={src}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        onError={() => setHasError(true)}
+        className={cn(
+          className,
+          contrast && "filter contrast-125",
+          "transition-opacity duration-300 ease-in-out",
+          loaded ? "opacity-100" : "opacity-0"
+        )}
+        loading="eager"
+      />
+    </div>
+  );
+}
 
 export default function SubjectInspector({ subject, onSelectSubject }) {
   const [metaLoading, setMetaLoading] = useState(false);
@@ -598,11 +668,10 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                       <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
                     </div>
                     <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <img
+                      <SliceImage
                         src={info.rawUrl}
                         alt="Raw Scan"
-                        className="w-full h-full object-contain filter contrast-125"
-                        loading="lazy"
+                        contrast={true}
                       />
                     </div>
                     <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
@@ -621,11 +690,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                       <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
                     </div>
                     <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <img
+                      <SliceImage
                         src={info.gtUrl}
                         alt="GT Mask"
-                        className="w-full h-full object-contain"
-                        loading="lazy"
                       />
                     </div>
                     <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
@@ -644,11 +711,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                       <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
                     </div>
                     <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <img
+                      <SliceImage
                         src={info.predUrl}
                         alt="Predicted Mask"
-                        className="w-full h-full object-contain"
-                        loading="lazy"
                       />
                     </div>
                     <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-zinc-500 border-t border-zinc-900 flex justify-between">
@@ -667,11 +732,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                       <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
                     </div>
                     <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <img
+                      <SliceImage
                         src={info.gtOverlayUrl}
                         alt="GT Overlay"
-                        className="w-full h-full object-contain"
-                        loading="lazy"
                       />
                     </div>
                     <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-emerald-400/80 border-t border-zinc-900 flex justify-between">
@@ -690,11 +753,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                       <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
                     </div>
                     <div className="aspect-square bg-black flex items-center justify-center p-1">
-                      <img
+                      <SliceImage
                         src={info.predOverlayUrl}
                         alt="Pred Overlay"
-                        className="w-full h-full object-contain"
-                        loading="lazy"
                       />
                     </div>
                     <div className="px-3 py-1.5 bg-zinc-950 text-[10px] text-cyan-400/80 border-t border-zinc-900 flex justify-between">
@@ -761,11 +822,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                     <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
                   </div>
                   <div className="aspect-square bg-black flex items-center justify-center p-2">
-                    <img
+                    <SliceImage
                       src={info.errorUrl}
                       alt="Error Map"
-                      className="w-full h-full object-contain"
-                      loading="lazy"
                     />
                   </div>
                   <div className="px-3 py-2 bg-zinc-950 text-[11px] text-zinc-400 border-t border-zinc-900">
@@ -785,11 +844,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                     <Maximize2 className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
                   </div>
                   <div className="aspect-square bg-black flex items-center justify-center p-2">
-                    <img
+                    <SliceImage
                       src={info.gtOverlayUrl}
                       alt="GT Overlay"
-                      className="w-full h-full object-contain"
-                      loading="lazy"
                     />
                   </div>
                   <div className="px-3 py-2 bg-zinc-950 text-[11px] text-zinc-400 border-t border-zinc-900">
@@ -825,7 +882,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
               </button>
             </div>
             <div className="p-6 bg-black flex items-center justify-center max-h-[75vh]">
-              <img
+              <SliceImage
                 src={fullscreenImage.url}
                 alt={fullscreenImage.title}
                 className="max-h-[70vh] object-contain rounded shadow-lg"
