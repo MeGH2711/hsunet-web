@@ -183,7 +183,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
 
   const playIntervalRef = useRef(null);
 
-  // When subject changes, reset slice indices to their default focus slices
+  // When subject changes, reset slice indices to their default focus slices (or first dominant slice)
   useEffect(() => {
     if (!subject) return;
 
@@ -191,13 +191,28 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     setDynamicMeta(null);
 
     const p = subject.visuals?.planes;
+    const axSlices = p?.axial?.slices || subject.visuals?.slices;
+    const sagSlices = p?.sagittal?.slices;
+    const corSlices = p?.coronal?.slices;
+
     const axDef = p?.axial?.default_slice ?? subject.visuals?.default_slice ?? 0;
     const sagDef = p?.sagittal?.default_slice ?? 0;
     const corDef = p?.coronal?.default_slice ?? 0;
 
-    setAxialSliceIdx(axDef);
-    setSagittalSliceIdx(sagDef);
-    setCoronalSliceIdx(corDef);
+    // Ensure the initial active slice is valid and in dominant slices if available
+    const initialAx = axSlices && axSlices.length > 0
+      ? (axSlices.find((s) => s.slice_index === axDef)?.slice_index ?? axSlices[0].slice_index)
+      : axDef;
+    const initialSag = sagSlices && sagSlices.length > 0
+      ? (sagSlices.find((s) => s.slice_index === sagDef)?.slice_index ?? sagSlices[0].slice_index)
+      : sagDef;
+    const initialCor = corSlices && corSlices.length > 0
+      ? (corSlices.find((s) => s.slice_index === corDef)?.slice_index ?? corSlices[0].slice_index)
+      : corDef;
+
+    setAxialSliceIdx(initialAx);
+    setSagittalSliceIdx(initialSag);
+    setCoronalSliceIdx(initialCor);
 
     // If case has no pre-rendered static planes, fetch dynamic metadata from Python backend
     if (!p) {
@@ -232,15 +247,26 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     setCoronalSliceIdx(planesConfig.coronal.defaultSlice);
   };
 
-  // Cine loop playback across axial slices
+  // Cine loop playback across axial dominant slices
   useEffect(() => {
     if (isPlaying) {
+      const axSlices = planesConfig.axial.slices;
+      const hasDom = axSlices && axSlices.length > 0;
+
       playIntervalRef.current = setInterval(() => {
-        setAxialSliceIdx((prevZ) => {
-          const total = planesConfig.axial.totalSlices;
-          if (total <= 1) return prevZ;
-          return prevZ >= total - 1 ? 0 : prevZ + 1;
-        });
+        if (hasDom) {
+          setAxialSliceIdx((prevZ) => {
+            const curIdx = axSlices.findIndex((s) => s.slice_index === prevZ);
+            const nextIdx = curIdx === -1 || curIdx >= axSlices.length - 1 ? 0 : curIdx + 1;
+            return axSlices[nextIdx].slice_index;
+          });
+        } else {
+          setAxialSliceIdx((prevZ) => {
+            const total = planesConfig.axial.totalSlices;
+            if (total <= 1) return prevZ;
+            return prevZ >= total - 1 ? 0 : prevZ + 1;
+          });
+        }
       }, playSpeed);
     } else {
       if (playIntervalRef.current) clearInterval(playIntervalRef.current);
@@ -248,19 +274,34 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     return () => {
       if (playIntervalRef.current) clearInterval(playIntervalRef.current);
     };
-  }, [isPlaying, planesConfig.axial.totalSlices, playSpeed]);
+  }, [isPlaying, planesConfig.axial.slices, planesConfig.axial.totalSlices, playSpeed]);
 
-  // Keyboard navigation for active axial plane
+  // Keyboard navigation strictly across available dominant slices
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
 
+      const axSlices = planesConfig.axial.slices;
+      const hasDom = axSlices && axSlices.length > 0;
+
       if (e.key === "ArrowLeft") {
         e.preventDefault();
-        setAxialSliceIdx((prev) => Math.max(0, prev - 1));
+        if (hasDom) {
+          const curIdx = axSlices.findIndex((s) => s.slice_index === axialSliceIdx);
+          const safeIdx = curIdx >= 0 ? curIdx : 0;
+          if (safeIdx > 0) setAxialSliceIdx(axSlices[safeIdx - 1].slice_index);
+        } else {
+          setAxialSliceIdx((prev) => Math.max(0, prev - 1));
+        }
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
-        setAxialSliceIdx((prev) => Math.min(planesConfig.axial.totalSlices - 1, prev + 1));
+        if (hasDom) {
+          const curIdx = axSlices.findIndex((s) => s.slice_index === axialSliceIdx);
+          const safeIdx = curIdx >= 0 ? curIdx : 0;
+          if (safeIdx < axSlices.length - 1) setAxialSliceIdx(axSlices[safeIdx + 1].slice_index);
+        } else {
+          setAxialSliceIdx((prev) => Math.min(planesConfig.axial.totalSlices - 1, prev + 1));
+        }
       } else if (e.key === " ") {
         e.preventDefault();
         setIsPlaying((prev) => !prev);
@@ -269,7 +310,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [planesConfig.axial.totalSlices]);
+  }, [planesConfig.axial.slices, planesConfig.axial.totalSlices, axialSliceIdx]);
 
   if (!subject) {
     return (
@@ -542,7 +583,44 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
       {viewMode === "grid" ? (
         <div className="space-y-6">
           {orthogonalRows.map(({ config, currentSliceIdx, setSliceIdx, info }) => {
-            const isFullScrub = config.slices.length === 0 || config.slices.length > 8;
+            const hasDominantSlices = config.slices && config.slices.length > 0;
+            const availableSlices = hasDominantSlices ? config.slices : [];
+
+            // Find active index in dominant slices list
+            const activePos = hasDominantSlices
+              ? availableSlices.findIndex((s) => s.slice_index === currentSliceIdx)
+              : -1;
+            const safePos = activePos >= 0 ? activePos : 0;
+            const isFirst = hasDominantSlices ? safePos === 0 : currentSliceIdx === 0;
+            const isLast = hasDominantSlices
+              ? safePos === availableSlices.length - 1
+              : currentSliceIdx === config.totalSlices - 1;
+
+            const handleFirst = () => {
+              if (hasDominantSlices) setSliceIdx(availableSlices[0].slice_index);
+              else setSliceIdx(0);
+            };
+
+            const handlePrev = () => {
+              if (hasDominantSlices) {
+                if (safePos > 0) setSliceIdx(availableSlices[safePos - 1].slice_index);
+              } else {
+                setSliceIdx((prev) => Math.max(0, prev - 1));
+              }
+            };
+
+            const handleNext = () => {
+              if (hasDominantSlices) {
+                if (safePos < availableSlices.length - 1) setSliceIdx(availableSlices[safePos + 1].slice_index);
+              } else {
+                setSliceIdx((prev) => Math.min(config.totalSlices - 1, prev + 1));
+              }
+            };
+
+            const handleLast = () => {
+              if (hasDominantSlices) setSliceIdx(availableSlices[availableSlices.length - 1].slice_index);
+              else setSliceIdx(config.totalSlices - 1);
+            };
 
             return (
               <div
@@ -561,8 +639,17 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                       ({config.planeLabel} · {config.axisDesc})
                     </span>
 
-                    <span className="text-xs font-bold font-mono text-white bg-zinc-900 border border-zinc-700 px-2.5 py-1 rounded-md shadow-inner">
-                      {config.axis} = {info.sliceIndex} <span className="text-zinc-500 font-normal">({info.sliceIndex + 1} / {config.totalSlices})</span>
+                    <span className="text-xs font-bold font-mono text-white bg-zinc-900 border border-zinc-700 px-2.5 py-1 rounded-md shadow-inner flex items-center gap-1.5">
+                      <span>{config.axis} = {info.sliceIndex}</span>
+                      {hasDominantSlices ? (
+                        <span className="text-cyan-400 font-medium text-[11px]">
+                          (Dominant Slice {safePos + 1} of {availableSlices.length})
+                        </span>
+                      ) : (
+                        <span className="text-zinc-500 font-normal">
+                          ({info.sliceIndex + 1} / {config.totalSlices})
+                        </span>
+                      )}
                     </span>
 
                     {info.isPeak && (
@@ -580,67 +667,100 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                   {/* Slice Step Controls & Buttons */}
                   <div className="flex items-center space-x-1.5">
                     <button
-                      onClick={() => setSliceIdx(0)}
-                      title={`First ${config.shortName} Slice`}
-                      className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
+                      onClick={handleFirst}
+                      disabled={isFirst}
+                      title={`First Dominant ${config.shortName} Slice`}
+                      className={cn(
+                        "p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 transition-colors",
+                        isFirst ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
+                      )}
                     >
                       <ChevronsLeft className="w-3.5 h-3.5" />
                     </button>
 
                     <button
-                      onClick={() => setSliceIdx((prev) => Math.max(0, prev - 1))}
-                      title={`Previous ${config.shortName} Slice`}
-                      className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
+                      onClick={handlePrev}
+                      disabled={isFirst}
+                      title={`Previous Dominant ${config.shortName} Slice`}
+                      className={cn(
+                        "p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 transition-colors",
+                        isFirst ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
+                      )}
                     >
                       <ChevronLeft className="w-3.5 h-3.5" />
                     </button>
 
-                    {/* Pre-rendered slice buttons if available */}
-                    {config.slices.length > 0 && config.slices.length <= 8 && (
-                      <div className="flex items-center space-x-1">
-                        {config.slices.map((sl) => (
-                          <button
-                            key={sl.slice_index}
-                            onClick={() => setSliceIdx(sl.slice_index)}
-                            className={cn(
-                              "px-2 py-1 text-xs rounded font-mono transition-all border",
-                              currentSliceIdx === sl.slice_index
-                                ? "bg-white text-black border-white font-semibold shadow-md"
-                                : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white"
-                            )}
-                          >
-                            {config.axis}={sl.slice_index}
-                          </button>
-                        ))}
+                    {/* Dominant Slices Selector Pills */}
+                    {hasDominantSlices ? (
+                      <div className="flex items-center space-x-1 sm:space-x-1.5 flex-wrap">
+                        {availableSlices.map((sl, idx) => {
+                          const isSelected = currentSliceIdx === sl.slice_index;
+                          return (
+                            <button
+                              key={sl.slice_index}
+                              onClick={() => setSliceIdx(sl.slice_index)}
+                              title={`Dominant Slice ${idx + 1} of ${availableSlices.length} (${config.axis}=${sl.slice_index})`}
+                              className={cn(
+                                "px-2.5 py-1 text-xs rounded-md font-mono transition-all border flex items-center gap-1.5",
+                                isSelected
+                                  ? "bg-white text-black border-white font-semibold shadow-md ring-1 ring-white/50"
+                                  : "bg-zinc-900/90 text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:text-white"
+                              )}
+                            >
+                              <span>{config.axis} = {sl.slice_index}</span>
+                              {sl.is_peak && (
+                                <span className={cn(
+                                  "text-[9px] px-1 rounded uppercase font-bold",
+                                  isSelected ? "bg-black/15 text-black" : "bg-emerald-500/20 text-emerald-400"
+                                )}>
+                                  Peak
+                                </span>
+                              )}
+                              {sl.gt_voxels > 0 && (
+                                <span className={cn("text-[9px]", isSelected ? "text-zinc-700 font-semibold" : "text-zinc-500")}>
+                                  ({sl.gt_voxels}v)
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
-
-                    {/* Slider for smooth scrubbing */}
-                    {isFullScrub && config.totalSlices > 1 && (
-                      <div className="w-28 sm:w-36 flex items-center px-1">
-                        <input
-                          type="range"
-                          min={0}
-                          max={config.totalSlices - 1}
-                          value={currentSliceIdx}
-                          onChange={(e) => setSliceIdx(Number(e.target.value))}
-                          className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
-                        />
-                      </div>
+                    ) : (
+                      /* Slider fallback for full 3D dynamic volume mode */
+                      config.totalSlices > 1 && (
+                        <div className="w-28 sm:w-36 flex items-center px-1">
+                          <input
+                            type="range"
+                            min={0}
+                            max={config.totalSlices - 1}
+                            value={currentSliceIdx}
+                            onChange={(e) => setSliceIdx(Number(e.target.value))}
+                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
+                          />
+                        </div>
+                      )
                     )}
 
                     <button
-                      onClick={() => setSliceIdx((prev) => Math.min(config.totalSlices - 1, prev + 1))}
-                      title={`Next ${config.shortName} Slice`}
-                      className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
+                      onClick={handleNext}
+                      disabled={isLast}
+                      title={`Next Dominant ${config.shortName} Slice`}
+                      className={cn(
+                        "p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 transition-colors",
+                        isLast ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
+                      )}
                     >
                       <ChevronRight className="w-3.5 h-3.5" />
                     </button>
 
                     <button
-                      onClick={() => setSliceIdx(config.totalSlices - 1)}
-                      title={`Last ${config.shortName} Slice`}
-                      className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-300 hover:text-white transition-colors"
+                      onClick={handleLast}
+                      disabled={isLast}
+                      title={`Last Dominant ${config.shortName} Slice`}
+                      className={cn(
+                        "p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-300 transition-colors",
+                        isLast ? "opacity-30 cursor-not-allowed" : "hover:bg-zinc-800 hover:text-white"
+                      )}
                     >
                       <ChevronsRight className="w-3.5 h-3.5" />
                     </button>
