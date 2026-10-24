@@ -1019,7 +1019,7 @@
       "time_sec": 27.22,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1162/strip.png",
+        "strip_url": "/data/subjects/ISLES_1162/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -1310,7 +1310,7 @@
       "time_sec": 24.7,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1163/strip.png",
+        "strip_url": "/data/subjects/ISLES_1163/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -1601,7 +1601,7 @@
       "time_sec": 24.64,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1164/strip.png",
+        "strip_url": "/data/subjects/ISLES_1164/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -1892,7 +1892,7 @@
       "time_sec": 26.3,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1165/strip.png",
+        "strip_url": "/data/subjects/ISLES_1165/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -2183,7 +2183,7 @@
       "time_sec": 26.32,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1166/strip.png",
+        "strip_url": "/data/subjects/ISLES_1166/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -2474,7 +2474,7 @@
       "time_sec": 26.92,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1167/strip.png",
+        "strip_url": "/data/subjects/ISLES_1167/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -2765,7 +2765,7 @@
       "time_sec": 25.07,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1168/strip.png",
+        "strip_url": "/data/subjects/ISLES_1168/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -3056,7 +3056,7 @@
       "time_sec": 25.13,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1169/strip.png",
+        "strip_url": "/data/subjects/ISLES_1169/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -3347,7 +3347,7 @@
       "time_sec": 25.19,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1170/strip.png",
+        "strip_url": "/data/subjects/ISLES_1170/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -3638,7 +3638,7 @@
       "time_sec": 27.89,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1171/strip.png",
+        "strip_url": "/data/subjects/ISLES_1171/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -3929,7 +3929,7 @@
       "time_sec": 25.56,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1172/strip.png",
+        "strip_url": "/data/subjects/ISLES_1172/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -4220,7 +4220,7 @@
       "time_sec": 25.65,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1173/strip.png",
+        "strip_url": "/data/subjects/ISLES_1173/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -4511,7 +4511,7 @@
       "time_sec": 25.46,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1174/strip.png",
+        "strip_url": "/data/subjects/ISLES_1174/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -4802,7 +4802,7 @@
       "time_sec": 25.63,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1175/strip.png",
+        "strip_url": "/data/subjects/ISLES_1175/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -5093,7 +5093,7 @@
       "time_sec": 25.23,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1176/strip.png",
+        "strip_url": "/data/subjects/ISLES_1176/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -5384,7 +5384,7 @@
       "time_sec": 25.0,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1177/strip.png",
+        "strip_url": "/data/subjects/ISLES_1177/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -5675,7 +5675,7 @@
       "time_sec": 25.12,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1178/strip.png",
+        "strip_url": "/data/subjects/ISLES_1178/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -5966,7 +5966,7 @@
       "time_sec": 25.07,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1179/strip.png",
+        "strip_url": "/data/subjects/ISLES_1179/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -6257,7 +6257,7 @@
       "time_sec": 25.19,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1180/strip.png",
+        "strip_url": "/data/subjects/ISLES_1180/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -6548,7 +6548,7 @@
       "time_sec": 25.08,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1181/strip.png",
+        "strip_url": "/data/subjects/ISLES_1181/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -6839,7 +6839,7 @@
       "time_sec": 25.22,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1182/strip.png",
+        "strip_url": "/data/subjects/ISLES_1182/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -7130,7 +7130,7 @@
       "time_sec": 25.05,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1183/strip.png",
+        "strip_url": "/data/subjects/ISLES_1183/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -7421,7 +7421,7 @@
       "time_sec": 25.1,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1184/strip.png",
+        "strip_url": "/data/subjects/ISLES_1184/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -7712,7 +7712,7 @@
       "time_sec": 26.21,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1185/strip.png",
+        "strip_url": "/data/subjects/ISLES_1185/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -8003,7 +8003,7 @@
       "time_sec": 26.11,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1186/strip.png",
+        "strip_url": "/data/subjects/ISLES_1186/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -8294,7 +8294,7 @@
       "time_sec": 16.19,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1187/strip.png",
+        "strip_url": "/data/subjects/ISLES_1187/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -8585,7 +8585,7 @@
       "time_sec": 25.79,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1188/strip.png",
+        "strip_url": "/data/subjects/ISLES_1188/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -8876,7 +8876,7 @@
       "time_sec": 25.92,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1189/strip.png",
+        "strip_url": "/data/subjects/ISLES_1189/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -9167,7 +9167,7 @@
       "time_sec": 16.3,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1190/strip.png",
+        "strip_url": "/data/subjects/ISLES_1190/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -9458,7 +9458,7 @@
       "time_sec": 25.72,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1191/strip.png",
+        "strip_url": "/data/subjects/ISLES_1191/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -9749,7 +9749,7 @@
       "time_sec": 25.86,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1192/strip.png",
+        "strip_url": "/data/subjects/ISLES_1192/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -10040,7 +10040,7 @@
       "time_sec": 25.79,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1193/strip.png",
+        "strip_url": "/data/subjects/ISLES_1193/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -10331,7 +10331,7 @@
       "time_sec": 25.91,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1194/strip.png",
+        "strip_url": "/data/subjects/ISLES_1194/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -10622,7 +10622,7 @@
       "time_sec": 26.01,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1195/strip.png",
+        "strip_url": "/data/subjects/ISLES_1195/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -10913,7 +10913,7 @@
       "time_sec": 26.06,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1196/strip.png",
+        "strip_url": "/data/subjects/ISLES_1196/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -11204,7 +11204,7 @@
       "time_sec": 25.99,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1197/strip.png",
+        "strip_url": "/data/subjects/ISLES_1197/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -11495,7 +11495,7 @@
       "time_sec": 25.93,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1198/strip.png",
+        "strip_url": "/data/subjects/ISLES_1198/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -11786,7 +11786,7 @@
       "time_sec": 26.09,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1199/strip.png",
+        "strip_url": "/data/subjects/ISLES_1199/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -12077,7 +12077,7 @@
       "time_sec": 25.9,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1200/strip.png",
+        "strip_url": "/data/subjects/ISLES_1200/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -12368,7 +12368,7 @@
       "time_sec": 26.04,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1201/strip.png",
+        "strip_url": "/data/subjects/ISLES_1201/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -12659,7 +12659,7 @@
       "time_sec": 25.97,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1202/strip.png",
+        "strip_url": "/data/subjects/ISLES_1202/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -12950,7 +12950,7 @@
       "time_sec": 26.01,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1203/strip.png",
+        "strip_url": "/data/subjects/ISLES_1203/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -13241,7 +13241,7 @@
       "time_sec": 25.9,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1204/strip.png",
+        "strip_url": "/data/subjects/ISLES_1204/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -13532,7 +13532,7 @@
       "time_sec": 25.81,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1205/strip.png",
+        "strip_url": "/data/subjects/ISLES_1205/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -13823,7 +13823,7 @@
       "time_sec": 25.89,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1206/strip.png",
+        "strip_url": "/data/subjects/ISLES_1206/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -14114,7 +14114,7 @@
       "time_sec": 25.81,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1207/strip.png",
+        "strip_url": "/data/subjects/ISLES_1207/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -14405,7 +14405,7 @@
       "time_sec": 25.83,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1208/strip.png",
+        "strip_url": "/data/subjects/ISLES_1208/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -14696,7 +14696,7 @@
       "time_sec": 26.03,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1209/strip.png",
+        "strip_url": "/data/subjects/ISLES_1209/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -14987,7 +14987,7 @@
       "time_sec": 26.13,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1210/strip.png",
+        "strip_url": "/data/subjects/ISLES_1210/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -15278,7 +15278,7 @@
       "time_sec": 26.08,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1211/strip.png",
+        "strip_url": "/data/subjects/ISLES_1211/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -15569,7 +15569,7 @@
       "time_sec": 25.97,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1212/strip.png",
+        "strip_url": "/data/subjects/ISLES_1212/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -15860,7 +15860,7 @@
       "time_sec": 25.97,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1213/strip.png",
+        "strip_url": "/data/subjects/ISLES_1213/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -16151,7 +16151,7 @@
       "time_sec": 25.95,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1214/strip.png",
+        "strip_url": "/data/subjects/ISLES_1214/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -16442,7 +16442,7 @@
       "time_sec": 25.89,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1215/strip.png",
+        "strip_url": "/data/subjects/ISLES_1215/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -16733,7 +16733,7 @@
       "time_sec": 25.95,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1216/strip.png",
+        "strip_url": "/data/subjects/ISLES_1216/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -17024,7 +17024,7 @@
       "time_sec": 25.85,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1217/strip.png",
+        "strip_url": "/data/subjects/ISLES_1217/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -17315,7 +17315,7 @@
       "time_sec": 25.88,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1218/strip.png",
+        "strip_url": "/data/subjects/ISLES_1218/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -17606,7 +17606,7 @@
       "time_sec": 26.02,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1219/strip.png",
+        "strip_url": "/data/subjects/ISLES_1219/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -17897,7 +17897,7 @@
       "time_sec": 26.02,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1220/strip.png",
+        "strip_url": "/data/subjects/ISLES_1220/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -18188,7 +18188,7 @@
       "time_sec": 25.95,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1221/strip.png",
+        "strip_url": "/data/subjects/ISLES_1221/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -18479,7 +18479,7 @@
       "time_sec": 26.04,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1222/strip.png",
+        "strip_url": "/data/subjects/ISLES_1222/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -18770,7 +18770,7 @@
       "time_sec": 25.9,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1223/strip.png",
+        "strip_url": "/data/subjects/ISLES_1223/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -19061,7 +19061,7 @@
       "time_sec": 27.08,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1224/strip.png",
+        "strip_url": "/data/subjects/ISLES_1224/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -19352,7 +19352,7 @@
       "time_sec": 40.33,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1225/strip.png",
+        "strip_url": "/data/subjects/ISLES_1225/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -19643,7 +19643,7 @@
       "time_sec": 40.09,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1226/strip.png",
+        "strip_url": "/data/subjects/ISLES_1226/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -19934,7 +19934,7 @@
       "time_sec": 40.41,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1227/strip.png",
+        "strip_url": "/data/subjects/ISLES_1227/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -20225,7 +20225,7 @@
       "time_sec": 40.24,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1228/strip.png",
+        "strip_url": "/data/subjects/ISLES_1228/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -20516,7 +20516,7 @@
       "time_sec": 39.94,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1229/strip.png",
+        "strip_url": "/data/subjects/ISLES_1229/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -20807,7 +20807,7 @@
       "time_sec": 39.62,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1230/strip.png",
+        "strip_url": "/data/subjects/ISLES_1230/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -21098,7 +21098,7 @@
       "time_sec": 40.72,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1231/strip.png",
+        "strip_url": "/data/subjects/ISLES_1231/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -21389,7 +21389,7 @@
       "time_sec": 39.8,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1232/strip.png",
+        "strip_url": "/data/subjects/ISLES_1232/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -21680,7 +21680,7 @@
       "time_sec": 26.85,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1233/strip.png",
+        "strip_url": "/data/subjects/ISLES_1233/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -21971,7 +21971,7 @@
       "time_sec": 26.82,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1234/strip.png",
+        "strip_url": "/data/subjects/ISLES_1234/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -22262,7 +22262,7 @@
       "time_sec": 27.05,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1235/strip.png",
+        "strip_url": "/data/subjects/ISLES_1235/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -22553,7 +22553,7 @@
       "time_sec": 26.79,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1236/strip.png",
+        "strip_url": "/data/subjects/ISLES_1236/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -22844,7 +22844,7 @@
       "time_sec": 27.12,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1237/strip.png",
+        "strip_url": "/data/subjects/ISLES_1237/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -23135,7 +23135,7 @@
       "time_sec": 26.95,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1238/strip.png",
+        "strip_url": "/data/subjects/ISLES_1238/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -23426,7 +23426,7 @@
       "time_sec": 27.07,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1239/strip.png",
+        "strip_url": "/data/subjects/ISLES_1239/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -23717,7 +23717,7 @@
       "time_sec": 27.09,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1240/strip.png",
+        "strip_url": "/data/subjects/ISLES_1240/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -24008,7 +24008,7 @@
       "time_sec": 26.86,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1241/strip.png",
+        "strip_url": "/data/subjects/ISLES_1241/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -24299,7 +24299,7 @@
       "time_sec": 27.25,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1242/strip.png",
+        "strip_url": "/data/subjects/ISLES_1242/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -24590,7 +24590,7 @@
       "time_sec": 26.16,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1243/strip.png",
+        "strip_url": "/data/subjects/ISLES_1243/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -24881,7 +24881,7 @@
       "time_sec": 26.17,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1244/strip.png",
+        "strip_url": "/data/subjects/ISLES_1244/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -25172,7 +25172,7 @@
       "time_sec": 22.57,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1245/strip.png",
+        "strip_url": "/data/subjects/ISLES_1245/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -25463,7 +25463,7 @@
       "time_sec": 33.03,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1246/strip.png",
+        "strip_url": "/data/subjects/ISLES_1246/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -25754,7 +25754,7 @@
       "time_sec": 32.33,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1247/strip.png",
+        "strip_url": "/data/subjects/ISLES_1247/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -26045,7 +26045,7 @@
       "time_sec": 21.56,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1248/strip.png",
+        "strip_url": "/data/subjects/ISLES_1248/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -26336,7 +26336,7 @@
       "time_sec": 25.65,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1249/strip.png",
+        "strip_url": "/data/subjects/ISLES_1249/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -26627,7 +26627,7 @@
       "time_sec": 25.94,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1250/strip.png",
+        "strip_url": "/data/subjects/ISLES_1250/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -26918,7 +26918,7 @@
       "time_sec": 25.64,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1251/strip.png",
+        "strip_url": "/data/subjects/ISLES_1251/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -27209,7 +27209,7 @@
       "time_sec": 25.28,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1252/strip.png",
+        "strip_url": "/data/subjects/ISLES_1252/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -27500,7 +27500,7 @@
       "time_sec": 25.83,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1253/strip.png",
+        "strip_url": "/data/subjects/ISLES_1253/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -27791,7 +27791,7 @@
       "time_sec": 25.83,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1254/strip.png",
+        "strip_url": "/data/subjects/ISLES_1254/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -28082,7 +28082,7 @@
       "time_sec": 25.85,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1255/strip.png",
+        "strip_url": "/data/subjects/ISLES_1255/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -28373,7 +28373,7 @@
       "time_sec": 16.14,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1256/strip.png",
+        "strip_url": "/data/subjects/ISLES_1256/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -28664,7 +28664,7 @@
       "time_sec": 26.75,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1257/strip.png",
+        "strip_url": "/data/subjects/ISLES_1257/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -28955,7 +28955,7 @@
       "time_sec": 26.63,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1258/strip.png",
+        "strip_url": "/data/subjects/ISLES_1258/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -29246,7 +29246,7 @@
       "time_sec": 26.85,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1259/strip.png",
+        "strip_url": "/data/subjects/ISLES_1259/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -29537,7 +29537,7 @@
       "time_sec": 17.07,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1260/strip.png",
+        "strip_url": "/data/subjects/ISLES_1260/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -29828,7 +29828,7 @@
       "time_sec": 26.67,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1261/strip.png",
+        "strip_url": "/data/subjects/ISLES_1261/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -30119,7 +30119,7 @@
       "time_sec": 51.93,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1262/strip.png",
+        "strip_url": "/data/subjects/ISLES_1262/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -30410,7 +30410,7 @@
       "time_sec": 52.05,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1263/strip.png",
+        "strip_url": "/data/subjects/ISLES_1263/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -30701,7 +30701,7 @@
       "time_sec": 51.92,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1264/strip.png",
+        "strip_url": "/data/subjects/ISLES_1264/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -30992,7 +30992,7 @@
       "time_sec": 26.68,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1265/strip.png",
+        "strip_url": "/data/subjects/ISLES_1265/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -31283,7 +31283,7 @@
       "time_sec": 26.86,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1266/strip.png",
+        "strip_url": "/data/subjects/ISLES_1266/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -31574,7 +31574,7 @@
       "time_sec": 26.68,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1267/strip.png",
+        "strip_url": "/data/subjects/ISLES_1267/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -31865,7 +31865,7 @@
       "time_sec": 26.88,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1268/strip.png",
+        "strip_url": "/data/subjects/ISLES_1268/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -32156,7 +32156,7 @@
       "time_sec": 26.72,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1269/strip.png",
+        "strip_url": "/data/subjects/ISLES_1269/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -32447,7 +32447,7 @@
       "time_sec": 26.77,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1270/strip.png",
+        "strip_url": "/data/subjects/ISLES_1270/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -32738,7 +32738,7 @@
       "time_sec": 26.81,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1271/strip.png",
+        "strip_url": "/data/subjects/ISLES_1271/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -33029,7 +33029,7 @@
       "time_sec": 26.6,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1272/strip.png",
+        "strip_url": "/data/subjects/ISLES_1272/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -33320,7 +33320,7 @@
       "time_sec": 26.83,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1273/strip.png",
+        "strip_url": "/data/subjects/ISLES_1273/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -33611,7 +33611,7 @@
       "time_sec": 26.74,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1274/strip.png",
+        "strip_url": "/data/subjects/ISLES_1274/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -33902,7 +33902,7 @@
       "time_sec": 26.71,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1275/strip.png",
+        "strip_url": "/data/subjects/ISLES_1275/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -34193,7 +34193,7 @@
       "time_sec": 26.65,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1276/strip.png",
+        "strip_url": "/data/subjects/ISLES_1276/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -34484,7 +34484,7 @@
       "time_sec": 26.74,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1277/strip.png",
+        "strip_url": "/data/subjects/ISLES_1277/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -34775,7 +34775,7 @@
       "time_sec": 26.86,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1278/strip.png",
+        "strip_url": "/data/subjects/ISLES_1278/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -35066,7 +35066,7 @@
       "time_sec": 47.55,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1279/strip.png",
+        "strip_url": "/data/subjects/ISLES_1279/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -35357,7 +35357,7 @@
       "time_sec": 47.64,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1280/strip.png",
+        "strip_url": "/data/subjects/ISLES_1280/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -35648,7 +35648,7 @@
       "time_sec": 47.79,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1281/strip.png",
+        "strip_url": "/data/subjects/ISLES_1281/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -35939,7 +35939,7 @@
       "time_sec": 47.61,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1282/strip.png",
+        "strip_url": "/data/subjects/ISLES_1282/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -36230,7 +36230,7 @@
       "time_sec": 47.49,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1283/strip.png",
+        "strip_url": "/data/subjects/ISLES_1283/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -36521,7 +36521,7 @@
       "time_sec": 47.4,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1284/strip.png",
+        "strip_url": "/data/subjects/ISLES_1284/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -36812,7 +36812,7 @@
       "time_sec": 47.9,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1285/strip.png",
+        "strip_url": "/data/subjects/ISLES_1285/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -37103,7 +37103,7 @@
       "time_sec": 47.91,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1286/strip.png",
+        "strip_url": "/data/subjects/ISLES_1286/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -37394,7 +37394,7 @@
       "time_sec": 47.78,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1287/strip.png",
+        "strip_url": "/data/subjects/ISLES_1287/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -37685,7 +37685,7 @@
       "time_sec": 47.64,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1288/strip.png",
+        "strip_url": "/data/subjects/ISLES_1288/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -37976,7 +37976,7 @@
       "time_sec": 25.32,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1289/strip.png",
+        "strip_url": "/data/subjects/ISLES_1289/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -38267,7 +38267,7 @@
       "time_sec": 25.7,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1290/strip.png",
+        "strip_url": "/data/subjects/ISLES_1290/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -38558,7 +38558,7 @@
       "time_sec": 25.49,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1291/strip.png",
+        "strip_url": "/data/subjects/ISLES_1291/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -38849,7 +38849,7 @@
       "time_sec": 25.66,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1292/strip.png",
+        "strip_url": "/data/subjects/ISLES_1292/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -39140,7 +39140,7 @@
       "time_sec": 25.58,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1293/strip.png",
+        "strip_url": "/data/subjects/ISLES_1293/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -39431,7 +39431,7 @@
       "time_sec": 25.38,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1294/strip.png",
+        "strip_url": "/data/subjects/ISLES_1294/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -39722,7 +39722,7 @@
       "time_sec": 15.81,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1295/strip.png",
+        "strip_url": "/data/subjects/ISLES_1295/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -40013,7 +40013,7 @@
       "time_sec": 25.35,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1296/strip.png",
+        "strip_url": "/data/subjects/ISLES_1296/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -40304,7 +40304,7 @@
       "time_sec": 39.95,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1297/strip.png",
+        "strip_url": "/data/subjects/ISLES_1297/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -40595,7 +40595,7 @@
       "time_sec": 30.07,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1298/strip.png",
+        "strip_url": "/data/subjects/ISLES_1298/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -40886,7 +40886,7 @@
       "time_sec": 39.61,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1299/strip.png",
+        "strip_url": "/data/subjects/ISLES_1299/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -41177,7 +41177,7 @@
       "time_sec": 39.51,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1300/strip.png",
+        "strip_url": "/data/subjects/ISLES_1300/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -41468,7 +41468,7 @@
       "time_sec": 40.06,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1301/strip.png",
+        "strip_url": "/data/subjects/ISLES_1301/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -41759,7 +41759,7 @@
       "time_sec": 25.22,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1302/strip.png",
+        "strip_url": "/data/subjects/ISLES_1302/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -42050,7 +42050,7 @@
       "time_sec": 25.64,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1303/strip.png",
+        "strip_url": "/data/subjects/ISLES_1303/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -42341,7 +42341,7 @@
       "time_sec": 25.57,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1304/strip.png",
+        "strip_url": "/data/subjects/ISLES_1304/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -42632,7 +42632,7 @@
       "time_sec": 25.43,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1305/strip.png",
+        "strip_url": "/data/subjects/ISLES_1305/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -42923,7 +42923,7 @@
       "time_sec": 28.02,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1306/strip.png",
+        "strip_url": "/data/subjects/ISLES_1306/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -43214,7 +43214,7 @@
       "time_sec": 26.99,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1307/strip.png",
+        "strip_url": "/data/subjects/ISLES_1307/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -43505,7 +43505,7 @@
       "time_sec": 25.66,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1308/strip.png",
+        "strip_url": "/data/subjects/ISLES_1308/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -43796,7 +43796,7 @@
       "time_sec": 25.66,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1309/strip.png",
+        "strip_url": "/data/subjects/ISLES_1309/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -44087,7 +44087,7 @@
       "time_sec": 25.75,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1310/strip.png",
+        "strip_url": "/data/subjects/ISLES_1310/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -44378,7 +44378,7 @@
       "time_sec": 25.73,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1311/strip.png",
+        "strip_url": "/data/subjects/ISLES_1311/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -44669,7 +44669,7 @@
       "time_sec": 25.73,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1312/strip.png",
+        "strip_url": "/data/subjects/ISLES_1312/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -44960,7 +44960,7 @@
       "time_sec": 25.78,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1313/strip.png",
+        "strip_url": "/data/subjects/ISLES_1313/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -45251,7 +45251,7 @@
       "time_sec": 26.13,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1314/strip.png",
+        "strip_url": "/data/subjects/ISLES_1314/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -45542,7 +45542,7 @@
       "time_sec": 25.75,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1315/strip.png",
+        "strip_url": "/data/subjects/ISLES_1315/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -45833,7 +45833,7 @@
       "time_sec": 15.88,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1316/strip.png",
+        "strip_url": "/data/subjects/ISLES_1316/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -46124,7 +46124,7 @@
       "time_sec": 25.68,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1317/strip.png",
+        "strip_url": "/data/subjects/ISLES_1317/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -46415,7 +46415,7 @@
       "time_sec": 25.79,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1318/strip.png",
+        "strip_url": "/data/subjects/ISLES_1318/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -46706,7 +46706,7 @@
       "time_sec": 25.74,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1319/strip.png",
+        "strip_url": "/data/subjects/ISLES_1319/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -46997,7 +46997,7 @@
       "time_sec": 26.57,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1320/strip.png",
+        "strip_url": "/data/subjects/ISLES_1320/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -47288,7 +47288,7 @@
       "time_sec": 26.62,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1321/strip.png",
+        "strip_url": "/data/subjects/ISLES_1321/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -47579,7 +47579,7 @@
       "time_sec": 26.15,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1322/strip.png",
+        "strip_url": "/data/subjects/ISLES_1322/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -47870,7 +47870,7 @@
       "time_sec": 26.32,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1323/strip.png",
+        "strip_url": "/data/subjects/ISLES_1323/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -48161,7 +48161,7 @@
       "time_sec": 26.39,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1324/strip.png",
+        "strip_url": "/data/subjects/ISLES_1324/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -48452,7 +48452,7 @@
       "time_sec": 26.24,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1325/strip.png",
+        "strip_url": "/data/subjects/ISLES_1325/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -48743,7 +48743,7 @@
       "time_sec": 26.28,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1326/strip.png",
+        "strip_url": "/data/subjects/ISLES_1326/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -49034,7 +49034,7 @@
       "time_sec": 26.12,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1327/strip.png",
+        "strip_url": "/data/subjects/ISLES_1327/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -49325,7 +49325,7 @@
       "time_sec": 26.38,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1328/strip.png",
+        "strip_url": "/data/subjects/ISLES_1328/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -49616,7 +49616,7 @@
       "time_sec": 26.22,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1329/strip.png",
+        "strip_url": "/data/subjects/ISLES_1329/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -49907,7 +49907,7 @@
       "time_sec": 26.12,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1330/strip.png",
+        "strip_url": "/data/subjects/ISLES_1330/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -50198,7 +50198,7 @@
       "time_sec": 26.21,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1331/strip.png",
+        "strip_url": "/data/subjects/ISLES_1331/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -50489,7 +50489,7 @@
       "time_sec": 26.2,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1332/strip.png",
+        "strip_url": "/data/subjects/ISLES_1332/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -50780,7 +50780,7 @@
       "time_sec": 26.76,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1333/strip.png",
+        "strip_url": "/data/subjects/ISLES_1333/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -51071,7 +51071,7 @@
       "time_sec": 26.15,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1334/strip.png",
+        "strip_url": "/data/subjects/ISLES_1334/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -51362,7 +51362,7 @@
       "time_sec": 26.33,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1335/strip.png",
+        "strip_url": "/data/subjects/ISLES_1335/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -51653,7 +51653,7 @@
       "time_sec": 26.32,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1336/strip.png",
+        "strip_url": "/data/subjects/ISLES_1336/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -51944,7 +51944,7 @@
       "time_sec": 26.27,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1337/strip.png",
+        "strip_url": "/data/subjects/ISLES_1337/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -52235,7 +52235,7 @@
       "time_sec": 26.1,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1338/strip.png",
+        "strip_url": "/data/subjects/ISLES_1338/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -52526,7 +52526,7 @@
       "time_sec": 26.37,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1339/strip.png",
+        "strip_url": "/data/subjects/ISLES_1339/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -52817,7 +52817,7 @@
       "time_sec": 25.79,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1340/strip.png",
+        "strip_url": "/data/subjects/ISLES_1340/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -53108,7 +53108,7 @@
       "time_sec": 25.63,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1341/strip.png",
+        "strip_url": "/data/subjects/ISLES_1341/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -53399,7 +53399,7 @@
       "time_sec": 25.9,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1342/strip.png",
+        "strip_url": "/data/subjects/ISLES_1342/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -53690,7 +53690,7 @@
       "time_sec": 25.75,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1343/strip.png",
+        "strip_url": "/data/subjects/ISLES_1343/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -53981,7 +53981,7 @@
       "time_sec": 25.66,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1344/strip.png",
+        "strip_url": "/data/subjects/ISLES_1344/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -54272,7 +54272,7 @@
       "time_sec": 28.81,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1345/strip.png",
+        "strip_url": "/data/subjects/ISLES_1345/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -54563,7 +54563,7 @@
       "time_sec": 28.75,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1346/strip.png",
+        "strip_url": "/data/subjects/ISLES_1346/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -54854,7 +54854,7 @@
       "time_sec": 28.43,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1347/strip.png",
+        "strip_url": "/data/subjects/ISLES_1347/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -55145,7 +55145,7 @@
       "time_sec": 26.47,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1348/strip.png",
+        "strip_url": "/data/subjects/ISLES_1348/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -55436,7 +55436,7 @@
       "time_sec": 26.86,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1349/strip.png",
+        "strip_url": "/data/subjects/ISLES_1349/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -55727,7 +55727,7 @@
       "time_sec": 26.66,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1350/strip.png",
+        "strip_url": "/data/subjects/ISLES_1350/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -56018,7 +56018,7 @@
       "time_sec": 26.75,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1351/strip.png",
+        "strip_url": "/data/subjects/ISLES_1351/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -56309,7 +56309,7 @@
       "time_sec": 26.57,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1352/strip.png",
+        "strip_url": "/data/subjects/ISLES_1352/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -56600,7 +56600,7 @@
       "time_sec": 26.18,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1353/strip.png",
+        "strip_url": "/data/subjects/ISLES_1353/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -56891,7 +56891,7 @@
       "time_sec": 26.21,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1354/strip.png",
+        "strip_url": "/data/subjects/ISLES_1354/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -57182,7 +57182,7 @@
       "time_sec": 25.96,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1355/strip.png",
+        "strip_url": "/data/subjects/ISLES_1355/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -57473,7 +57473,7 @@
       "time_sec": 26.27,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1356/strip.png",
+        "strip_url": "/data/subjects/ISLES_1356/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -57764,7 +57764,7 @@
       "time_sec": 26.36,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1357/strip.png",
+        "strip_url": "/data/subjects/ISLES_1357/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -58055,7 +58055,7 @@
       "time_sec": 25.22,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1358/strip.png",
+        "strip_url": "/data/subjects/ISLES_1358/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -58346,7 +58346,7 @@
       "time_sec": 25.45,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1359/strip.png",
+        "strip_url": "/data/subjects/ISLES_1359/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -58637,7 +58637,7 @@
       "time_sec": 25.35,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1360/strip.png",
+        "strip_url": "/data/subjects/ISLES_1360/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -58928,7 +58928,7 @@
       "time_sec": 25.36,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1361/strip.png",
+        "strip_url": "/data/subjects/ISLES_1361/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -59219,7 +59219,7 @@
       "time_sec": 26.29,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1362/strip.png",
+        "strip_url": "/data/subjects/ISLES_1362/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -59510,7 +59510,7 @@
       "time_sec": 26.18,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1363/strip.png",
+        "strip_url": "/data/subjects/ISLES_1363/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -59801,7 +59801,7 @@
       "time_sec": 26.23,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1364/strip.png",
+        "strip_url": "/data/subjects/ISLES_1364/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -60092,7 +60092,7 @@
       "time_sec": 25.75,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1365/strip.png",
+        "strip_url": "/data/subjects/ISLES_1365/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -60383,7 +60383,7 @@
       "time_sec": 26.48,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1366/strip.png",
+        "strip_url": "/data/subjects/ISLES_1366/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -60674,7 +60674,7 @@
       "time_sec": 26.52,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1367/strip.png",
+        "strip_url": "/data/subjects/ISLES_1367/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -60965,7 +60965,7 @@
       "time_sec": 26.54,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1368/strip.png",
+        "strip_url": "/data/subjects/ISLES_1368/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -61256,7 +61256,7 @@
       "time_sec": 26.02,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1369/strip.png",
+        "strip_url": "/data/subjects/ISLES_1369/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -61547,7 +61547,7 @@
       "time_sec": 26.17,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1370/strip.png",
+        "strip_url": "/data/subjects/ISLES_1370/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -61838,7 +61838,7 @@
       "time_sec": 26.21,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1371/strip.png",
+        "strip_url": "/data/subjects/ISLES_1371/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -62129,7 +62129,7 @@
       "time_sec": 26.18,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1372/strip.png",
+        "strip_url": "/data/subjects/ISLES_1372/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -62420,7 +62420,7 @@
       "time_sec": 28.77,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1373/strip.png",
+        "strip_url": "/data/subjects/ISLES_1373/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -62711,7 +62711,7 @@
       "time_sec": 18.39,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1374/strip.png",
+        "strip_url": "/data/subjects/ISLES_1374/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -63002,7 +63002,7 @@
       "time_sec": 28.71,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1375/strip.png",
+        "strip_url": "/data/subjects/ISLES_1375/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -63293,7 +63293,7 @@
       "time_sec": 28.56,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1376/strip.png",
+        "strip_url": "/data/subjects/ISLES_1376/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -63584,7 +63584,7 @@
       "time_sec": 28.63,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1377/strip.png",
+        "strip_url": "/data/subjects/ISLES_1377/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -63875,7 +63875,7 @@
       "time_sec": 27.06,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1378/strip.png",
+        "strip_url": "/data/subjects/ISLES_1378/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -64166,7 +64166,7 @@
       "time_sec": 27.31,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1379/strip.png",
+        "strip_url": "/data/subjects/ISLES_1379/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -64457,7 +64457,7 @@
       "time_sec": 27.06,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1380/strip.png",
+        "strip_url": "/data/subjects/ISLES_1380/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -64748,7 +64748,7 @@
       "time_sec": 17.54,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1381/strip.png",
+        "strip_url": "/data/subjects/ISLES_1381/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -65039,7 +65039,7 @@
       "time_sec": 27.18,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1382/strip.png",
+        "strip_url": "/data/subjects/ISLES_1382/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -65330,7 +65330,7 @@
       "time_sec": 17.34,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1383/strip.png",
+        "strip_url": "/data/subjects/ISLES_1383/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -65621,7 +65621,7 @@
       "time_sec": 27.11,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1384/strip.png",
+        "strip_url": "/data/subjects/ISLES_1384/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -65912,7 +65912,7 @@
       "time_sec": 25.97,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1385/strip.png",
+        "strip_url": "/data/subjects/ISLES_1385/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -66203,7 +66203,7 @@
       "time_sec": 25.94,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1386/strip.png",
+        "strip_url": "/data/subjects/ISLES_1386/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -66494,7 +66494,7 @@
       "time_sec": 26.09,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1387/strip.png",
+        "strip_url": "/data/subjects/ISLES_1387/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -66785,7 +66785,7 @@
       "time_sec": 26.0,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1388/strip.png",
+        "strip_url": "/data/subjects/ISLES_1388/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -67076,7 +67076,7 @@
       "time_sec": 25.86,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1389/strip.png",
+        "strip_url": "/data/subjects/ISLES_1389/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -67367,7 +67367,7 @@
       "time_sec": 26.91,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1390/strip.png",
+        "strip_url": "/data/subjects/ISLES_1390/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -67658,7 +67658,7 @@
       "time_sec": 25.71,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1391/strip.png",
+        "strip_url": "/data/subjects/ISLES_1391/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -67949,7 +67949,7 @@
       "time_sec": 27.21,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1392/strip.png",
+        "strip_url": "/data/subjects/ISLES_1392/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -68240,7 +68240,7 @@
       "time_sec": 36.97,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1393/strip.png",
+        "strip_url": "/data/subjects/ISLES_1393/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -68531,7 +68531,7 @@
       "time_sec": 36.82,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1394/strip.png",
+        "strip_url": "/data/subjects/ISLES_1394/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -68822,7 +68822,7 @@
       "time_sec": 37.31,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1395/strip.png",
+        "strip_url": "/data/subjects/ISLES_1395/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -69113,7 +69113,7 @@
       "time_sec": 25.04,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1396/strip.png",
+        "strip_url": "/data/subjects/ISLES_1396/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -69404,7 +69404,7 @@
       "time_sec": 15.56,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1397/strip.png",
+        "strip_url": "/data/subjects/ISLES_1397/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -69695,7 +69695,7 @@
       "time_sec": 35.93,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1398/strip.png",
+        "strip_url": "/data/subjects/ISLES_1398/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -69986,7 +69986,7 @@
       "time_sec": 26.55,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1399/strip.png",
+        "strip_url": "/data/subjects/ISLES_1399/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -70277,7 +70277,7 @@
       "time_sec": 26.63,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1400/strip.png",
+        "strip_url": "/data/subjects/ISLES_1400/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -70568,7 +70568,7 @@
       "time_sec": 26.86,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1401/strip.png",
+        "strip_url": "/data/subjects/ISLES_1401/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -70859,7 +70859,7 @@
       "time_sec": 26.83,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1402/strip.png",
+        "strip_url": "/data/subjects/ISLES_1402/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -71150,7 +71150,7 @@
       "time_sec": 27.0,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1403/strip.png",
+        "strip_url": "/data/subjects/ISLES_1403/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -71441,7 +71441,7 @@
       "time_sec": 26.95,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1404/strip.png",
+        "strip_url": "/data/subjects/ISLES_1404/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -71732,7 +71732,7 @@
       "time_sec": 26.48,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1405/strip.png",
+        "strip_url": "/data/subjects/ISLES_1405/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -72023,7 +72023,7 @@
       "time_sec": 26.35,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1406/strip.png",
+        "strip_url": "/data/subjects/ISLES_1406/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -72314,7 +72314,7 @@
       "time_sec": 26.34,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1407/strip.png",
+        "strip_url": "/data/subjects/ISLES_1407/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -72605,7 +72605,7 @@
       "time_sec": 26.47,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1408/strip.png",
+        "strip_url": "/data/subjects/ISLES_1408/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -72896,7 +72896,7 @@
       "time_sec": 26.46,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1409/strip.png",
+        "strip_url": "/data/subjects/ISLES_1409/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -73187,7 +73187,7 @@
       "time_sec": 26.76,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1410/strip.png",
+        "strip_url": "/data/subjects/ISLES_1410/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -73478,7 +73478,7 @@
       "time_sec": 26.65,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1411/strip.png",
+        "strip_url": "/data/subjects/ISLES_1411/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -73769,7 +73769,7 @@
       "time_sec": 26.52,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1412/strip.png",
+        "strip_url": "/data/subjects/ISLES_1412/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -74060,7 +74060,7 @@
       "time_sec": 16.3,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1413/strip.png",
+        "strip_url": "/data/subjects/ISLES_1413/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -74351,7 +74351,7 @@
       "time_sec": 26.04,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1414/strip.png",
+        "strip_url": "/data/subjects/ISLES_1414/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -74642,7 +74642,7 @@
       "time_sec": 26.09,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1415/strip.png",
+        "strip_url": "/data/subjects/ISLES_1415/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -74933,7 +74933,7 @@
       "time_sec": 27.02,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1416/strip.png",
+        "strip_url": "/data/subjects/ISLES_1416/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -75224,7 +75224,7 @@
       "time_sec": 27.14,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1417/strip.png",
+        "strip_url": "/data/subjects/ISLES_1417/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -75515,7 +75515,7 @@
       "time_sec": 26.16,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1418/strip.png",
+        "strip_url": "/data/subjects/ISLES_1418/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -75806,7 +75806,7 @@
       "time_sec": 17.4,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1419/strip.png",
+        "strip_url": "/data/subjects/ISLES_1419/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -76097,7 +76097,7 @@
       "time_sec": 26.95,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1420/strip.png",
+        "strip_url": "/data/subjects/ISLES_1420/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -76388,7 +76388,7 @@
       "time_sec": 26.57,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1421/strip.png",
+        "strip_url": "/data/subjects/ISLES_1421/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -76679,7 +76679,7 @@
       "time_sec": 26.97,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1422/strip.png",
+        "strip_url": "/data/subjects/ISLES_1422/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -76970,7 +76970,7 @@
       "time_sec": 126.69,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1423/strip.png",
+        "strip_url": "/data/subjects/ISLES_1423/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -77261,7 +77261,7 @@
       "time_sec": 25.23,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1424/strip.png",
+        "strip_url": "/data/subjects/ISLES_1424/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -77552,7 +77552,7 @@
       "time_sec": 51.55,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1425/strip.png",
+        "strip_url": "/data/subjects/ISLES_1425/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -77843,7 +77843,7 @@
       "time_sec": 27.38,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1426/strip.png",
+        "strip_url": "/data/subjects/ISLES_1426/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -78134,7 +78134,7 @@
       "time_sec": 54.0,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1427/strip.png",
+        "strip_url": "/data/subjects/ISLES_1427/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -78425,7 +78425,7 @@
       "time_sec": 25.02,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1428/strip.png",
+        "strip_url": "/data/subjects/ISLES_1428/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -78716,7 +78716,7 @@
       "time_sec": 50.97,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1429/strip.png",
+        "strip_url": "/data/subjects/ISLES_1429/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -79007,7 +79007,7 @@
       "time_sec": 24.85,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1430/strip.png",
+        "strip_url": "/data/subjects/ISLES_1430/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -79298,7 +79298,7 @@
       "time_sec": 50.56,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1431/strip.png",
+        "strip_url": "/data/subjects/ISLES_1431/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -79589,7 +79589,7 @@
       "time_sec": 27.19,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1432/strip.png",
+        "strip_url": "/data/subjects/ISLES_1432/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -79880,7 +79880,7 @@
       "time_sec": 25.04,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1433/strip.png",
+        "strip_url": "/data/subjects/ISLES_1433/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -80171,7 +80171,7 @@
       "time_sec": 31.09,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1434/strip.png",
+        "strip_url": "/data/subjects/ISLES_1434/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -80462,7 +80462,7 @@
       "time_sec": 25.17,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1435/strip.png",
+        "strip_url": "/data/subjects/ISLES_1435/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -80753,7 +80753,7 @@
       "time_sec": 56.94,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1436/strip.png",
+        "strip_url": "/data/subjects/ISLES_1436/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -81044,7 +81044,7 @@
       "time_sec": 50.9,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1437/strip.png",
+        "strip_url": "/data/subjects/ISLES_1437/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -81335,7 +81335,7 @@
       "time_sec": 44.65,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1438/strip.png",
+        "strip_url": "/data/subjects/ISLES_1438/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -81626,7 +81626,7 @@
       "time_sec": 49.58,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1439/strip.png",
+        "strip_url": "/data/subjects/ISLES_1439/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -81917,7 +81917,7 @@
       "time_sec": 53.95,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1440/strip.png",
+        "strip_url": "/data/subjects/ISLES_1440/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -82208,7 +82208,7 @@
       "time_sec": 50.37,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1441/strip.png",
+        "strip_url": "/data/subjects/ISLES_1441/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -82499,7 +82499,7 @@
       "time_sec": 26.36,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1442/strip.png",
+        "strip_url": "/data/subjects/ISLES_1442/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -82790,7 +82790,7 @@
       "time_sec": 26.59,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1443/strip.png",
+        "strip_url": "/data/subjects/ISLES_1443/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -83081,7 +83081,7 @@
       "time_sec": 27.96,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1444/strip.png",
+        "strip_url": "/data/subjects/ISLES_1444/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -83372,7 +83372,7 @@
       "time_sec": 26.72,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1445/strip.png",
+        "strip_url": "/data/subjects/ISLES_1445/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -83663,7 +83663,7 @@
       "time_sec": 24.96,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1446/strip.png",
+        "strip_url": "/data/subjects/ISLES_1446/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -83954,7 +83954,7 @@
       "time_sec": 50.73,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1447/strip.png",
+        "strip_url": "/data/subjects/ISLES_1447/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -84245,7 +84245,7 @@
       "time_sec": 45.52,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1448/strip.png",
+        "strip_url": "/data/subjects/ISLES_1448/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -84536,7 +84536,7 @@
       "time_sec": 50.21,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1449/strip.png",
+        "strip_url": "/data/subjects/ISLES_1449/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -84827,7 +84827,7 @@
       "time_sec": 50.41,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1450/strip.png",
+        "strip_url": "/data/subjects/ISLES_1450/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -85118,7 +85118,7 @@
       "time_sec": 26.35,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1451/strip.png",
+        "strip_url": "/data/subjects/ISLES_1451/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,
@@ -85409,7 +85409,7 @@
       "time_sec": 50.52,
       "has_visuals": true,
       "visuals": {
-        "strip_url": "/data/subjects/ISLES_1452/strip.png",
+        "strip_url": "/data/subjects/ISLES_1452/hsunet/strip.png",
         "strip_cols": 6,
         "strip_rows": 15,
         "cell_size": 256,

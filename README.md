@@ -35,10 +35,17 @@ Live deployment ready for **Vercel**.
 
 ## Application Routes
 
+### 1. HyperScale-UNet (`/hsunet/*`)
 - `/hsunet/visuals`: Subject visual inspector & multi-planar 2D/3D slice viewer (supports `?case=<case_id>` or `/hsunet/visuals/<case_id>`)
 - `/hsunet/overview`: Global ISLES multi-site benchmark overview & key performance metrics
 - `/hsunet/curves`: High-resolution interactive training dynamics, losses, & validation pseudo Dice progression
 - `/hsunet/metrics`: Complete searchable database table of all 1,453 evaluated cases with CSV export
+
+### 2. Joint Ensemble (`/ensemble/*`)
+- `/ensemble/visuals`: Subject visual inspector displaying joint ensemble segmentations (`dashboard/public/data/subjects/<case_id>/ensemble/strip.png`)
+- `/ensemble/overview`: Multi-model head-to-head performance comparison & convergence overview
+- `/ensemble/metrics`: Full 1,453 case evaluation database with Delta gains vs HS-UNet & Baseline nnU-Net
+
 
 ---
 

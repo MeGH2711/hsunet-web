@@ -15,7 +15,8 @@ import CaseTableView from "./components/CaseTableView";
 import { Loader2, AlertCircle } from "lucide-react";
 
 export default function App() {
-  const [data, setData] = useState(null);
+  const [hsunetData, setHsunetData] = useState(null);
+  const [ensembleData, setEnsembleData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,25 +26,54 @@ export default function App() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Active model based on current route
+  const activeModel = useMemo(() => {
+    return location.pathname.toLowerCase().startsWith("/ensemble")
+      ? "ensemble"
+      : "hsunet";
+  }, [location.pathname]);
+
+  // Current active dataset
+  const data = activeModel === "ensemble" ? ensembleData : hsunetData;
+
   // Derive current view from pathname
   const currentView = useMemo(() => {
     const p = location.pathname.toLowerCase();
-    if (p.startsWith("/hsunet/overview")) return "overview";
-    if (p.startsWith("/hsunet/curves") || p.startsWith("/curves") || p.startsWith("/training")) return "curves";
-    if (p.startsWith("/hsunet/metrics") || p.startsWith("/metrics") || p.startsWith("/table")) return "metrics";
+    if (p.includes("/overview")) return "overview";
+    if (p.includes("/curves") || p.includes("/training")) return "curves";
+    if (p.includes("/metrics") || p.includes("/table")) return "metrics";
     return "visuals";
   }, [location.pathname]);
 
-  // Navigate to corresponding /hsunet route
+  // Navigate to corresponding route for active model
   const handleViewChange = (view) => {
     if (view === "overview") {
-      navigate("/hsunet/overview");
+      navigate(`/${activeModel}/overview`);
     } else if (view === "curves" || view === "training") {
-      navigate("/hsunet/curves");
+      if (activeModel === "ensemble") {
+        navigate(`/ensemble/overview`);
+      } else {
+        navigate(`/hsunet/curves`);
+      }
     } else if (view === "metrics" || view === "table") {
-      navigate("/hsunet/metrics");
+      navigate(`/${activeModel}/metrics`);
     } else {
-      navigate("/hsunet/visuals");
+      navigate(`/${activeModel}/visuals`);
+    }
+  };
+
+  // Switch between models (HS-UNet vs Ensemble)
+  const handleModelChange = (newModel) => {
+    if (newModel === activeModel) return;
+    let targetView = currentView;
+    if (newModel === "ensemble" && targetView === "curves") {
+      targetView = "overview";
+    }
+    const caseQuery = selectedSubject ? `?case=${selectedSubject.case_id}` : "";
+    if (targetView === "visuals") {
+      navigate(`/${newModel}/visuals${caseQuery}`);
+    } else {
+      navigate(`/${newModel}/${targetView}`);
     }
   };
 
@@ -55,27 +85,40 @@ export default function App() {
   const [onlyWithVisuals, setOnlyWithVisuals] = useState(false); // Default to false so all 1,453 subjects can be browsed
   const [sortBy, setSortBy] = useState("dice-desc");
 
+  // Load both HS-UNet and Ensemble datasets in parallel for instantaneous switching
   useEffect(() => {
-    fetch("/data/dashboard_data.json")
-      .then((res) => {
+    Promise.all([
+      fetch("/data/dashboard_data.json").then((res) => {
         if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
         return res.json();
-      })
-      .then((json) => {
-        setData(json);
+      }),
+      fetch("/data/dashboard_data_ensemble.json").then((res) => {
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        return res.json();
+      }),
+    ])
+      .then(([hsuJson, ensJson]) => {
+        setHsunetData(hsuJson);
+        setEnsembleData(ensJson);
+
+        const currentDataset = window.location.pathname
+          .toLowerCase()
+          .startsWith("/ensemble")
+          ? ensJson
+          : hsuJson;
 
         // Check if a specific case is requested via query (?case=...) or URL path
         const urlParams = new URLSearchParams(window.location.search);
         const queryCase = urlParams.get("case");
         const pathMatch = window.location.pathname.match(
-          /^\/hsunet\/visuals\/([^/]+)/i
+          /^\/(?:hsunet|ensemble)\/visuals\/([^/]+)/i
         );
         const pathCase = pathMatch ? pathMatch[1] : null;
         const targetId = queryCase || pathCase;
 
         let initial = null;
         if (targetId) {
-          initial = json.cases.find(
+          initial = currentDataset.cases.find(
             (c) =>
               c.case_id.toLowerCase() === targetId.toLowerCase() ||
               c.subject.toLowerCase() === targetId.toLowerCase()
@@ -83,8 +126,8 @@ export default function App() {
         }
         if (!initial) {
           initial =
-            json.cases.find((c) => c.case_id === "ISLES_1170") ||
-            json.cases[0];
+            currentDataset.cases.find((c) => c.case_id === "ISLES_1170") ||
+            currentDataset.cases[0];
         }
         setSelectedSubject(initial);
         setLoading(false);
@@ -96,12 +139,25 @@ export default function App() {
       });
   }, []);
 
-  // Synchronize selected subject when URL path (/hsunet/visuals/:caseId) or search param (?case=...) changes
+  // Sync selected subject when active model changes
+  useEffect(() => {
+    if (!data?.cases || !selectedSubject) return;
+    const match = data.cases.find(
+      (c) => c.case_id.toLowerCase() === selectedSubject.case_id.toLowerCase()
+    );
+    if (match && match !== selectedSubject) {
+      setSelectedSubject(match);
+    }
+  }, [activeModel, data]);
+
+  // Synchronize selected subject when URL path or search param (?case=...) changes
   useEffect(() => {
     if (!data?.cases || data.cases.length === 0) return;
 
     const queryCase = searchParams.get("case");
-    const pathMatch = location.pathname.match(/^\/hsunet\/visuals\/([^/]+)/i);
+    const pathMatch = location.pathname.match(
+      /^\/(?:hsunet|ensemble)\/visuals\/([^/]+)/i
+    );
     const pathCase = pathMatch ? pathMatch[1] : null;
     const targetId = queryCase || pathCase;
 
@@ -121,7 +177,7 @@ export default function App() {
   const handleSelectSubject = (subject, shouldNavigateToVisuals = false) => {
     setSelectedSubject(subject);
     if (shouldNavigateToVisuals) {
-      navigate("/hsunet/visuals");
+      navigate(`/${activeModel}/visuals`);
     }
   };
 
@@ -182,7 +238,7 @@ export default function App() {
         <div className="flex flex-col items-center space-y-3">
           <Loader2 className="w-8 h-8 animate-spin text-white" />
           <p className="text-xs tracking-wider uppercase text-zinc-400 font-medium">
-            Loading HS-UNet Studio...
+            Loading {activeModel === "ensemble" ? "ISLES Ensemble Studio" : "HS-UNet Studio"}...
           </p>
         </div>
       </div>
@@ -214,13 +270,15 @@ export default function App() {
       {/* Sidebar Navigation & Live Filters */}
       <Sidebar
         data={data}
+        model={activeModel}
+        onModelChange={handleModelChange}
         currentView={currentView}
         setCurrentView={handleViewChange}
         selectedSubject={selectedSubject}
         setSelectedSubject={(c) => {
           setSelectedSubject(c);
           if (currentView !== "visuals") {
-            navigate("/hsunet/visuals");
+            navigate(`/${activeModel}/visuals`);
           }
         }}
         searchQuery={searchQuery}
@@ -241,13 +299,14 @@ export default function App() {
       {/* Main Routed View Area */}
       <main className="flex-1 h-full min-h-0 overflow-hidden bg-black flex flex-col">
         <Routes>
-          {/* Main /hsunet routes */}
+          {/* ==================== HS-UNET ROUTES ==================== */}
           <Route
             path="/hsunet/visuals"
             element={
               <SubjectInspector
                 subject={selectedSubject}
                 onSelectSubject={handleSelectSubject}
+                model="hsunet"
               />
             }
           />
@@ -257,6 +316,7 @@ export default function App() {
               <SubjectInspector
                 subject={selectedSubject}
                 onSelectSubject={handleSelectSubject}
+                model="hsunet"
               />
             }
           />
@@ -264,7 +324,8 @@ export default function App() {
             path="/hsunet/overview"
             element={
               <OverviewView
-                data={data}
+                data={hsunetData}
+                model="hsunet"
                 onSelectSubject={(c) => handleSelectSubject(c, true)}
                 onGoToInspector={() => navigate("/hsunet/visuals")}
                 onGoToTraining={() => navigate("/hsunet/curves")}
@@ -273,20 +334,72 @@ export default function App() {
           />
           <Route
             path="/hsunet/curves"
-            element={<TrainingView trainingData={data?.training} />}
+            element={<TrainingView trainingData={hsunetData?.training} />}
           />
           <Route
             path="/hsunet/metrics"
             element={
               <CaseTableView
-                cases={data?.cases || []}
+                cases={hsunetData?.cases || []}
                 onSelectSubject={(c) => handleSelectSubject(c, true)}
                 onGoToInspector={() => navigate("/hsunet/visuals")}
               />
             }
           />
 
-          {/* Root and route redirects */}
+          {/* ==================== ENSEMBLE ROUTES (NO CURVES) ==================== */}
+          <Route
+            path="/ensemble/visuals"
+            element={
+              <SubjectInspector
+                subject={selectedSubject}
+                onSelectSubject={handleSelectSubject}
+                model="ensemble"
+              />
+            }
+          />
+          <Route
+            path="/ensemble/visuals/:caseId"
+            element={
+              <SubjectInspector
+                subject={selectedSubject}
+                onSelectSubject={handleSelectSubject}
+                model="ensemble"
+              />
+            }
+          />
+          <Route
+            path="/ensemble/overview"
+            element={
+              <OverviewView
+                data={ensembleData}
+                model="ensemble"
+                onSelectSubject={(c) => handleSelectSubject(c, true)}
+                onGoToInspector={() => navigate("/ensemble/visuals")}
+                onGoToTraining={null}
+              />
+            }
+          />
+          <Route
+            path="/ensemble/metrics"
+            element={
+              <CaseTableView
+                cases={ensembleData?.cases || []}
+                onSelectSubject={(c) => handleSelectSubject(c, true)}
+                onGoToInspector={() => navigate("/ensemble/visuals")}
+              />
+            }
+          />
+          <Route
+            path="/ensemble/curves"
+            element={<Navigate to="/ensemble/overview" replace />}
+          />
+          <Route
+            path="/ensemble"
+            element={<Navigate to="/ensemble/visuals" replace />}
+          />
+
+          {/* ==================== LEGACY & ROOT REDIRECTS ==================== */}
           <Route path="/" element={<Navigate to="/hsunet/visuals" replace />} />
           <Route
             path="/hsunet"

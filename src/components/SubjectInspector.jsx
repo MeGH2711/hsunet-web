@@ -418,9 +418,10 @@ function PlaneCardHeader({
   );
 }
 
-export default function SubjectInspector({ subject, onSelectSubject }) {
+export default function SubjectInspector({ subject, onSelectSubject, model = "hsunet" }) {
   const [metaLoading, setMetaLoading] = useState(false);
   const [dynamicMeta, setDynamicMeta] = useState(null);
+
 
   // Active visuals payload: static or dynamically fetched
   const visuals = subject?.visuals || dynamicMeta;
@@ -545,7 +546,7 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
     // If case has no pre-rendered static planes, fetch dynamic metadata from Python backend
     if (!p) {
       setMetaLoading(true);
-      fetch(`/api/subject_meta?case_id=${subject.case_id}`)
+      fetch(`/api/subject_meta?case_id=${subject.case_id}&model=${model || "hsunet"}`)
         .then((res) => {
           if (!res.ok) throw new Error("Metadata fetch error");
           return res.json();
@@ -975,8 +976,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
                 {/* 5-Way Slices Row: Raw, GT Mask, Pred Mask, GT+Scan Overlay, Pred Mask Overlay */}
                 {(() => {
                   const stripRow = isDominantMode ? (config.rowOffset ?? 0) + safePos : 0;
+                  const activeModelDir = model === "ensemble" ? "ensemble" : "hsunet";
                   const stripUrl = isDominantMode
-                    ? (visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null))
+                    ? (visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/${activeModelDir}/strip.png` : null))
                     : null;
 
                   return (
@@ -1197,8 +1199,9 @@ export default function SubjectInspector({ subject, onSelectSubject }) {
             };
 
             const stripRow = isDominantMode ? (config.rowOffset ?? 0) + safePos : 0;
+            const activeModelDir = model === "ensemble" ? "ensemble" : "hsunet";
             const stripUrl = isDominantMode
-              ? (visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/strip.png` : null))
+              ? (visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/${activeModelDir}/strip.png` : null))
               : null;
 
             return (

@@ -19,6 +19,8 @@ import { cn, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
 
 export default function Sidebar({
   data,
+  model = "hsunet",
+  onModelChange,
   currentView,
   setCurrentView,
   selectedSubject,
@@ -46,17 +48,21 @@ export default function Sidebar({
       <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-700/80 flex items-center justify-center text-white shadow-inner">
-            <BrainCircuit className="w-5 h-5 text-white" />
+            {model === "ensemble" ? (
+              <Sparkles className="w-5 h-5 text-emerald-400" />
+            ) : (
+              <BrainCircuit className="w-5 h-5 text-cyan-400" />
+            )}
           </div>
           <div>
             <h1 className="text-sm font-semibold tracking-wider uppercase text-white flex items-center gap-1.5">
-              HS-UNet Studio
+              {model === "ensemble" ? "ISLES Ensemble" : "HS-UNet Studio"}
               <span className="text-[10px] px-1.5 py-0.2 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded font-mono">
-                v1.0
+                {model === "ensemble" ? "50/50 Joint" : "v1.0"}
               </span>
             </h1>
             <p className="text-[11px] text-zinc-300 font-light tracking-wide">
-              ISLES 2026
+              {model === "ensemble" ? "HS-UNet + Baseline nnU-Net" : "ISLES 2026"}
             </p>
             <p className="text-[10px] text-zinc-400 font-medium tracking-wide mt-0.5">
               Megh Patel
@@ -65,8 +71,43 @@ export default function Sidebar({
         </div>
       </div>
 
+      {/* Model Selection Switcher (HS-UNet vs Ensemble) */}
+      <div className="px-3 pt-2.5 pb-2 border-b border-zinc-800/80 bg-zinc-950/60">
+        <div className="flex items-center p-0.5 bg-zinc-900 border border-zinc-800 rounded-lg">
+          <button
+            onClick={() => onModelChange && onModelChange("hsunet")}
+            className={cn(
+              "flex-1 py-1 px-2 rounded-md text-xs font-medium transition-all text-center flex items-center justify-center gap-1.5",
+              model === "hsunet"
+                ? "bg-zinc-800 text-white shadow-sm border border-zinc-700 font-semibold"
+                : "text-zinc-400 hover:text-white"
+            )}
+          >
+            <BrainCircuit className="w-3.5 h-3.5 text-cyan-400" />
+            <span>HS-UNet</span>
+          </button>
+          <button
+            onClick={() => onModelChange && onModelChange("ensemble")}
+            className={cn(
+              "flex-1 py-1 px-2 rounded-md text-xs font-medium transition-all text-center flex items-center justify-center gap-1.5",
+              model === "ensemble"
+                ? "bg-zinc-800 text-white shadow-sm border border-zinc-700 font-semibold"
+                : "text-zinc-400 hover:text-white"
+            )}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Ensemble</span>
+          </button>
+        </div>
+      </div>
+
       {/* Navigation Tabs (Visuals, Overview, Curves, Metrics) */}
-      <div className="px-3 pt-3 pb-2 border-b border-zinc-800/80 grid grid-cols-4 gap-1">
+      <div
+        className={cn(
+          "px-3 pt-3 pb-2 border-b border-zinc-800/80 grid gap-1",
+          model === "ensemble" ? "grid-cols-3" : "grid-cols-4"
+        )}
+      >
         <button
           onClick={() => setCurrentView("visuals")}
           className={cn(
@@ -75,7 +116,7 @@ export default function Sidebar({
               ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
           )}
-          title="Subject Visual Inspector (/hsunet/visuals)"
+          title={`Subject Visual Inspector (/${model}/visuals)`}
         >
           <Layers className="w-4 h-4 mb-1" />
           Visuals
@@ -89,25 +130,27 @@ export default function Sidebar({
               ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
           )}
-          title="Global Benchmark Overview (/hsunet/overview)"
+          title={`Global Benchmark Overview (/${model}/overview)`}
         >
           <Activity className="w-4 h-4 mb-1" />
           Overview
         </button>
 
-        <button
-          onClick={() => setCurrentView("curves")}
-          className={cn(
-            "flex flex-col items-center justify-center py-2 px-1 rounded-md text-[11px] font-medium transition-all",
-            currentView === "curves" || currentView === "training"
-              ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
-              : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
-          )}
-          title="Training Curves & Logs (/hsunet/curves)"
-        >
-          <LineChart className="w-4 h-4 mb-1" />
-          Curves
-        </button>
+        {model !== "ensemble" && (
+          <button
+            onClick={() => setCurrentView("curves")}
+            className={cn(
+              "flex flex-col items-center justify-center py-2 px-1 rounded-md text-[11px] font-medium transition-all",
+              currentView === "curves" || currentView === "training"
+                ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
+            )}
+            title="Training Curves & Logs (/hsunet/curves)"
+          >
+            <LineChart className="w-4 h-4 mb-1" />
+            Curves
+          </button>
+        )}
 
         <button
           onClick={() => setCurrentView("metrics")}
@@ -117,7 +160,7 @@ export default function Sidebar({
               ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
           )}
-          title="All Cases Table & Metrics (/hsunet/metrics)"
+          title={`All Cases Table & Metrics (/${model}/metrics)`}
         >
           <TableIcon className="w-4 h-4 mb-1" />
           Metrics
@@ -299,13 +342,26 @@ export default function Sidebar({
                 </div>
 
                 <div className="flex items-center space-x-2 shrink-0">
-                  <div
-                    className={cn(
-                      "px-2 py-0.5 rounded text-[11px] font-mono font-medium border",
-                      getDiceBg(c.dice)
+                  <div className="flex flex-col items-end">
+                    <div
+                      className={cn(
+                        "px-2 py-0.5 rounded text-[11px] font-mono font-medium border",
+                        getDiceBg(c.dice)
+                      )}
+                    >
+                      {c.dice.toFixed(3)}
+                    </div>
+                    {model === "ensemble" && c.gain_vs_hsunet !== undefined && (
+                      <span
+                        className={cn(
+                          "text-[9px] font-mono font-medium mt-0.5",
+                          c.gain_vs_hsunet >= 0 ? "text-emerald-400" : "text-rose-400"
+                        )}
+                        title={`Gain vs HS-UNet: ${c.gain_vs_hsunet >= 0 ? "+" : ""}${c.gain_vs_hsunet.toFixed(4)}`}
+                      >
+                        {c.gain_vs_hsunet >= 0 ? `+${c.gain_vs_hsunet.toFixed(3)}` : c.gain_vs_hsunet.toFixed(3)}
+                      </span>
                     )}
-                  >
-                    {c.dice.toFixed(3)}
                   </div>
                   <ChevronRight
                     className={cn(
@@ -322,8 +378,10 @@ export default function Sidebar({
 
       {/* Footer Info */}
       <div className="p-3 border-t border-zinc-800/80 bg-zinc-950 flex items-center justify-between text-[11px] text-zinc-400 font-light">
-        <span>Evaluated: 1,453 Cases</span>
-        <span className="text-zinc-300 font-mono">Epoch 100 Best</span>
+        <span>Evaluated: {data?.summary?.total_cases || 1453} Cases</span>
+        <span className="text-zinc-300 font-mono">
+          {model === "ensemble" ? "Ensemble 50/50" : "Epoch 100 Best"}
+        </span>
       </div>
     </aside>
   );
