@@ -33,6 +33,15 @@ Live deployment ready for **Vercel**.
 
 ---
 
+## Application Routes
+
+- `/hsunet/visuals`: Subject visual inspector & multi-planar 2D/3D slice viewer (supports `?case=<case_id>` or `/hsunet/visuals/<case_id>`)
+- `/hsunet/overview`: Global ISLES multi-site benchmark overview & key performance metrics
+- `/hsunet/curves`: High-resolution interactive training dynamics, losses, & validation pseudo Dice progression
+- `/hsunet/metrics`: Complete searchable database table of all 1,453 evaluated cases with CSV export
+
+---
+
 ## Getting Started Locally
 
 ```bash

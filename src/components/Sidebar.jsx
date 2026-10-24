@@ -65,17 +65,17 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* Navigation Tabs (Overview, Inspector, Training, Table) */}
+      {/* Navigation Tabs (Visuals, Overview, Curves, Metrics) */}
       <div className="px-3 pt-3 pb-2 border-b border-zinc-800/80 grid grid-cols-4 gap-1">
         <button
-          onClick={() => setCurrentView("inspector")}
+          onClick={() => setCurrentView("visuals")}
           className={cn(
             "flex flex-col items-center justify-center py-2 px-1 rounded-md text-[11px] font-medium transition-all",
-            currentView === "inspector"
+            currentView === "visuals" || currentView === "inspector"
               ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
           )}
-          title="Subject Visual Inspector"
+          title="Subject Visual Inspector (/hsunet/visuals)"
         >
           <Layers className="w-4 h-4 mb-1" />
           Visuals
@@ -89,35 +89,35 @@ export default function Sidebar({
               ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
           )}
-          title="Global Benchmark Overview"
+          title="Global Benchmark Overview (/hsunet/overview)"
         >
           <Activity className="w-4 h-4 mb-1" />
           Overview
         </button>
 
         <button
-          onClick={() => setCurrentView("training")}
+          onClick={() => setCurrentView("curves")}
           className={cn(
             "flex flex-col items-center justify-center py-2 px-1 rounded-md text-[11px] font-medium transition-all",
-            currentView === "training"
+            currentView === "curves" || currentView === "training"
               ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
           )}
-          title="Training Curves & Logs"
+          title="Training Curves & Logs (/hsunet/curves)"
         >
           <LineChart className="w-4 h-4 mb-1" />
           Curves
         </button>
 
         <button
-          onClick={() => setCurrentView("table")}
+          onClick={() => setCurrentView("metrics")}
           className={cn(
             "flex flex-col items-center justify-center py-2 px-1 rounded-md text-[11px] font-medium transition-all",
-            currentView === "table"
+            currentView === "metrics" || currentView === "table"
               ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900/60"
           )}
-          title="All Cases Table"
+          title="All Cases Table & Metrics (/hsunet/metrics)"
         >
           <TableIcon className="w-4 h-4 mb-1" />
           Metrics
@@ -261,8 +261,8 @@ export default function Sidebar({
                 key={c.case_id}
                 onClick={() => {
                   setSelectedSubject(c);
-                  if (currentView !== "inspector") {
-                    setCurrentView("inspector");
+                  if (currentView !== "visuals" && currentView !== "inspector") {
+                    setCurrentView("visuals");
                   }
                 }}
                 className={cn(
