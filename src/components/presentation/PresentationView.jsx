@@ -26,7 +26,16 @@ const SLIDE_COMPONENTS = {
 };
 
 export default function PresentationView({ model = "hsunet", onExit }) {
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const s = parseInt(params.get("slide"), 10);
+      if (!isNaN(s) && s >= 1 && s <= SLIDES_CONFIG.length) {
+        return s - 1;
+      }
+    } catch (_) {}
+    return 0;
+  });
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playInterval, setPlayInterval] = useState(8000); // 8s per slide
