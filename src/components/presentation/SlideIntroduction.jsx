@@ -154,7 +154,7 @@ export default function SlideIntroduction() {
       </div>
 
       {/* MAIN CONTENT ZONE: Balanced Spacing with Problem Visual Cards */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center max-w-6xl mx-auto my-auto w-full space-y-4 sm:space-y-5 px-2">
+      <div className="relative z-20 flex flex-col items-center justify-center text-center max-w-7xl mx-auto my-auto w-full space-y-4 sm:space-y-5 px-3 sm:px-6">
         {/* Category Pill */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#801214]/10 border border-[#801214]/30 text-[#801214] text-xs font-mono font-bold tracking-wider uppercase shadow-sm">
           <ShieldAlert className="w-4 h-4 text-[#801214]" />
@@ -162,7 +162,7 @@ export default function SlideIntroduction() {
         </div>
 
         {/* Slide Main Heading */}
-        <div className="space-y-1.5 max-w-5xl mx-auto">
+        <div className="space-y-1.5 max-w-6xl mx-auto">
           <h2 className="tracking-tight leading-tight select-none">
             <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-4.5xl font-black text-black">
               The Challenge:{" "}
@@ -172,13 +172,13 @@ export default function SlideIntroduction() {
               Across 4 Orders of Magnitude in 1,453 Multi-Centric Cases
             </span>
           </h2>
-          <p className="text-xs sm:text-sm md:text-base text-zinc-700 font-medium max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm md:text-base text-zinc-700 font-medium max-w-4xl mx-auto leading-relaxed">
             Direct clinical scans from the dataset illustrate why baseline nnU-Net models fail on acute ischemic stroke lesions.
           </p>
         </div>
 
-        {/* 3 High-Impact Failure Mode Cards with Integrated Dataset Visuals / Animated GIFs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4.5 w-full max-w-5xl mx-auto pt-1">
+        {/* 3 High-Impact Failure Mode Cards: Expanded Width & Generous Spacing */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7.5 xl:gap-8 w-full max-w-7xl mx-auto pt-1">
           {problemCards.map((card) => {
             const Icon = card.icon;
             const mediaSrc = useAnimated ? card.gifUrl : card.pngUrl;
@@ -188,55 +188,50 @@ export default function SlideIntroduction() {
                 key={card.id}
                 className="group bg-white border-2 border-[#801214]/30 hover:border-[#801214] rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between text-left transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
               >
-                {/* Visual Medical Scan Media Header Viewport */}
-                <div className="relative w-full aspect-[4/3] bg-zinc-950 overflow-hidden border-b-2 border-[#801214]/20 flex items-center justify-center">
+                {/* Card Top Header: Clean Pillar Tag & Actions (No wrapping) */}
+                <div className="px-4 py-2.5 bg-zinc-50/90 border-b border-[#801214]/15 flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-black text-[#801214] uppercase tracking-wider bg-[#801214]/10 px-2.5 py-0.5 rounded-full">
+                    {card.pillar}
+                  </span>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setActiveModal(card)}
+                      className="w-6 h-6 rounded-md bg-white hover:bg-[#801214] hover:text-white text-zinc-600 flex items-center justify-center transition-all border border-zinc-200 shadow-xs"
+                      title="Enlarge slice & view clinical diagnostics"
+                    >
+                      <Maximize2 className="w-3 h-3" />
+                    </button>
+                    <span className="w-6 h-6 rounded-md bg-[#801214] flex items-center justify-center text-white shadow-xs">
+                      <Icon className="w-3 h-3" />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Visual Medical Scan Media Viewport: Calibrated height for expanded card width */}
+                <div className="relative w-full h-48 sm:h-52 bg-zinc-950 overflow-hidden flex items-center justify-center">
                   <img
                     src={mediaSrc}
                     alt={card.alt}
-                    className="w-full h-full object-contain pointer-events-none transition-transform duration-500 group-hover:scale-[1.03]"
+                    className="w-full h-full object-contain pointer-events-none transition-transform duration-500 group-hover:scale-[1.02]"
                     loading="eager"
                   />
 
-                  {/* Top Floating Badge on Image */}
-                  <div className="absolute top-2 left-2 flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono font-bold bg-black/85 text-white px-2 py-0.5 rounded-md border border-white/20 backdrop-blur-sm">
+                  {/* Bottom HUD Overlays: Case Identifier on Left & Status on Right */}
+                  <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between pointer-events-none">
+                    <span className="text-[9px] font-mono font-semibold px-2 py-0.5 rounded bg-black/80 text-white/90 border border-white/15 backdrop-blur-sm">
                       {card.caseId}
                     </span>
-                  </div>
-
-                  {/* Expand / Maximize Button */}
-                  <button
-                    onClick={() => setActiveModal(card)}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-black/75 hover:bg-[#801214] text-white flex items-center justify-center transition-all duration-200 border border-white/20 shadow-md opacity-90 group-hover:opacity-100"
-                    title="Enlarge slice & view clinical diagnostic details"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </button>
-
-                  {/* Bottom Indicator on Image */}
-                  <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between pointer-events-none">
-                    <span className="text-[9px] font-mono font-semibold px-2 py-0.5 rounded bg-black/80 text-white/90 border border-white/10 backdrop-blur-sm">
-                      {card.highlight}
-                    </span>
-                    <span className="flex items-center gap-1 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-[#801214]/90 text-white border border-white/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                      {useAnimated ? "Cycle" : "Scan"}
+                    <span className="flex items-center gap-1 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-black/80 text-white/90 border border-white/15 backdrop-blur-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      {useAnimated ? "Looping" : "Static"}
                     </span>
                   </div>
                 </div>
 
                 {/* Card Content & Clinical Pathology Breakdown */}
-                <div className="p-4 flex flex-col justify-between flex-1 space-y-2.5">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono font-black text-[#801214] uppercase tracking-wider bg-[#801214]/10 px-2 py-0.5 rounded-full">
-                        {card.pillar}
-                      </span>
-                      <span className="w-7 h-7 rounded-lg bg-[#801214] flex items-center justify-center text-white shadow-sm">
-                        <Icon className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
-
+                <div className="p-4 sm:p-4.5 flex flex-col justify-between flex-1 space-y-2">
+                  <div className="space-y-1">
                     <div>
                       <div className="text-xl sm:text-2xl font-black text-black leading-tight">
                         {card.title}
@@ -251,7 +246,7 @@ export default function SlideIntroduction() {
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-[#801214]/20 flex items-center justify-between text-[10px] font-mono font-bold text-zinc-500">
+                  <div className="pt-2.5 pb-0.5 border-t border-[#801214]/15 flex items-center justify-between text-[10px] font-mono font-bold text-zinc-500">
                     <span>{card.tagLeft}</span>
                     <span className="text-[#801214]">{card.tagRight}</span>
                   </div>
@@ -261,8 +256,8 @@ export default function SlideIntroduction() {
           })}
         </div>
 
-        {/* HyperScale-UNet Resolution Framework Banner */}
-        <div className="w-full max-w-5xl mx-auto bg-gradient-to-r from-[#faf5f5] via-white to-[#faf5f5] border-2 border-[#801214] rounded-2xl p-3.5 sm:p-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+        {/* HyperScale-UNet Resolution Framework Banner: Expanded Width */}
+        <div className="w-full max-w-7xl mx-auto bg-gradient-to-r from-[#faf5f5] via-white to-[#faf5f5] border-2 border-[#801214] rounded-2xl p-3.5 sm:p-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#801214] flex items-center justify-center text-white shrink-0 shadow-md">
               <Cpu className="w-5 h-5 text-white" />
