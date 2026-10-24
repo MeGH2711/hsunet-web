@@ -13,7 +13,8 @@ import {
   CheckCircle2,
   XCircle,
   BrainCircuit,
-  Maximize2
+  Maximize2,
+  Presentation
 } from "lucide-react";
 import { cn, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
 
@@ -101,11 +102,11 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* Navigation Tabs (Visuals, Overview, Curves, Metrics) */}
+      {/* Navigation Tabs (Visuals, Overview, Curves, Metrics, Slides) */}
       <div
         className={cn(
           "px-3 pt-3 pb-2 border-b border-zinc-800/80 grid gap-1",
-          model === "ensemble" ? "grid-cols-3" : "grid-cols-4"
+          model === "ensemble" ? "grid-cols-4" : "grid-cols-5"
         )}
       >
         <button
@@ -164,6 +165,36 @@ export default function Sidebar({
         >
           <TableIcon className="w-4 h-4 mb-1" />
           Metrics
+        </button>
+
+        <button
+          onClick={() => setCurrentView("presentation")}
+          className={cn(
+            "flex flex-col items-center justify-center py-2 px-1 rounded-md text-[11px] font-medium transition-all",
+            currentView === "presentation" || currentView === "slides"
+              ? "bg-[#801214] text-white shadow-md border border-white/20 font-bold"
+              : "text-rose-200/80 hover:text-white hover:bg-[#801214]/30"
+          )}
+          title="Ahmedabad University Presentation Slides"
+        >
+          <Presentation className="w-4 h-4 mb-1" />
+          Slides
+        </button>
+      </div>
+
+      {/* Quick Launch Presentation Banner */}
+      <div className="px-3 py-2 border-b border-zinc-800/80 bg-gradient-to-r from-[#801214]/25 via-zinc-950 to-zinc-950">
+        <button
+          onClick={() => setCurrentView("presentation")}
+          className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-[#801214] hover:bg-[#991619] text-white font-semibold text-xs transition shadow-md border border-white/20 group"
+        >
+          <div className="flex items-center gap-2">
+            <Presentation className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
+            <span>Launch Presentation</span>
+          </div>
+          <span className="text-[10px] font-mono bg-white/20 px-1.5 py-0.5 rounded text-white font-bold">
+            3 Slides
+          </span>
         </button>
       </div>
 

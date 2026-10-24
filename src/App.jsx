@@ -12,6 +12,7 @@ import SubjectInspector from "./components/SubjectInspector";
 import OverviewView from "./components/OverviewView";
 import TrainingView from "./components/TrainingView";
 import CaseTableView from "./components/CaseTableView";
+import PresentationView from "./components/presentation/PresentationView";
 import { Loader2, AlertCircle } from "lucide-react";
 
 export default function App() {
@@ -39,6 +40,7 @@ export default function App() {
   // Derive current view from pathname
   const currentView = useMemo(() => {
     const p = location.pathname.toLowerCase();
+    if (p.includes("/presentation") || p.includes("/slides")) return "presentation";
     if (p.includes("/overview")) return "overview";
     if (p.includes("/curves") || p.includes("/training")) return "curves";
     if (p.includes("/metrics") || p.includes("/table")) return "metrics";
@@ -47,7 +49,9 @@ export default function App() {
 
   // Navigate to corresponding route for active model
   const handleViewChange = (view) => {
-    if (view === "overview") {
+    if (view === "presentation" || view === "slides") {
+      navigate(`/${activeModel}/presentation`);
+    } else if (view === "overview") {
       navigate(`/${activeModel}/overview`);
     } else if (view === "curves" || view === "training") {
       if (activeModel === "ensemble") {
@@ -267,34 +271,36 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-black text-white font-sans">
-      {/* Sidebar Navigation & Live Filters */}
-      <Sidebar
-        data={data}
-        model={activeModel}
-        onModelChange={handleModelChange}
-        currentView={currentView}
-        setCurrentView={handleViewChange}
-        selectedSubject={selectedSubject}
-        setSelectedSubject={(c) => {
-          setSelectedSubject(c);
-          if (currentView !== "visuals") {
-            navigate(`/${activeModel}/visuals`);
-          }
-        }}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedSite={selectedSite}
-        setSelectedSite={setSelectedSite}
-        selectedSize={selectedSize}
-        setSelectedSize={setSelectedSize}
-        selectedSplit={selectedSplit}
-        setSelectedSplit={setSelectedSplit}
-        onlyWithVisuals={onlyWithVisuals}
-        setOnlyWithVisuals={setOnlyWithVisuals}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        filteredCases={filteredCases}
-      />
+      {/* Sidebar Navigation & Live Filters - Hidden in Presentation View */}
+      {currentView !== "presentation" && currentView !== "slides" && (
+        <Sidebar
+          data={data}
+          model={activeModel}
+          onModelChange={handleModelChange}
+          currentView={currentView}
+          setCurrentView={handleViewChange}
+          selectedSubject={selectedSubject}
+          setSelectedSubject={(c) => {
+            setSelectedSubject(c);
+            if (currentView !== "visuals") {
+              navigate(`/${activeModel}/visuals`);
+            }
+          }}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedSite={selectedSite}
+          setSelectedSite={setSelectedSite}
+          selectedSize={selectedSize}
+          setSelectedSize={setSelectedSize}
+          selectedSplit={selectedSplit}
+          setSelectedSplit={setSelectedSplit}
+          onlyWithVisuals={onlyWithVisuals}
+          setOnlyWithVisuals={setOnlyWithVisuals}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          filteredCases={filteredCases}
+        />
+      )}
 
       {/* Main Routed View Area */}
       <main className="flex-1 h-full min-h-0 overflow-hidden bg-black flex flex-col">
@@ -346,6 +352,15 @@ export default function App() {
               />
             }
           />
+          <Route
+            path="/hsunet/presentation"
+            element={
+              <PresentationView
+                model="hsunet"
+                onExit={() => navigate("/hsunet/visuals")}
+              />
+            }
+          />
 
           {/* ==================== ENSEMBLE ROUTES (NO CURVES) ==================== */}
           <Route
@@ -391,12 +406,36 @@ export default function App() {
             }
           />
           <Route
+            path="/ensemble/presentation"
+            element={
+              <PresentationView
+                model="ensemble"
+                onExit={() => navigate("/ensemble/visuals")}
+              />
+            }
+          />
+          <Route
             path="/ensemble/curves"
             element={<Navigate to="/ensemble/overview" replace />}
           />
           <Route
             path="/ensemble"
             element={<Navigate to="/ensemble/visuals" replace />}
+          />
+
+          {/* ==================== PRESENTATION DIRECT ROUTES ==================== */}
+          <Route
+            path="/presentation"
+            element={
+              <PresentationView
+                model={activeModel}
+                onExit={() => navigate(`/${activeModel}/visuals`)}
+              />
+            }
+          />
+          <Route
+            path="/slides"
+            element={<Navigate to={`/${activeModel}/presentation`} replace />}
           />
 
           {/* ==================== LEGACY & ROOT REDIRECTS ==================== */}
