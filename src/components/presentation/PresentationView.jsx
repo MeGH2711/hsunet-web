@@ -192,79 +192,6 @@ export default function PresentationView({ model = "hsunet", onExit }) {
         </div>
       )}
 
-      {/* TOP FLOATING CONTROLS BAR in Light Theme */}
-      <header className="absolute top-3 left-6 right-6 z-40 flex items-center justify-between pointer-events-none">
-        {/* Left: Exit to Dashboard & Category */}
-        <div className="flex items-center gap-2 pointer-events-auto">
-          {onExit && (
-            <button
-              onClick={onExit}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/95 hover:bg-[#801214] text-[#801214] hover:text-white text-xs font-bold backdrop-blur-md border-2 border-[#801214]/30 shadow-md transition-all"
-              title="Return to Studio Dashboard"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Studio</span>
-            </button>
-          )}
-
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/95 backdrop-blur-md border border-[#801214]/20 text-xs font-mono font-bold text-[#801214] shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-[#801214]" />
-            <span>{currentConfig.category}</span>
-          </div>
-        </div>
-
-        {/* Right: Quick Action Controls Pill */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/95 backdrop-blur-md border-2 border-[#801214]/25 shadow-lg pointer-events-auto">
-          {/* Slide Drawer Button */}
-          <button
-            onClick={() => setShowSlideDrawer(true)}
-            className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
-            title="Slide Overview (G)"
-          >
-            <Grid className="w-4 h-4" />
-          </button>
-
-          {/* Autoplay Toggle */}
-          <button
-            onClick={() => setIsPlaying((p) => !p)}
-            className={`p-1.5 rounded-lg transition ${
-              isPlaying
-                ? "bg-[#801214] text-white shadow-md"
-                : "text-[#801214] hover:bg-[#801214]/10"
-            }`}
-            title={isPlaying ? "Pause Autoplay (P)" : "Start Autoplay (P)"}
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
-          </button>
-
-          {/* Fullscreen Toggle */}
-          <button
-            onClick={toggleFullscreen}
-            className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
-            title={isFullscreen ? "Exit Fullscreen (F)" : "Enter Fullscreen (F)"}
-          >
-            {isFullscreen ? (
-              <Minimize2 className="w-4 h-4" />
-            ) : (
-              <Maximize2 className="w-4 h-4" />
-            )}
-          </button>
-
-          {/* Keyboard Shortcuts Hint */}
-          <button
-            onClick={() => setShowKeyHints(true)}
-            className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
-            title="Keyboard Shortcuts (?)"
-          >
-            <Keyboard className="w-4 h-4" />
-          </button>
-        </div>
-      </header>
-
       {/* MAIN SLIDE STAGE CANVAS */}
       <main className="relative flex-1 w-full h-full overflow-hidden flex items-center justify-center bg-white">
         <div className="w-full h-full transition-all duration-300">
@@ -272,48 +199,93 @@ export default function PresentationView({ model = "hsunet", onExit }) {
         </div>
       </main>
 
-      {/* BOTTOM FLOATING CONTROLS DOCK in Pure Light Theme */}
-      <footer className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-1.5 rounded-full bg-white/95 backdrop-blur-xl border-2 border-[#801214]/30 shadow-2xl">
-        {/* Previous Slide Button */}
+      {/* ALL CONTROLS IN ONE ROW ONLY AT THE BOTTOM OF THE SLIDES */}
+      <footer className="absolute bottom-3 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 p-1 rounded-xl bg-white/95 backdrop-blur-md border-2 border-[#801214]/25 shadow-xl select-none pointer-events-auto">
+        {/* Studio Exit Button */}
+        {onExit && (
+          <button
+            onClick={onExit}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white hover:bg-[#801214] text-[#801214] hover:text-white text-xs font-bold transition-all border border-[#801214]/20"
+            title="Return to Studio Dashboard"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Studio</span>
+          </button>
+        )}
+
+        <div className="w-[1px] h-4 bg-[#801214]/20 mx-0.5" />
+
+        {/* Previous Slide Arrow */}
         <button
           onClick={goToPrevSlide}
-          className="p-2 rounded-full text-[#801214] hover:text-white hover:bg-[#801214] transition-all"
+          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214] hover:text-white transition-all disabled:opacity-30"
           title="Previous Slide (← / Space)"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4" />
         </button>
 
-        {/* Slide Selector Indicators / Dots */}
-        <div className="flex items-center gap-1.5 px-2">
-          {SLIDES_CONFIG.map((slide, index) => {
-            const isActive = index === currentSlideIndex;
-            return (
-              <button
-                key={slide.id}
-                onClick={() => goToSlide(index)}
-                className={`transition-all duration-300 rounded-full ${
-                  isActive
-                    ? "w-8 h-2.5 bg-[#801214] shadow-md shadow-[#801214]/30"
-                    : "w-2.5 h-2.5 bg-[#801214]/30 hover:bg-[#801214]/60"
-                }`}
-                title={`Jump to ${slide.navTitle}`}
-              />
-            );
-          })}
-        </div>
-
         {/* Slide Counter Readout */}
-        <span className="font-mono text-xs font-black px-2 text-[#801214]">
+        <span className="font-mono text-xs font-black px-1.5 text-[#801214] select-none">
           {String(currentSlideIndex + 1).padStart(2, "0")} / {String(totalSlides).padStart(2, "0")}
         </span>
 
-        {/* Next Slide Button */}
+        {/* Next Slide Arrow */}
         <button
           onClick={goToNextSlide}
-          className="p-2 rounded-full text-[#801214] hover:text-white hover:bg-[#801214] transition-all"
+          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214] hover:text-white transition-all"
           title="Next Slide (→ / Space)"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-4 h-4" />
+        </button>
+
+        <div className="w-[1px] h-4 bg-[#801214]/20 mx-0.5" />
+
+        {/* Slide Drawer Button */}
+        <button
+          onClick={() => setShowSlideDrawer(true)}
+          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
+          title="Slide Overview (G)"
+        >
+          <Grid className="w-4 h-4" />
+        </button>
+
+        {/* Autoplay Toggle */}
+        <button
+          onClick={() => setIsPlaying((p) => !p)}
+          className={`p-1.5 rounded-lg transition ${
+            isPlaying
+              ? "bg-[#801214] text-white shadow-md"
+              : "text-[#801214] hover:bg-[#801214]/10"
+          }`}
+          title={isPlaying ? "Pause Autoplay (P)" : "Start Autoplay (P)"}
+        >
+          {isPlaying ? (
+            <Pause className="w-4 h-4" />
+          ) : (
+            <Play className="w-4 h-4" />
+          )}
+        </button>
+
+        {/* Fullscreen Toggle */}
+        <button
+          onClick={toggleFullscreen}
+          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
+          title={isFullscreen ? "Exit Fullscreen (F)" : "Enter Fullscreen (F)"}
+        >
+          {isFullscreen ? (
+            <Minimize2 className="w-4 h-4" />
+          ) : (
+            <Maximize2 className="w-4 h-4" />
+          )}
+        </button>
+
+        {/* Keyboard Shortcuts Hint */}
+        <button
+          onClick={() => setShowKeyHints(true)}
+          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
+          title="Keyboard Shortcuts (?)"
+        >
+          <Keyboard className="w-4 h-4" />
         </button>
       </footer>
 
