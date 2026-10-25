@@ -9,16 +9,13 @@ import {
   Maximize2,
   X,
   Sparkles,
-  ZoomIn,
-  Play,
-  RotateCcw
+  ZoomIn
 } from "lucide-react";
 import { PRESENTATION_METADATA } from "./slidesData";
 
 export default function SlideIntroduction() {
   // State for optional enlarged modal view of sample images/gifs
   const [activeModal, setActiveModal] = useState(null);
-  const [useAnimated, setUseAnimated] = useState(true);
 
   const problemCards = [
     {
@@ -99,7 +96,7 @@ export default function SlideIntroduction() {
   ];
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between p-6 sm:p-8 md:p-10 lg:p-12 overflow-hidden select-none bg-white text-[#801214]">
+    <div className="relative w-full h-full flex flex-col justify-between pt-3 sm:pt-4 md:pt-5 px-4 sm:px-8 lg:px-10 pb-3 sm:pb-5 overflow-hidden select-none bg-white text-[#801214]">
       {/* Background Subtle Geometric Mesh & Crimson Accents */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[54rem] h-[54rem] rounded-full bg-[#801214]/4 blur-3xl" />
@@ -108,10 +105,10 @@ export default function SlideIntroduction() {
         <div className="absolute inset-0 bg-[radial-gradient(#801214_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.05]" />
       </div>
 
-      {/* TOP BAR: Category Pill, Media Switcher & Top-Right AU Logo */}
+      {/* TOP BAR: Category Pill & Top-Right AU Logo */}
       <div className="relative z-30 flex items-center justify-between w-full">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#801214] text-white text-xs font-semibold tracking-wider uppercase shadow-md shadow-[#801214]/20 border border-[#801214]">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#801214] text-white text-xs font-semibold tracking-wider uppercase shadow-md shadow-[#801214]/20 border border-[#801214]">
             <Activity className="w-3.5 h-3.5 text-white" />
             <span>Problem & Clinical Challenge</span>
           </div>
@@ -120,59 +117,38 @@ export default function SlideIntroduction() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#801214] animate-pulse" />
             ISLES 2026 / ATLAS 3.0 Clinical Corpus (1,453 Cases)
           </span>
-
-          {/* Media Format Toggle: Live Animated GIF vs Static Error Map */}
-          <button
-            onClick={() => setUseAnimated(!useAnimated)}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold border transition-all duration-200 bg-white hover:bg-[#801214]/5 border-[#801214]/30 text-[#801214] shadow-sm"
-            title="Toggle between real-time looping GIF animation and static failure map"
-          >
-            {useAnimated ? (
-              <>
-                <RotateCcw className="w-3 h-3 text-[#801214]" />
-                <span>Animation: Active</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3 h-3 text-[#801214]" />
-                <span>Show Animation</span>
-              </>
-            )}
-          </button>
         </div>
 
         {/* Top-Right AU Logo */}
         <div className="flex items-center">
-          <div className="bg-white px-5 py-2.5 rounded-2xl shadow-xl border-2 border-[#801214]/25 flex items-center transition-all duration-300 hover:border-[#801214] hover:scale-105">
-            <img
-              src={PRESENTATION_METADATA.logoUrl}
-              alt="Ahmedabad University Logo"
-              className="h-12 sm:h-14 md:h-16 lg:h-18 w-auto object-contain block"
-            />
-          </div>
+          <img
+            src={PRESENTATION_METADATA.logoUrl}
+            alt="Ahmedabad University Logo"
+            className="h-12 sm:h-14 md:h-16 lg:h-18 w-auto object-contain block select-none transition-transform duration-300 hover:scale-105"
+          />
         </div>
       </div>
 
-      {/* MAIN CONTENT ZONE: Balanced Spacing with Problem Visual Cards */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center max-w-7xl mx-auto my-auto w-full space-y-4 sm:space-y-5 px-3 sm:px-6">
+      {/* MAIN CONTENT ZONE: Fully Balanced Widescreen Utilization */}
+      <div className="relative z-20 flex-1 flex flex-col justify-evenly items-center text-center max-w-7xl mx-auto w-full px-3 sm:px-6 py-2">
         {/* Category Pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#801214]/10 border border-[#801214]/30 text-[#801214] text-xs font-mono font-bold tracking-wider uppercase shadow-sm">
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#801214]/10 border border-[#801214]/30 text-[#801214] text-xs sm:text-sm font-mono font-bold tracking-wider uppercase shadow-xs">
           <ShieldAlert className="w-4 h-4 text-[#801214]" />
           <span>Core Failure Modes of Standard Segmentation Architectures</span>
         </div>
 
         {/* Slide Main Heading */}
         <div className="space-y-1.5 max-w-6xl mx-auto">
-          <h2 className="tracking-tight leading-tight select-none">
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-4.5xl font-black text-black">
+          <h2 className="tracking-tight select-none">
+            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-black leading-tight">
               The Challenge:{" "}
               <span className="text-[#801214]">Profound Scale Divergence</span>
             </span>
-            <span className="block text-lg sm:text-xl md:text-2xl text-[#52090b] font-bold mt-1">
+            <span className="block text-lg sm:text-xl md:text-2xl lg:text-2.5xl text-[#52090b] font-bold mt-1">
               Across 4 Orders of Magnitude in 1,453 Multi-Centric Cases
             </span>
           </h2>
-          <p className="text-xs sm:text-sm md:text-base text-zinc-700 font-medium max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-zinc-700 font-medium max-w-5xl mx-auto leading-relaxed pt-0.5">
             Direct clinical scans from the dataset illustrate why baseline nnU-Net models fail on acute ischemic stroke lesions.
           </p>
         </div>
@@ -181,7 +157,7 @@ export default function SlideIntroduction() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7.5 xl:gap-8 w-full max-w-7xl mx-auto pt-1">
           {problemCards.map((card) => {
             const Icon = card.icon;
-            const mediaSrc = useAnimated ? card.gifUrl : card.pngUrl;
+            const mediaSrc = card.gifUrl;
 
             return (
               <div
@@ -217,14 +193,10 @@ export default function SlideIntroduction() {
                     loading="eager"
                   />
 
-                  {/* Bottom HUD Overlays: Case Identifier on Left & Status on Right */}
-                  <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between pointer-events-none">
+                  {/* Bottom HUD Overlay: Case Identifier */}
+                  <div className="absolute bottom-1.5 left-2 pointer-events-none">
                     <span className="text-[9px] font-mono font-semibold px-2 py-0.5 rounded bg-black/80 text-white/90 border border-white/15 backdrop-blur-sm">
                       {card.caseId}
-                    </span>
-                    <span className="flex items-center gap-1 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-black/80 text-white/90 border border-white/15 backdrop-blur-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      {useAnimated ? "Looping" : "Static"}
                     </span>
                   </div>
                 </div>
