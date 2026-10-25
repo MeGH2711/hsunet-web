@@ -17,11 +17,15 @@ import {
 import { SLIDES_CONFIG, PRESENTATION_METADATA } from "./slidesData";
 import SlideTitle from "./SlideTitle";
 import SlideIntroduction from "./SlideIntroduction";
+import SlideArchitecture from "./SlideArchitecture";
+import SlideReferences from "./SlideReferences";
 import SlideConclusion from "./SlideConclusion";
 
 const SLIDE_COMPONENTS = {
   title: SlideTitle,
   introduction: SlideIntroduction,
+  architecture: SlideArchitecture,
+  references: SlideReferences,
   conclusion: SlideConclusion,
 };
 

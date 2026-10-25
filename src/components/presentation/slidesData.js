@@ -39,8 +39,22 @@ export const SLIDES_CONFIG = [
     category: "Clinical Challenge",
   },
   {
-    id: "conclusion",
+    id: "architecture",
     slideNumber: 3,
+    hasSlideNumber: true, // Content slide MUST have slide number at bottom-right
+    navTitle: "Proposed Architecture",
+    category: "HyperScale-UNet Spec",
+  },
+  {
+    id: "references",
+    slideNumber: 4,
+    hasSlideNumber: true, // Content slide MUST have slide number at bottom-right
+    navTitle: "Publications & References",
+    category: "Academic Lineage",
+  },
+  {
+    id: "conclusion",
+    slideNumber: 5,
     hasSlideNumber: false, // Conclusion slide must NOT have slide number
     navTitle: "Conclusion & Q&A",
     category: "Discussion",

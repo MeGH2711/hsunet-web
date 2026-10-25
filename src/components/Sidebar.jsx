@@ -17,6 +17,7 @@ import {
   Presentation
 } from "lucide-react";
 import { cn, getDiceBg, getSplitBadge, getSplitDot } from "../lib/utils";
+import { SLIDES_CONFIG } from "./presentation/slidesData";
 
 export default function Sidebar({
   data,
@@ -193,7 +194,7 @@ export default function Sidebar({
             <span>Launch Presentation</span>
           </div>
           <span className="text-[10px] font-mono bg-white/20 px-1.5 py-0.5 rounded text-white font-bold">
-            3 Slides
+            {SLIDES_CONFIG.length} Slides
           </span>
         </button>
       </div>

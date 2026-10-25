@@ -3,7 +3,6 @@ import {
   Activity,
   Layers,
   Building2,
-  ShieldAlert,
   TrendingDown,
   Cpu,
   Maximize2,
@@ -124,37 +123,31 @@ export default function SlideIntroduction() {
           <img
             src={PRESENTATION_METADATA.logoUrl}
             alt="Ahmedabad University Logo"
-            className="h-12 sm:h-14 md:h-16 lg:h-18 w-auto object-contain block select-none transition-transform duration-300 hover:scale-105"
+            className="h-16 sm:h-20 md:h-22 lg:h-24 xl:h-28 w-auto object-contain block select-none transition-transform duration-300 hover:scale-105"
           />
         </div>
       </div>
 
-      {/* MAIN CONTENT ZONE: Fully Balanced Widescreen Utilization */}
-      <div className="relative z-20 flex-1 flex flex-col justify-evenly items-center text-center max-w-7xl mx-auto w-full px-3 sm:px-6 py-2">
-        {/* Category Pill */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#801214]/10 border border-[#801214]/30 text-[#801214] text-xs sm:text-sm font-mono font-bold tracking-wider uppercase shadow-xs">
-          <ShieldAlert className="w-4 h-4 text-[#801214]" />
-          <span>Core Failure Modes of Standard Segmentation Architectures</span>
-        </div>
-
+      {/* MAIN CONTENT ZONE: Fully Balanced & Even Widescreen Layout */}
+      <div className="relative z-20 flex-1 flex flex-col justify-evenly items-center text-center max-w-[96rem] 2xl:max-w-[106rem] mx-auto w-full px-2 sm:px-4 py-2 sm:py-3">
         {/* Slide Main Heading */}
-        <div className="space-y-1.5 max-w-6xl mx-auto">
+        <div className="space-y-2 max-w-7xl mx-auto">
           <h2 className="tracking-tight select-none">
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-black leading-tight">
+            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-5.5xl font-black text-black leading-tight">
               The Challenge:{" "}
               <span className="text-[#801214]">Profound Scale Divergence</span>
             </span>
-            <span className="block text-lg sm:text-xl md:text-2xl lg:text-2.5xl text-[#52090b] font-bold mt-1">
+            <span className="block text-xl sm:text-2xl md:text-2.5xl lg:text-3xl text-[#52090b] font-bold mt-1.5">
               Across 4 Orders of Magnitude in 1,453 Multi-Centric Cases
             </span>
           </h2>
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-zinc-700 font-medium max-w-5xl mx-auto leading-relaxed pt-0.5">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-zinc-600 font-medium max-w-6xl mx-auto leading-relaxed pt-0.5">
             Direct clinical scans from the dataset illustrate why baseline nnU-Net models fail on acute ischemic stroke lesions.
           </p>
         </div>
 
         {/* 3 High-Impact Failure Mode Cards: Expanded Width & Generous Spacing */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7.5 xl:gap-8 w-full max-w-7xl mx-auto pt-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7.5 xl:gap-8 w-full max-w-[96rem] 2xl:max-w-[106rem] mx-auto pt-1">
           {problemCards.map((card) => {
             const Icon = card.icon;
             const mediaSrc = card.gifUrl;
@@ -262,7 +255,7 @@ export default function SlideIntroduction() {
       <div className="relative z-20 flex items-center justify-between text-xs text-[#801214] pt-3 border-t-2 border-[#801214]/20 w-full">
         <div className="flex items-center gap-2 font-medium">
           <span className="w-2 h-2 rounded-full bg-[#801214]" />
-          <span>School of Engineering and Applied Science • Ahmedabad University</span>
+          <span>School of Engineering and Applied Science • Ahmedabad University • Megh Patel &amp; Konark Karia</span>
         </div>
 
         {/* BOTTOM RIGHT SLIDE NUMBER: Slide 2 MUST have slide number */}

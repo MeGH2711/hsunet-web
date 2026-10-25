@@ -40,13 +40,13 @@ export default function SlideTitle() {
           <img
             src={PRESENTATION_METADATA.logoUrl}
             alt="Ahmedabad University Logo"
-            className="h-12 sm:h-14 md:h-16 lg:h-18 w-auto object-contain block select-none transition-transform duration-300 hover:scale-105"
+            className="h-16 sm:h-20 md:h-22 lg:h-24 xl:h-28 w-auto object-contain block select-none transition-transform duration-300 hover:scale-105"
           />
         </div>
       </div>
 
       {/* MAIN CENTER-ALIGNED SLIDE CONTENT: Fully Balanced & Proportional White Space */}
-      <div className="relative z-20 flex-1 flex flex-col justify-evenly items-center text-center max-w-6xl xl:max-w-7xl mx-auto w-full px-4 sm:px-6 py-2 sm:py-3">
+      <div className="relative z-20 flex-1 flex flex-col justify-evenly items-center text-center max-w-[96rem] 2xl:max-w-[106rem] mx-auto w-full px-2 sm:px-4 py-2 sm:py-3">
         {/* Top Centered Category Pill */}
         <div className="inline-flex items-center gap-2.5 px-5 py-1.5 rounded-full bg-[#801214]/10 border border-[#801214]/30 text-[#801214] text-xs sm:text-sm font-mono font-bold tracking-wider uppercase shadow-xs">
           <Scale className="w-4 h-4 text-[#801214]" />
@@ -54,7 +54,7 @@ export default function SlideTitle() {
         </div>
 
         {/* Main Title & Subtitle */}
-        <div className="space-y-2 max-w-6xl mx-auto">
+        <div className="space-y-2 max-w-7xl mx-auto">
           <h1 className="tracking-tight select-none">
             <span className="block text-3xl sm:text-4.5xl md:text-5.5xl lg:text-6xl xl:text-6.5xl font-black text-[#801214] leading-[1.08]">
               <span className="text-black">HyperScale-UNet:</span>{" "}
@@ -65,14 +65,14 @@ export default function SlideTitle() {
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-600 font-medium max-w-5xl mx-auto leading-relaxed pt-1">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-600 font-medium max-w-6xl mx-auto leading-relaxed pt-1">
             A Unified Deep Learning Architecture Optimizing Small (&lt; 1.5 mL), Medium, and Large Lesions Across 55 Multi-Centric Clinical Sites
           </p>
         </div>
 
         {/* Centered 3-Pillar Architectural Highlight Cards (Widescreen Canvas Utilization) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-7 w-full max-w-5xl xl:max-w-6xl mx-auto">
-          <div className="bg-white border-2 border-[#801214]/25 hover:border-[#801214] rounded-2xl p-5 sm:p-6 lg:p-7 shadow-md transition-all hover:shadow-xl hover:-translate-y-0.5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-8 w-full max-w-6xl xl:max-w-7xl 2xl:max-w-[85rem] mx-auto">
+          <div className="bg-white border-2 border-[#801214]/25 hover:border-[#801214] rounded-2xl p-5 sm:p-6 lg:p-8 shadow-md transition-all hover:shadow-xl hover:-translate-y-0.5">
             <div className="flex items-center justify-center gap-2 text-[#801214] mb-2">
               <Scale className="w-5 h-5 text-[#801214]" />
               <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-zinc-500">Scale Invariance</span>
@@ -81,7 +81,7 @@ export default function SlideTitle() {
             <div className="text-xs sm:text-sm lg:text-base text-zinc-600 font-semibold mt-1.5">0.012 mL to 387.6 mL Coverage</div>
           </div>
 
-          <div className="bg-white border-2 border-[#801214]/25 hover:border-[#801214] rounded-2xl p-5 sm:p-6 lg:p-7 shadow-md transition-all hover:shadow-xl hover:-translate-y-0.5">
+          <div className="bg-white border-2 border-[#801214]/25 hover:border-[#801214] rounded-2xl p-5 sm:p-6 lg:p-8 shadow-md transition-all hover:shadow-xl hover:-translate-y-0.5">
             <div className="flex items-center justify-center gap-2 text-[#801214] mb-2">
               <Building2 className="w-5 h-5 text-[#801214]" />
               <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-zinc-500">Clinical Scope</span>
@@ -90,7 +90,7 @@ export default function SlideTitle() {
             <div className="text-xs sm:text-sm lg:text-base text-zinc-600 font-semibold mt-1.5">55 Multi-Centric Sites</div>
           </div>
 
-          <div className="bg-white border-2 border-[#801214]/25 hover:border-[#801214] rounded-2xl p-5 sm:p-6 lg:p-7 shadow-md transition-all hover:shadow-xl hover:-translate-y-0.5">
+          <div className="bg-white border-2 border-[#801214]/25 hover:border-[#801214] rounded-2xl p-5 sm:p-6 lg:p-8 shadow-md transition-all hover:shadow-xl hover:-translate-y-0.5">
             <div className="flex items-center justify-center gap-2 text-[#801214] mb-2">
               <Layers className="w-5 h-5 text-[#801214]" />
               <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-zinc-500">Multi-Lesion</span>
@@ -101,7 +101,7 @@ export default function SlideTitle() {
         </div>
 
         {/* Presenters & Academic Institution Card: Executive Split Horizontal Layout */}
-        <div className="bg-white rounded-2xl px-8 sm:px-12 py-5 sm:py-6 border-2 border-[#801214] shadow-xl w-full max-w-5xl xl:max-w-6xl mx-auto transition-all duration-300 hover:shadow-2xl">
+        <div className="bg-white rounded-2xl px-8 sm:px-12 py-5 sm:py-6 border-2 border-[#801214] shadow-xl w-full max-w-6xl xl:max-w-7xl 2xl:max-w-[85rem] mx-auto transition-all duration-300 hover:shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             {/* Left Column: Presenters */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-1">
@@ -138,10 +138,10 @@ export default function SlideTitle() {
       <div className="relative z-20 flex items-center justify-between text-xs text-[#801214] pt-4 border-t-2 border-[#801214]/20 w-full">
         <div className="flex items-center gap-2 font-medium">
           <span className="w-2 h-2 rounded-full bg-[#801214]" />
-          <span>Ahmedabad University • School of Engineering and Applied Science</span>
+          <span>School of Engineering and Applied Science • Ahmedabad University • Megh Patel &amp; Konark Karia</span>
         </div>
         <div className="font-mono text-[11px] font-bold text-[#801214]">
-          Megh Patel & Konark Karia
+          ISLES 2026 / ATLAS 3.0
         </div>
         {/* Title slide intentionally has NO slide number */}
       </div>

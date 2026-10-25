@@ -3,13 +3,6 @@ import {
   HelpCircle,
   MessageSquare,
   GraduationCap,
-  Brain,
-  Award,
-  Network,
-  CheckCircle2,
-  Sparkles,
-  ShieldCheck,
-  Scale,
   Building2
 } from "lucide-react";
 import { PRESENTATION_METADATA } from "./slidesData";
@@ -42,45 +35,39 @@ export default function SlideConclusion() {
           <img
             src={PRESENTATION_METADATA.logoUrl}
             alt="Ahmedabad University Logo"
-            className="h-12 sm:h-14 md:h-16 lg:h-18 w-auto object-contain block select-none transition-transform duration-300 hover:scale-105"
+            className="h-16 sm:h-20 md:h-22 lg:h-24 xl:h-28 w-auto object-contain block select-none transition-transform duration-300 hover:scale-105"
           />
         </div>
       </div>
 
-      {/* MAIN CENTER-ALIGNED CONCLUSION CONTENT: Fully Balanced Widescreen Utilization */}
-      <div className="relative z-20 flex-1 flex flex-col justify-evenly items-center text-center max-w-5xl xl:max-w-6xl mx-auto w-full px-4 py-2 sm:py-3">
-        {/* Session Tag Pill */}
-        <div className="inline-flex items-center gap-2.5 px-5 py-1.5 rounded-full bg-[#801214]/10 text-[#801214] text-xs sm:text-sm font-mono font-bold tracking-wider uppercase border border-[#801214]/30 shadow-xs">
-          <Sparkles className="w-4 h-4 text-[#801214]" />
-          <span>Session Concluded</span>
-        </div>
-
+      {/* MAIN CENTER-ALIGNED CONCLUSION CONTENT: Fully Balanced & Even Widescreen Layout */}
+      <div className="relative z-20 flex-1 flex flex-col justify-evenly items-center text-center max-w-6xl xl:max-w-7xl 2xl:max-w-[85rem] mx-auto w-full px-4 py-3 sm:py-5">
         {/* Central Animated Question & Discussion Emblem */}
         <div className="flex items-center justify-center">
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-3xl bg-[#801214] flex items-center justify-center text-white shadow-2xl shadow-[#801214]/30 border-2 border-white transition-transform hover:scale-105">
-            <div className="absolute inset-0 rounded-3xl border-2 border-[#801214]/40 animate-ping opacity-30" />
-            <MessageSquare className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 text-white animate-pulse" />
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-3xl bg-[#801214] flex items-center justify-center text-white shadow-2xl shadow-[#801214]/30 border-2 border-white transition-transform hover:scale-105">
+            <div className="absolute inset-0 rounded-3xl border-2 border-[#801214]/40 animate-ping opacity-25" />
+            <MessageSquare className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-white animate-pulse" />
           </div>
         </div>
 
         {/* Thank You & Main Question Heading */}
-        <div className="space-y-2 max-w-4xl mx-auto">
-          <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-black tracking-tight leading-none">
+        <div className="space-y-3 max-w-5xl mx-auto">
+          <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-black tracking-tight leading-none">
             Thank You!
           </h2>
-          <h3 className="text-2xl sm:text-3.5xl md:text-4.5xl lg:text-5xl font-black text-[#801214] mt-2">
+          <h3 className="text-2xl sm:text-3.5xl md:text-4.5xl lg:text-5xl font-black text-[#801214] mt-2 sm:mt-3">
             Questions &amp; Discussion
           </h3>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-600 font-medium max-w-3xl mx-auto leading-relaxed pt-1">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-600 font-medium max-w-4xl mx-auto leading-relaxed pt-1">
             We welcome your questions, feedback, and technical inquiries on the HyperScale-UNet architecture and multi-site clinical evaluation.
           </p>
         </div>
 
         {/* Presenters & Academic Institution Card: Executive Split Horizontal Layout */}
-        <div className="bg-white rounded-2xl px-8 sm:px-12 py-5 sm:py-6 border-2 border-[#801214] shadow-xl w-full max-w-4xl xl:max-w-5xl mx-auto transition-all duration-300 hover:shadow-2xl">
+        <div className="bg-white rounded-2xl px-8 sm:px-12 py-6 sm:py-7 border-2 border-[#801214] shadow-xl w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto transition-all duration-300 hover:shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             {/* Left Column: Presenters */}
-            <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-1">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-1.5">
               <div className="text-xs font-bold text-[#801214] uppercase tracking-widest font-mono flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-[#801214]" />
                 <span>Project Presenters</span>
@@ -94,7 +81,7 @@ export default function SlideConclusion() {
             </div>
 
             {/* Right Column: Institution */}
-            <div className="flex flex-col items-center md:items-end text-center md:text-right space-y-1 md:border-l md:border-[#801214]/20 md:pl-8">
+            <div className="flex flex-col items-center md:items-end text-center md:text-right space-y-1.5 md:border-l md:border-[#801214]/20 md:pl-8">
               <div className="text-xs font-bold text-[#801214] uppercase tracking-widest font-mono flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-[#801214]" />
                 <span>Academic Institution</span>
@@ -109,25 +96,9 @@ export default function SlideConclusion() {
           </div>
         </div>
 
-        {/* Benchmark Metric Highlights: 3 Distinct Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-4xl xl:max-w-5xl mx-auto">
-          <div className="flex items-center justify-center gap-2.5 bg-white border-2 border-[#801214]/25 hover:border-[#801214] px-5 py-3 rounded-2xl text-xs sm:text-sm lg:text-base font-bold text-black shadow-sm transition hover:shadow-md">
-            <Award className="w-5 h-5 text-[#801214]" />
-            <span>1,453 Cases Evaluated</span>
-          </div>
-          <div className="flex items-center justify-center gap-2.5 bg-white border-2 border-[#801214]/25 hover:border-[#801214] px-5 py-3 rounded-2xl text-xs sm:text-sm lg:text-base font-bold text-black shadow-sm transition hover:shadow-md">
-            <Building2 className="w-5 h-5 text-[#801214]" />
-            <span>55 Multi-Centric Sites</span>
-          </div>
-          <div className="flex items-center justify-center gap-2.5 bg-white border-2 border-[#801214]/25 hover:border-[#801214] px-5 py-3 rounded-2xl text-xs sm:text-sm lg:text-base font-bold text-black shadow-sm transition hover:shadow-md">
-            <Scale className="w-5 h-5 text-[#801214]" />
-            <span>4 Orders Scale Invariance</span>
-          </div>
-        </div>
-
         {/* Open Floor Invitation Banner */}
-        <div className="bg-[#801214] text-white px-8 py-3 rounded-full font-bold text-xs sm:text-sm lg:text-base flex items-center justify-center gap-2.5 shadow-lg max-w-3xl w-full mx-auto">
-          <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+        <div className="bg-[#801214] text-white px-8 sm:px-12 py-3.5 sm:py-4 rounded-full font-bold text-sm sm:text-base lg:text-lg flex items-center justify-center gap-3 shadow-xl max-w-4xl w-full mx-auto">
+          <HelpCircle className="w-5 h-5 text-white" />
           <span>Floor Open for Questions &amp; Collaborative Discussion</span>
         </div>
       </div>
@@ -136,7 +107,7 @@ export default function SlideConclusion() {
       <div className="relative z-20 flex items-center justify-between text-xs text-[#801214] pt-3 border-t-2 border-[#801214]/20 w-full">
         <div className="flex items-center gap-2 font-medium">
           <span className="w-2 h-2 rounded-full bg-[#801214]" />
-          <span>School of Engineering and Applied Science • Ahmedabad University</span>
+          <span>School of Engineering and Applied Science • Ahmedabad University • Megh Patel &amp; Konark Karia</span>
         </div>
         <div className="font-mono text-[11px] font-bold text-[#801214]">
           Q&A Session
