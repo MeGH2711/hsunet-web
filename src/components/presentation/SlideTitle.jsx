@@ -10,6 +10,7 @@ import {
   Award
 } from "lucide-react";
 import { PRESENTATION_METADATA } from "./slidesData";
+import SlideFooter from "./SlideFooter";
 
 export default function SlideTitle() {
   return (
@@ -113,7 +114,7 @@ export default function SlideTitle() {
                 Megh Patel <span className="text-[#801214] font-semibold text-xl sm:text-2xl">&amp;</span> Konark Karia
               </div>
               <div className="text-xs sm:text-sm text-zinc-500 font-medium">
-                Masters in Computer Science &amp; Engineering
+                Master in Computer Science &amp; Engineering
               </div>
             </div>
 
@@ -134,17 +135,8 @@ export default function SlideTitle() {
         </div>
       </div>
 
-      {/* FOOTER: Center Aligned & Strictly NO Slide Number */}
-      <div className="relative z-20 flex items-center justify-between text-xs text-[#801214] pt-4 border-t-2 border-[#801214]/20 w-full">
-        <div className="flex items-center gap-2 font-medium">
-          <span className="w-2 h-2 rounded-full bg-[#801214]" />
-          <span>School of Engineering and Applied Science • Ahmedabad University • Megh Patel &amp; Konark Karia</span>
-        </div>
-        <div className="font-mono text-[11px] font-bold text-[#801214]">
-          ISLES 2026 / ATLAS 3.0
-        </div>
-        {/* Title slide intentionally has NO slide number */}
-      </div>
+      {/* FOOTER: Standard SlideFooter (Strictly NO Slide Number on Cover) */}
+      <SlideFooter />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   Building2
 } from "lucide-react";
 import { PRESENTATION_METADATA } from "./slidesData";
+import SlideFooter from "./SlideFooter";
 
 export default function SlideConclusion() {
   return (
@@ -103,17 +104,8 @@ export default function SlideConclusion() {
         </div>
       </div>
 
-      {/* FOOTER BAR: SEAS Affiliation Note on Left & STRICTLY NO SLIDE NUMBER ON RIGHT */}
-      <div className="relative z-20 flex items-center justify-between text-xs text-[#801214] pt-3 border-t-2 border-[#801214]/20 w-full">
-        <div className="flex items-center gap-2 font-medium">
-          <span className="w-2 h-2 rounded-full bg-[#801214]" />
-          <span>School of Engineering and Applied Science • Ahmedabad University • Megh Patel &amp; Konark Karia</span>
-        </div>
-        <div className="font-mono text-[11px] font-bold text-[#801214]">
-          Q&A Session
-        </div>
-        {/* Strictly NO slide number on conclusion slide */}
-      </div>
+      {/* FOOTER BAR: Standard SlideFooter (Strictly NO Slide Number on Conclusion) */}
+      <SlideFooter />
     </div>
   );
 }

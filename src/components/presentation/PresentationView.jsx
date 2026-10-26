@@ -15,6 +15,7 @@ import {
   HelpCircle
 } from "lucide-react";
 import { SLIDES_CONFIG, PRESENTATION_METADATA } from "./slidesData";
+import { PresentationContext } from "./PresentationContext";
 import SlideTitle from "./SlideTitle";
 import SlideIntroduction from "./SlideIntroduction";
 import SlideArchitecture from "./SlideArchitecture";
@@ -205,121 +206,48 @@ export default function PresentationView({ model = "hsunet", onExit }) {
     };
   }, [isPlaying, playInterval, totalSlides]);
 
+  const presentationContextValue = {
+    currentSlideIndex,
+    totalSlides,
+    goToNextSlide,
+    goToPrevSlide,
+    goToSlide,
+    isPlaying,
+    togglePlay,
+    isFullscreen,
+    toggleFullscreen,
+    showSlideDrawer,
+    setShowSlideDrawer,
+    showKeyHints,
+    setShowKeyHints,
+    onExit,
+    currentConfig,
+  };
+
   return (
-    <div
-      ref={containerRef}
-      className={`relative w-full h-full flex flex-col bg-white text-[#801214] select-none overflow-hidden ${
-        isFullscreen ? "p-0" : ""
-      }`}
-    >
-      {/* Autoplay Top Progress Bar */}
-      {isPlaying && (
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#801214]/15 z-50 overflow-hidden">
-          <div
-            className="h-full bg-[#801214] transition-all duration-100 ease-linear shadow-md"
-            style={{ width: `${timerProgress}%` }}
-          />
-        </div>
-      )}
-
-      {/* MAIN SLIDE STAGE CANVAS */}
-      <main className="relative flex-1 w-full h-full overflow-hidden flex items-center justify-center bg-white">
-        <div className="w-full h-full transition-all duration-300">
-          <ActiveSlideComponent />
-        </div>
-      </main>
-
-      {/* ALL CONTROLS IN ONE ROW ONLY AT THE BOTTOM OF THE SLIDES */}
-      <footer className="absolute bottom-3 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 p-1 rounded-xl bg-white/95 backdrop-blur-md border-2 border-[#801214]/25 shadow-xl select-none pointer-events-auto">
-        {/* Studio Exit Button */}
-        {onExit && (
-          <button
-            onClick={onExit}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white hover:bg-[#801214] text-[#801214] hover:text-white text-xs font-bold transition-all border border-[#801214]/20"
-            title="Return to Studio Dashboard"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Studio</span>
-          </button>
+    <PresentationContext.Provider value={presentationContextValue}>
+      <div
+        ref={containerRef}
+        className={`relative w-full h-full flex flex-col bg-white text-[#801214] select-none overflow-hidden ${
+          isFullscreen ? "p-0" : ""
+        }`}
+      >
+        {/* Autoplay Top Progress Bar */}
+        {isPlaying && (
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#801214]/15 z-50 overflow-hidden">
+            <div
+              className="h-full bg-[#801214] transition-all duration-100 ease-linear shadow-md"
+              style={{ width: `${timerProgress}%` }}
+            />
+          </div>
         )}
 
-        <div className="w-[1px] h-4 bg-[#801214]/20 mx-0.5" />
-
-        {/* Previous Slide Arrow */}
-        <button
-          onClick={goToPrevSlide}
-          disabled={currentSlideIndex === 0}
-          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214] hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
-          title="Previous Slide (← / Space)"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-
-        {/* Slide Counter Readout */}
-        <span className="font-mono text-xs font-black px-1.5 text-[#801214] select-none">
-          {String(currentSlideIndex + 1).padStart(2, "0")} / {String(totalSlides).padStart(2, "0")}
-        </span>
-
-        {/* Next Slide Arrow */}
-        <button
-          onClick={goToNextSlide}
-          disabled={currentSlideIndex === totalSlides - 1}
-          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214] hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
-          title="Next Slide (→ / Space)"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
-
-        <div className="w-[1px] h-4 bg-[#801214]/20 mx-0.5" />
-
-        {/* Slide Drawer Button */}
-        <button
-          onClick={() => setShowSlideDrawer(true)}
-          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
-          title="Slide Overview (G)"
-        >
-          <Grid className="w-4 h-4" />
-        </button>
-
-        {/* Autoplay Toggle */}
-        <button
-          onClick={togglePlay}
-          className={`p-1.5 rounded-lg transition ${
-            isPlaying
-              ? "bg-[#801214] text-white shadow-md"
-              : "text-[#801214] hover:bg-[#801214]/10"
-          }`}
-          title={isPlaying ? "Pause Autoplay (P)" : "Start Autoplay (P)"}
-        >
-          {isPlaying ? (
-            <Pause className="w-4 h-4" />
-          ) : (
-            <Play className="w-4 h-4" />
-          )}
-        </button>
-
-        {/* Fullscreen Toggle */}
-        <button
-          onClick={toggleFullscreen}
-          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
-          title={isFullscreen ? "Exit Fullscreen (F)" : "Enter Fullscreen (F)"}
-        >
-          {isFullscreen ? (
-            <Minimize2 className="w-4 h-4" />
-          ) : (
-            <Maximize2 className="w-4 h-4" />
-          )}
-        </button>
-
-        {/* Keyboard Shortcuts Hint */}
-        <button
-          onClick={() => setShowKeyHints(true)}
-          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214]/10 transition"
-          title="Keyboard Shortcuts (?)"
-        >
-          <Keyboard className="w-4 h-4" />
-        </button>
-      </footer>
+        {/* MAIN SLIDE STAGE CANVAS */}
+        <main className="relative flex-1 w-full h-full overflow-hidden flex items-center justify-center bg-white">
+          <div className="w-full h-full transition-all duration-300">
+            <ActiveSlideComponent />
+          </div>
+        </main>
 
       {/* SLIDE GRID DRAWER / OVERVIEW MODAL in Light Theme */}
       {showSlideDrawer && (
@@ -431,5 +359,6 @@ export default function PresentationView({ model = "hsunet", onExit }) {
         </div>
       )}
     </div>
+  </PresentationContext.Provider>
   );
 }

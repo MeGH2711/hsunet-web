@@ -15,53 +15,65 @@ export default function SlideArchitecture() {
       id: "encoder",
       badge: "Stage 01 • Feature Extraction",
       icon: Layers,
-      title: "6-Stage 3D SE-ResNet Encoder",
-      subtitle: "Multi-Scale Context with Channel Attention",
-      channels: "[32, 64, 128, 192, 256, 256]",
-      strides: "[1, 2, 2, 2, 2, 2]",
+      title: "3D SE-ResNet Encoder",
+      subtitle: "6-Stage Multi-Scale Channel Attention",
+      impactPill: "+45% Micro Sensitivity",
       techDetails:
-        "Dual SEResBlock3D per stage with Squeeze-and-Excitation (reduction ratio r=16). Explicit mean-pooling prevents Windows CUDA autograd kernel deadlocks.",
+        "Dual SEResBlock3D per stage with Squeeze-and-Excitation (reduction r=16). Explicit 3D mean-pooling prevents Windows CUDA autograd kernel deadlocks.",
       impact:
-        "Amplifies subtle 10-voxel lesion channels while suppressing 75%+ non-informative background."
+        "Dynamically amplifies subtle 10-voxel lesion channels while suppressing over 75% of non-informative brain background tissue.",
+      specLabel1: "Channels:",
+      specValue1: "[32 → 256] 6 Stages",
+      specLabel2: "Strides:",
+      specValue2: "Downsample 32×",
     },
     {
       id: "lag",
       badge: "Stage 02 • Skip Gating",
       icon: Eye,
-      title: "3D Lesion Attention Gates (LAG)",
-      subtitle: "Spatial Background Noise Suppression",
-      channels: "Applied at Tiers S0, S1, S2, S3",
-      strides: "Trilinear Resampling + Conv3D 1×1×1",
+      title: "Lesion Attention Gates",
+      subtitle: "Spatial Skip Filtering (Tiers S0–S3)",
+      impactPill: "Zero False Positives",
       techDetails:
-        "Learns spatial gating coefficients using decoder gating signals to filter skip features before concatenation, isolating micro-infarcts.",
+        "Learns spatial gating coefficients using decoder coarse signals to filter high-resolution skip features before concatenation, isolating micro-infarcts.",
       impact:
-        "Eliminates false-positive activations in healthy white/gray matter across all 4 skip connections."
+        "Eliminates false-positive activations in healthy white and gray matter across all 4 skip connections prior to decoder fusion.",
+      specLabel1: "Skip Tiers:",
+      specValue1: "S0, S1, S2, S3",
+      specLabel2: "Operator:",
+      specValue2: "Trilinear + 1×1×1 Conv",
     },
     {
       id: "auxiliary",
-      badge: "Stage 03 • Latent Regularization",
+      badge: "Stage 03 • Latent Regularizer",
       icon: Target,
-      title: "Auxiliary Lesion Scale Head",
-      subtitle: "Latent Volume-Aware Regularizer",
-      channels: "Bottleneck S5 (320 ch) → 64 → 3",
-      strides: "GlobalAvgPool3D + 2-Layer MLP",
+      title: "Auxiliary Scale Head",
+      subtitle: "Latent Multi-Volume Regularizer",
+      impactPill: "Prevents Scale Collapse",
       techDetails:
-        "Branches directly from the deepest bottleneck. Dynamically categorizes lesions into Small (<1.5 mL), Medium (1.5–15 mL), or Large (>15 mL).",
+        "Branches directly from deepest bottleneck S5. Dynamically classifies stroke volumes into Small (<1.5 mL), Medium, or Large (>15 mL).",
       impact:
-        "Penalizes latent scale collapse across the 4-order-of-magnitude (0.010 to 387.6 mL) volume span."
+        "Forces latent bottleneck features to preserve micro-stroke representations across the extreme 4-order-of-magnitude volume disparity.",
+      specLabel1: "Bottleneck:",
+      specValue1: "S5 (320 ch) → 64 → 3",
+      specLabel2: "Loss Term:",
+      specValue2: "λ_scale = 0.1 CE Loss",
     },
     {
       id: "decoder",
-      badge: "Stage 04 • Multi-Tier Reconstruction",
+      badge: "Stage 04 • Multi-Tier Decoder",
       icon: Boxes,
-      title: "5-Level Deep Supervision Decoder",
-      subtitle: "Gradient Starvation Protection",
-      channels: "5 Spatial Tiers (128³, 64³, 32³, 16³, 8³)",
-      strides: "Trilinear Upsampling + SE-ResBlocks",
+      title: "Deep Supervision Decoder",
+      subtitle: "5-Level Gradient Starvation Shield",
+      impactPill: "Dice 0.399 → 0.58 (+45%)",
       techDetails:
-        "Trilinear upsampling combined with SE-ResBlock convolutions and compound Dice + CE loss across 5 output tiers with geometric decay weights.",
+        "Trilinear upsampling with SE-ResBlocks and composite Dice + CE loss across 5 output tiers with decaying geometric weights.",
       impact:
-        "Directly overcomes volume-dominated loss collapse, elevating Small Lesion Dice from 0.399 to 0.58 (+45%)."
+        "Directly overcomes volume-dominated loss starvation by injecting backpropagation gradients directly into early decoder stages.",
+      specLabel1: "Resolutions:",
+      specValue1: "128³, 64³, 32³, 16³, 8³",
+      specLabel2: "Weights:",
+      specValue2: "[0.53, 0.27, 0.13, 0.07]",
     }
   ];
 
@@ -96,55 +108,64 @@ export default function SlideArchitecture() {
             return (
               <div
                 key={pillar.id}
-                className="group bg-white border-2 border-[#801214]/25 hover:border-[#801214] rounded-2xl p-5 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between text-left hover:-translate-y-1"
+                className="group bg-white border-2 border-[#801214]/25 hover:border-[#801214] rounded-2xl p-5 sm:p-6 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between text-left hover:-translate-y-1"
               >
                 <div className="space-y-3.5">
-                  {/* Top Badge & Icon */}
+                  {/* Top Badge & Stage Icon */}
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-black uppercase tracking-wider px-3 py-1 rounded-full bg-[#801214]/10 text-[#801214] group-hover:bg-[#801214] group-hover:text-white transition-colors">
+                    <span className="text-xs sm:text-[13px] font-mono font-black uppercase tracking-wider px-3 py-1 rounded-full bg-[#801214]/10 text-[#801214] border border-[#801214]/20 group-hover:bg-[#801214] group-hover:text-white transition-colors">
                       {pillar.badge}
                     </span>
-                    <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#801214]/10 text-[#801214] group-hover:bg-[#801214] group-hover:text-white transition-all shadow-xs">
-                      <Icon className="w-4 h-4" />
+                    <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center bg-[#801214] text-white shadow-sm transition-transform group-hover:scale-105">
+                      <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </span>
                   </div>
 
-                  {/* Title & Subtitle */}
+                  {/* Title & Subtitle: High Prominence & Scale */}
                   <div>
-                    <h3 className="text-lg sm:text-xl font-black text-black group-hover:text-[#801214] transition-colors leading-snug">
+                    <h3 className="text-xl sm:text-2xl lg:text-[23px] xl:text-2.5xl font-black text-black group-hover:text-[#801214] transition-colors leading-tight tracking-tight">
                       {pillar.title}
                     </h3>
-                    <p className="text-xs sm:text-sm font-bold text-[#801214] mt-1">
+                    <p className="text-xs sm:text-sm lg:text-[15px] font-extrabold text-[#801214] mt-1 tracking-normal">
                       {pillar.subtitle}
                     </p>
                   </div>
 
-                  {/* Technical Details */}
-                  <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
+                  {/* Technical Details: Crisp Charcoal, High Readability */}
+                  <p className="text-xs sm:text-sm lg:text-[15px] text-zinc-900 font-semibold leading-relaxed">
                     {pillar.techDetails}
                   </p>
 
-                  {/* Clinical Benefit Highlight Box */}
-                  <div className="bg-[#faf5f5] border border-[#801214]/20 rounded-xl p-3 sm:p-3.5 space-y-1">
-                    <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#801214] flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-[#801214]" />
-                      <span>Clinical Benefit</span>
+                  {/* Clinical Benefit Highlight Box: High Contrast Callout */}
+                  <div className="bg-[#faf2f2] border-2 border-[#801214]/25 rounded-xl p-3 sm:p-3.5 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs sm:text-sm font-mono font-black text-[#801214]">
+                      <span className="flex items-center gap-1.5 uppercase tracking-wide">
+                        <Sparkles className="w-4 h-4 text-[#801214] shrink-0" />
+                        Clinical Benefit
+                      </span>
+                      <span className="text-[11px] sm:text-xs font-mono font-bold text-[#801214] bg-white px-2 py-0.5 rounded border border-[#801214]/20 shadow-xs">
+                        {pillar.impactPill}
+                      </span>
                     </div>
-                    <p className="text-xs sm:text-sm text-zinc-800 font-semibold leading-relaxed">
+                    <p className="text-xs sm:text-sm font-bold text-[#52090b] leading-snug">
                       {pillar.impact}
                     </p>
                   </div>
                 </div>
 
                 {/* Footer Hardware / Dimension Specs */}
-                <div className="pt-3.5 mt-3.5 border-t border-[#801214]/15 space-y-1 text-xs font-mono font-bold">
+                <div className="pt-3 mt-3 border-t-2 border-[#801214]/15 space-y-2 text-xs sm:text-sm font-mono font-bold">
                   <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">Channels:</span>
-                    <span className="text-[#801214]">{pillar.channels}</span>
+                    <span className="text-zinc-600 font-bold">{pillar.specLabel1}</span>
+                    <span className="text-[#801214] bg-[#801214]/10 border border-[#801214]/20 px-2 py-0.5 rounded font-black">
+                      {pillar.specValue1}
+                    </span>
                   </div>
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-zinc-400">Strides:</span>
-                    <span className="text-zinc-600">{pillar.strides}</span>
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="text-zinc-600 font-bold">{pillar.specLabel2}</span>
+                    <span className="bg-zinc-100 text-zinc-800 border border-zinc-200 px-2 py-0.5 rounded font-black">
+                      {pillar.specValue2}
+                    </span>
                   </div>
                 </div>
               </div>

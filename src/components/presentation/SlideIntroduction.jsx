@@ -155,17 +155,14 @@ export default function SlideIntroduction() {
                     loading="eager"
                   />
 
-                  {/* High-Contrast Clinical HUD Overlay */}
-                  <div className="absolute bottom-2.5 left-3 pointer-events-none">
+                  {/* High-Contrast Clinical HUD Overlay: T1w + GT Overlay directly above subject badge */}
+                  <div className="absolute bottom-2.5 left-3 pointer-events-none flex flex-col items-start gap-1.5">
+                    <span className="text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-md bg-black/85 text-zinc-200 border border-white/20 shadow-md backdrop-blur-md">
+                      T1w + GT Overlay
+                    </span>
                     <span className="text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-md bg-black/90 text-white border border-white/25 shadow-lg backdrop-blur-md flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                       {card.caseId}
-                    </span>
-                  </div>
-
-                  <div className="absolute top-2.5 right-3 pointer-events-none">
-                    <span className="text-[10px] sm:text-xs font-mono font-bold px-2 py-0.5 rounded bg-black/75 text-zinc-300 border border-white/15 backdrop-blur-sm">
-                      T1w + GT Overlay
                     </span>
                   </div>
                 </div>
