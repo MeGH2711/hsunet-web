@@ -113,7 +113,7 @@ export default function SlideTitle() {
                 Megh Patel <span className="text-[#801214] font-semibold text-xl sm:text-2xl">&amp;</span> Konark Karia
               </div>
               <div className="text-xs sm:text-sm text-zinc-500 font-medium">
-                B.Tech Honors Thesis in Computer Science &amp; Engineering
+                Masters in Computer Science &amp; Engineering
               </div>
             </div>
 
