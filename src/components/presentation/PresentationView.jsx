@@ -55,16 +55,16 @@ export default function PresentationView({ model = "hsunet", onExit }) {
   const currentConfig = SLIDES_CONFIG[currentSlideIndex];
   const ActiveSlideComponent = SLIDE_COMPONENTS[currentConfig.id] || SlideTitle;
 
-  // Slide navigation handlers
+  // Slide navigation handlers (no loop)
   const goToNextSlide = useCallback(() => {
-    setCurrentSlideIndex((prev) => (prev + 1 < totalSlides ? prev + 1 : 0));
+    setCurrentSlideIndex((prev) => (prev + 1 < totalSlides ? prev + 1 : prev));
     setTimerProgress(0);
   }, [totalSlides]);
 
   const goToPrevSlide = useCallback(() => {
-    setCurrentSlideIndex((prev) => (prev - 1 >= 0 ? prev - 1 : totalSlides - 1));
+    setCurrentSlideIndex((prev) => (prev - 1 >= 0 ? prev - 1 : 0));
     setTimerProgress(0);
-  }, [totalSlides]);
+  }, []);
 
   const goToSlide = (index) => {
     if (index >= 0 && index < totalSlides) {
@@ -73,6 +73,15 @@ export default function PresentationView({ model = "hsunet", onExit }) {
       setTimerProgress(0);
     }
   };
+
+  const togglePlay = useCallback(() => {
+    setIsPlaying((prevPlaying) => {
+      if (!prevPlaying && currentSlideIndex >= totalSlides - 1) {
+        setCurrentSlideIndex(0);
+      }
+      return !prevPlaying;
+    });
+  }, [currentSlideIndex, totalSlides]);
 
   // Toggle native HTML5 fullscreen
   const toggleFullscreen = () => {
@@ -134,7 +143,7 @@ export default function PresentationView({ model = "hsunet", onExit }) {
         case "p":
         case "P":
           e.preventDefault();
-          setIsPlaying((p) => !p);
+          togglePlay();
           break;
         case "g":
         case "G":
@@ -159,7 +168,7 @@ export default function PresentationView({ model = "hsunet", onExit }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToNextSlide, goToPrevSlide, totalSlides, showSlideDrawer, showKeyHints]);
+  }, [goToNextSlide, goToPrevSlide, togglePlay, totalSlides, showSlideDrawer, showKeyHints]);
 
   // Autoplay timer
   useEffect(() => {
@@ -179,14 +188,22 @@ export default function PresentationView({ model = "hsunet", onExit }) {
       setTimerProgress(pct);
       if (elapsed >= playInterval) {
         elapsed = 0;
-        goToNextSlide();
+        setTimerProgress(0);
+        setCurrentSlideIndex((prev) => {
+          if (prev + 1 < totalSlides) {
+            return prev + 1;
+          } else {
+            setIsPlaying(false);
+            return prev;
+          }
+        });
       }
     }, intervalStep);
 
     return () => {
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
     };
-  }, [isPlaying, playInterval, goToNextSlide]);
+  }, [isPlaying, playInterval, totalSlides]);
 
   return (
     <div
@@ -231,7 +248,8 @@ export default function PresentationView({ model = "hsunet", onExit }) {
         {/* Previous Slide Arrow */}
         <button
           onClick={goToPrevSlide}
-          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214] hover:text-white transition-all disabled:opacity-30"
+          disabled={currentSlideIndex === 0}
+          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214] hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
           title="Previous Slide (← / Space)"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -245,7 +263,8 @@ export default function PresentationView({ model = "hsunet", onExit }) {
         {/* Next Slide Arrow */}
         <button
           onClick={goToNextSlide}
-          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214] hover:text-white transition-all"
+          disabled={currentSlideIndex === totalSlides - 1}
+          className="p-1.5 rounded-lg text-[#801214] hover:bg-[#801214] hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
           title="Next Slide (→ / Space)"
         >
           <ChevronRight className="w-4 h-4" />
@@ -264,7 +283,7 @@ export default function PresentationView({ model = "hsunet", onExit }) {
 
         {/* Autoplay Toggle */}
         <button
-          onClick={() => setIsPlaying((p) => !p)}
+          onClick={togglePlay}
           className={`p-1.5 rounded-lg transition ${
             isPlaying
               ? "bg-[#801214] text-white shadow-md"
