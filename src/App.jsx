@@ -62,7 +62,11 @@ export default function App() {
     } else if (view === "metrics" || view === "table") {
       navigate(`/${activeModel}/metrics`);
     } else {
-      navigate(`/${activeModel}/visuals`);
+      const caseId =
+        selectedSubject?.case_id ||
+        searchParams.get("case") ||
+        "ISLES_1170";
+      navigate(`/${activeModel}/visuals?case=${caseId}`);
     }
   };
 
@@ -73,9 +77,12 @@ export default function App() {
     if (newModel === "ensemble" && targetView === "curves") {
       targetView = "overview";
     }
-    const caseQuery = selectedSubject ? `?case=${selectedSubject.case_id}` : "";
+    const currentCaseId =
+      selectedSubject?.case_id ||
+      searchParams.get("case") ||
+      "ISLES_1170";
     if (targetView === "visuals") {
-      navigate(`/${newModel}/visuals${caseQuery}`);
+      navigate(`/${newModel}/visuals?case=${currentCaseId}`);
     } else {
       navigate(`/${newModel}/${targetView}`);
     }
@@ -171,17 +178,40 @@ export default function App() {
           c.case_id.toLowerCase() === targetId.toLowerCase() ||
           c.subject.toLowerCase() === targetId.toLowerCase()
       );
-      if (match && match.case_id !== selectedSubject?.case_id) {
-        setSelectedSubject(match);
+      if (match) {
+        if (!selectedSubject || selectedSubject.case_id !== match.case_id || selectedSubject !== match) {
+          setSelectedSubject(match);
+        }
+      }
+      // If accessed via /visuals/:caseId path, normalize to ?case=...
+      if (pathCase && (!queryCase || queryCase.toLowerCase() !== pathCase.toLowerCase())) {
+        navigate(`/${activeModel}/visuals?case=${match ? match.case_id : pathCase}`, {
+          replace: true,
+        });
+      }
+    } else if (currentView === "visuals") {
+      // Missing ?case in visuals view: ensure the URL reflects the active subject
+      const defaultCase =
+        selectedSubject ||
+        data.cases.find((c) => c.case_id === "ISLES_1170") ||
+        data.cases[0];
+      if (defaultCase) {
+        if (!selectedSubject || selectedSubject.case_id !== defaultCase.case_id) {
+          setSelectedSubject(defaultCase);
+        }
+        navigate(`/${activeModel}/visuals?case=${defaultCase.case_id}`, {
+          replace: true,
+        });
       }
     }
-  }, [location.pathname, searchParams, data, selectedSubject]);
+  }, [location.pathname, searchParams, data, activeModel, currentView]);
 
   // Handler for subject selection from components
-  const handleSelectSubject = (subject, shouldNavigateToVisuals = false) => {
+  const handleSelectSubject = (subject, forceVisuals = true) => {
+    if (!subject) return;
     setSelectedSubject(subject);
-    if (shouldNavigateToVisuals) {
-      navigate(`/${activeModel}/visuals`);
+    if (forceVisuals || currentView === "visuals") {
+      navigate(`/${activeModel}/visuals?case=${subject.case_id}`);
     }
   };
 
@@ -280,12 +310,7 @@ export default function App() {
           currentView={currentView}
           setCurrentView={handleViewChange}
           selectedSubject={selectedSubject}
-          setSelectedSubject={(c) => {
-            setSelectedSubject(c);
-            if (currentView !== "visuals") {
-              navigate(`/${activeModel}/visuals`);
-            }
-          }}
+          setSelectedSubject={(c) => handleSelectSubject(c, true)}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           selectedSite={selectedSite}
@@ -333,7 +358,7 @@ export default function App() {
                 data={hsunetData}
                 model="hsunet"
                 onSelectSubject={(c) => handleSelectSubject(c, true)}
-                onGoToInspector={() => navigate("/hsunet/visuals")}
+                onGoToInspector={(c) => { if (c) handleSelectSubject(c, true); }}
                 onGoToTraining={() => navigate("/hsunet/curves")}
               />
             }
@@ -348,7 +373,7 @@ export default function App() {
               <CaseTableView
                 cases={hsunetData?.cases || []}
                 onSelectSubject={(c) => handleSelectSubject(c, true)}
-                onGoToInspector={() => navigate("/hsunet/visuals")}
+                onGoToInspector={(c) => { if (c) handleSelectSubject(c, true); }}
               />
             }
           />
@@ -357,7 +382,10 @@ export default function App() {
             element={
               <PresentationView
                 model="hsunet"
-                onExit={() => navigate("/hsunet/visuals")}
+                onExit={() => {
+                  const caseId = selectedSubject?.case_id || "ISLES_1170";
+                  navigate(`/hsunet/visuals?case=${caseId}`);
+                }}
               />
             }
           />
@@ -390,7 +418,7 @@ export default function App() {
                 data={ensembleData}
                 model="ensemble"
                 onSelectSubject={(c) => handleSelectSubject(c, true)}
-                onGoToInspector={() => navigate("/ensemble/visuals")}
+                onGoToInspector={(c) => { if (c) handleSelectSubject(c, true); }}
                 onGoToTraining={null}
               />
             }
@@ -401,7 +429,7 @@ export default function App() {
               <CaseTableView
                 cases={ensembleData?.cases || []}
                 onSelectSubject={(c) => handleSelectSubject(c, true)}
-                onGoToInspector={() => navigate("/ensemble/visuals")}
+                onGoToInspector={(c) => { if (c) handleSelectSubject(c, true); }}
               />
             }
           />
@@ -410,7 +438,10 @@ export default function App() {
             element={
               <PresentationView
                 model="ensemble"
-                onExit={() => navigate("/ensemble/visuals")}
+                onExit={() => {
+                  const caseId = selectedSubject?.case_id || "ISLES_1170";
+                  navigate(`/ensemble/visuals?case=${caseId}`);
+                }}
               />
             }
           />
@@ -420,7 +451,7 @@ export default function App() {
           />
           <Route
             path="/ensemble"
-            element={<Navigate to="/ensemble/visuals" replace />}
+            element={<Navigate to={`/ensemble/visuals?case=${selectedSubject?.case_id || "ISLES_1170"}`} replace />}
           />
 
           {/* ==================== PRESENTATION DIRECT ROUTES ==================== */}
@@ -429,7 +460,10 @@ export default function App() {
             element={
               <PresentationView
                 model={activeModel}
-                onExit={() => navigate(`/${activeModel}/visuals`)}
+                onExit={() => {
+                  const caseId = selectedSubject?.case_id || "ISLES_1170";
+                  navigate(`/${activeModel}/visuals?case=${caseId}`);
+                }}
               />
             }
           />
@@ -439,14 +473,14 @@ export default function App() {
           />
 
           {/* ==================== LEGACY & ROOT REDIRECTS ==================== */}
-          <Route path="/" element={<Navigate to="/hsunet/visuals" replace />} />
+          <Route path="/" element={<Navigate to={`/hsunet/visuals?case=${selectedSubject?.case_id || "ISLES_1170"}`} replace />} />
           <Route
             path="/hsunet"
-            element={<Navigate to="/hsunet/visuals" replace />}
+            element={<Navigate to={`/hsunet/visuals?case=${selectedSubject?.case_id || "ISLES_1170"}`} replace />}
           />
           <Route
             path="/visuals"
-            element={<Navigate to="/hsunet/visuals" replace />}
+            element={<Navigate to={`/hsunet/visuals?case=${selectedSubject?.case_id || "ISLES_1170"}`} replace />}
           />
           <Route
             path="/overview"
@@ -462,7 +496,7 @@ export default function App() {
           />
           <Route
             path="/inspector"
-            element={<Navigate to="/hsunet/visuals" replace />}
+            element={<Navigate to={`/hsunet/visuals?case=${selectedSubject?.case_id || "ISLES_1170"}`} replace />}
           />
           <Route
             path="/training"
@@ -472,7 +506,7 @@ export default function App() {
             path="/table"
             element={<Navigate to="/hsunet/metrics" replace />}
           />
-          <Route path="*" element={<Navigate to="/hsunet/visuals" replace />} />
+          <Route path="*" element={<Navigate to={`/hsunet/visuals?case=${selectedSubject?.case_id || "ISLES_1170"}`} replace />} />
         </Routes>
       </main>
     </div>

@@ -336,9 +336,6 @@ export default function Sidebar({
                 key={c.case_id}
                 onClick={() => {
                   setSelectedSubject(c);
-                  if (currentView !== "visuals" && currentView !== "inspector") {
-                    setCurrentView("visuals");
-                  }
                 }}
                 className={cn(
                   "w-full text-left px-3 py-2.5 transition-colors flex items-center justify-between group",

@@ -567,7 +567,7 @@ export default function SubjectInspector({ subject, onSelectSubject, model = "hs
           setMetaLoading(false);
         });
     }
-  }, [subject?.case_id]);
+  }, [subject?.case_id, model]);
 
   // Jump all 3 views to the lesion focus coordinate
   const handleJumpAllToFocus = () => {
@@ -662,7 +662,7 @@ export default function SubjectInspector({ subject, onSelectSubject, model = "hs
       return matched[`${type}_url`];
     }
     // Dynamic slice server endpoint
-    return `/api/slice?case_id=${subject.case_id}&plane=${planeKey}&slice_idx=${sliceIdx}&type=${type}`;
+    return `/api/slice?case_id=${subject.case_id}&plane=${planeKey}&slice_idx=${sliceIdx}&type=${type}&model=${model || "hsunet"}`;
   };
 
   // Compute slice info helper for any given plane
@@ -978,7 +978,7 @@ export default function SubjectInspector({ subject, onSelectSubject, model = "hs
                   const stripRow = isDominantMode ? (config.rowOffset ?? 0) + safePos : 0;
                   const activeModelDir = model === "ensemble" ? "ensemble" : "hsunet";
                   const stripUrl = isDominantMode
-                    ? (visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/${activeModelDir}/strip.png` : null))
+                    ? (subject?.has_visuals ? `/data/subjects/${subject.case_id}/${activeModelDir}/strip.png` : (visuals?.strip_url || null))
                     : null;
 
                   return (
@@ -1201,7 +1201,7 @@ export default function SubjectInspector({ subject, onSelectSubject, model = "hs
             const stripRow = isDominantMode ? (config.rowOffset ?? 0) + safePos : 0;
             const activeModelDir = model === "ensemble" ? "ensemble" : "hsunet";
             const stripUrl = isDominantMode
-              ? (visuals?.strip_url || (subject?.has_visuals ? `/data/subjects/${subject.case_id}/${activeModelDir}/strip.png` : null))
+              ? (subject?.has_visuals ? `/data/subjects/${subject.case_id}/${activeModelDir}/strip.png` : (visuals?.strip_url || null))
               : null;
 
             return (
